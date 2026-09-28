@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
 import path from 'node:path';
 import sharp from 'sharp';
 
