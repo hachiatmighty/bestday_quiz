@@ -1,12 +1,15 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
 import path from 'node:path';
-import sharp from 'sharp';
 
 const root = process.cwd();
 const asset = (...parts) => path.join(root, 'public', 'assets', ...parts);
-const fontMedium = (await readFile(asset('fonts', 'Urbanist-Medium.ttf'))).toString('base64');
-const fontBold = (await readFile(asset('fonts', 'Urbanist-ExtraBold.ttf'))).toString('base64');
+const fontCachePath = path.join(root, '.astro', 'font-cache');
+const fontConfigPath = path.join(root, '.astro', 'fontconfig.xml');
+await mkdir(fontCachePath, { recursive: true });
+await writeFile(fontConfigPath, `<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>${asset('fonts')}</dir><cachedir>${fontCachePath}</cachedir></fontconfig>`);
+process.env.FONTCONFIG_FILE = fontConfigPath;
+const { default: sharp } = await import('sharp');
 const wordmarkBlack = (await readFile(asset('logos', 'wordmark-black.png'))).toString('base64');
 const wordmarkWhite = (await readFile(asset('logos', 'wordmark-white.png'))).toString('base64');
 
@@ -20,11 +23,7 @@ const cards = {
 
 const escapeXml = value => value.replaceAll('&', '&amp;').replaceAll("'", '&apos;');
 const dataUri = async filename => `data:image/png;base64,${(await readFile(asset('illustrations', filename))).toString('base64')}`;
-const fonts = `<style>
-  @font-face { font-family: Urbanist; src: url(data:font/ttf;base64,${fontMedium}); font-weight: 500; }
-  @font-face { font-family: Urbanist; src: url(data:font/ttf;base64,${fontBold}); font-weight: 800; }
-  text { font-family: Urbanist, sans-serif; }
-</style>`;
+const fonts = `<style>text { font-family: 'Urbanist Medium'; } text[font-weight='800'] { font-family: 'Urbanist ExtraBold'; }</style>`;
 
 const wrap = (text, limit) => {
   const lines = [];
@@ -68,6 +67,7 @@ for (const [slug, [name, cardLine, pictogram]] of Object.entries(cards)) {
     <text x="68" y="230" font-size="32" font-weight="800" letter-spacing="3">I'M</text>
     <text x="68" y="330" font-size="92" font-weight="800">${name}</text>
     ${textLines(wrap(cardLine, 44), 68, 455, 44, 'font-size="32" font-weight="500"')}
+    <text x="68" y="575" font-size="24" font-weight="500">quiz.bestday.ai</text>
   </svg>`;
   await renderPng(og, asset('og', `${slug}.png`));
 
@@ -79,7 +79,7 @@ for (const [slug, [name, cardLine, pictogram]] of Object.entries(cards)) {
     <text x="80" y="1160" font-size="44" font-weight="800" letter-spacing="4">I'M</text>
     <text x="80" y="1300" font-size="122" font-weight="800">${name}</text>
     ${textLines(wrap(cardLine, 27), 80, 1455, 64, 'font-size="48" font-weight="500"')}
-    <text x="80" y="1818" font-size="30" font-weight="800" letter-spacing="3">HOW DO YOU GO AFTER A GOAL?</text>
+    <text x="80" y="1818" font-size="30" font-weight="500">quiz.bestday.ai</text>
   </svg>`;
   await renderPng(story, asset('cards', `${slug}.png`));
 }
@@ -103,7 +103,7 @@ const anchorDark = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height=
   <text x="80" y="1160" fill="#FFDE59" font-size="44" font-weight="800" letter-spacing="4">I'M</text>
   <text x="80" y="1300" fill="#FFFCEF" font-size="122" font-weight="800">${anchorName}</text>
   ${textLines(wrap(anchorLine, 27), 80, 1455, 64, 'fill="#FFFCEF" font-size="48" font-weight="500"')}
-  <text x="80" y="1818" fill="#FFDE59" font-size="30" font-weight="800" letter-spacing="3">HOW DO YOU GO AFTER A GOAL?</text>
+  <text x="80" y="1818" fill="#FFDE59" font-size="30" font-weight="500">quiz.bestday.ai</text>
 </svg>`;
 await renderPng(anchorDark, asset('review', 'anchor-dark-1080x1920.png'));
 

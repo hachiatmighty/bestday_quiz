@@ -1,3 +1,5 @@
+import { archetypes, type ArchetypeSlug } from './quiz';
+
 export const emails = [
   {
     slug: 'result', timing: 'Immediately', subject: "You're The {type}", preview: 'Your full read, and the kind of person who helps you most.',
@@ -20,3 +22,16 @@ export const emails = [
     cta: 'Start your circle', note: '7 days free, then Premium is $99 a year.', signoff: 'No one achieves alone.\n\nBestday',
   },
 ] as const;
+
+export function renderEmailPreview(email: (typeof emails)[number], type: ArchetypeSlug) {
+  const result = archetypes[type];
+  const replaceFields = (value: string) => value
+    .replaceAll('{first_name}', 'Amara')
+    .replaceAll('{type}', result.name.replace('The ', ''));
+  const paragraphs = email.paragraphs.map(paragraph => {
+    if (paragraph.startsWith('[Identity line]')) return `${result.identity}\n\n${result.strength}\n\n${result.tendency}\n\n${result.need}`;
+    if (paragraph.startsWith('[Type-specific line]')) return result.emailPick;
+    return replaceFields(paragraph);
+  });
+  return { ...email, subject: replaceFields(email.subject), paragraphs };
+}

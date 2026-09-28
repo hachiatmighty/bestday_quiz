@@ -1,0 +1,10 @@
+---
+import EmailPreview from '../../../components/EmailPreview.astro';
+import { emails } from '../../../data/emails';
+import { archetypeOrder } from '../../../data/quiz';
+export function getStaticPaths() {
+  return archetypeOrder.flatMap(type => emails.map(email => ({ params: { type, slug: email.slug }, props: { email, type } })));
+}
+const { email, type } = Astro.props;
+---
+<EmailPreview {email} {type} />
