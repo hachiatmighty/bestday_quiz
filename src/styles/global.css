@@ -1,0 +1,14 @@
+@font-face { font-family: Urbanist; src: url('/assets/fonts/Urbanist-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: Urbanist; src: url('/assets/fonts/Urbanist-ExtraBold.ttf') format('truetype'); font-weight: 800; font-display: swap; }
+:root { --yellow: #FFDE59; --black: #0D0D0D; --cream: #FFFCEF; --muted: #c8c5b8; font-family: Urbanist, ui-sans-serif, system-ui, sans-serif; }
+* { box-sizing: border-box; }
+html { background: var(--black); color: var(--cream); }
+body { margin: 0; min-width: 320px; }
+button, input { font: inherit; }
+a { color: inherit; }
+.shell { width: min(100% - 32px, 760px); margin: 0 auto; }
+.eyebrow { color: var(--yellow); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.button { display: inline-flex; justify-content: center; align-items: center; min-height: 52px; padding: 0 24px; border: 0; border-radius: 999px; background: var(--yellow); color: var(--black); font-weight: 800; text-decoration: none; cursor: pointer; }
+.button.secondary { background: transparent; color: var(--cream); border: 1px solid #4d4d46; }
+.button:focus-visible, .option:focus-visible, input:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.card { border-radius: 12px; }
