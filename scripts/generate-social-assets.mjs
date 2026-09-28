@@ -1,15 +1,12 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { Buffer } from 'node:buffer';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { chromium } from 'playwright-core';
 
 const root = process.cwd();
 const asset = (...parts) => path.join(root, 'public', 'assets', ...parts);
-const fontCachePath = path.join(root, '.astro', 'font-cache');
-const fontConfigPath = path.join(root, '.astro', 'fontconfig.xml');
-await mkdir(fontCachePath, { recursive: true });
-await writeFile(fontConfigPath, `<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>${asset('fonts')}</dir><cachedir>${fontCachePath}</cachedir></fontconfig>`);
-process.env.FONTCONFIG_FILE = fontConfigPath;
-const { default: sharp } = await import('sharp');
+const fontMedium = (await readFile(asset('fonts', 'Urbanist-Medium.ttf'))).toString('base64');
+const fontBold = (await readFile(asset('fonts', 'Urbanist-ExtraBold.ttf'))).toString('base64');
 const wordmarkBlack = (await readFile(asset('logos', 'wordmark-black.png'))).toString('base64');
 const wordmarkWhite = (await readFile(asset('logos', 'wordmark-white.png'))).toString('base64');
 
@@ -21,22 +18,11 @@ const cards = {
   finisher: ['The Finisher', 'I finish things for everyone. My circle makes sure one is mine.', '05_success.png'],
 };
 
-const escapeXml = value => value.replaceAll('&', '&amp;').replaceAll("'", '&apos;');
 const dataUri = async filename => `data:image/png;base64,${(await readFile(asset('illustrations', filename))).toString('base64')}`;
-const fonts = `<style>text { font-family: 'Urbanist Medium'; } text[font-weight='800'] { font-family: 'Urbanist ExtraBold'; }</style>`;
-
-const wrap = (text, limit) => {
-  const lines = [];
-  for (const word of text.split(' ')) {
-    const candidate = `${lines.at(-1) || ''} ${word}`.trim();
-    if (candidate.length > limit && lines.length) lines.push(word);
-    else if (lines.length) lines[lines.length - 1] = candidate;
-    else lines.push(candidate);
-  }
-  return lines;
-};
-
-const textLines = (lines, x, y, gap, attributes) => lines.map((line, index) => `<text x="${x}" y="${y + index * gap}" ${attributes}>${escapeXml(line)}</text>`).join('');
+const fonts = `
+  @font-face { font-family: Urbanist; src: url(data:font/ttf;base64,${fontMedium}) format('truetype'); font-weight: 500; }
+  @font-face { font-family: Urbanist; src: url(data:font/ttf;base64,${fontBold}) format('truetype'); font-weight: 800; }
+`;
 const stripPngMetadata = buffer => {
   const chunks = [buffer.subarray(0, 8)];
   for (let offset = 8; offset < buffer.length;) {
@@ -48,66 +34,61 @@ const stripPngMetadata = buffer => {
   }
   return Buffer.concat(chunks);
 };
-const renderPng = async (svg, output) => {
-  const buffer = await sharp(Buffer.from(svg)).flatten().removeAlpha().png({ compressionLevel: 9 }).toBuffer();
-  await writeFile(output, stripPngMetadata(buffer));
-};
+const documentFor = (content, width, height) => `<!doctype html><html><head><style>${fonts}
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: ${width}px; height: ${height}px; overflow: hidden; }
+  body { font-family: Urbanist, sans-serif; font-weight: 500; }
+  #card { position: relative; width: ${width}px; height: ${height}px; overflow: hidden; }
+</style></head><body>${content}</body></html>`;
 
 await mkdir(asset('og'), { recursive: true });
 await mkdir(asset('cards'), { recursive: true });
 await mkdir(asset('review'), { recursive: true });
 
+const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+const page = await browser.newPage({ deviceScaleFactor: 1 });
+const render = async (content, width, height, output) => {
+  await page.setViewportSize({ width, height });
+  await page.setContent(documentFor(content, width, height), { waitUntil: 'load' });
+  await page.evaluate(() => document.fonts.ready);
+  const screenshot = await page.locator('#card').screenshot({ type: 'png' });
+  await writeFile(output, stripPngMetadata(screenshot));
+};
+
 for (const [slug, [name, cardLine, pictogram]] of Object.entries(cards)) {
   const illustration = await dataUri(pictogram);
-  const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">${fonts}
-    <rect width="1200" height="630" rx="12" fill="#FFDE59"/>
-    <circle cx="948" cy="228" r="190" fill="#0D0D0D"/>
-    <image href="${illustration}" x="790" y="70" width="316" height="316"/>
-    <image href="data:image/png;base64,${wordmarkBlack}" x="68" y="58" width="142" height="45" preserveAspectRatio="xMinYMid meet"/>
-    <text x="68" y="230" font-size="32" font-weight="800" letter-spacing="3">I'M</text>
-    <text x="68" y="330" font-size="92" font-weight="800">${name}</text>
-    ${textLines(wrap(cardLine, 44), 68, 455, 44, 'font-size="32" font-weight="500"')}
-    <text x="68" y="575" font-size="24" font-weight="500">quiz.bestday.ai</text>
-  </svg>`;
-  await renderPng(og, asset('og', `${slug}.png`));
+  const og = `<article id="card" style="background:#FFDE59;color:#0D0D0D;padding:58px 68px">
+    <img src="data:image/png;base64,${wordmarkBlack}" style="width:142px;height:45px;object-fit:contain;object-position:left center">
+    <div style="position:absolute;right:62px;top:38px;width:380px;height:380px;border-radius:50%;background:#0D0D0D;display:grid;place-items:center"><img src="${illustration}" style="width:316px;height:316px;object-fit:contain"></div>
+    <div style="position:absolute;left:68px;right:510px;top:218px"><div style="font-size:32px;font-weight:800;letter-spacing:3px">I'M</div><div style="font-size:92px;line-height:1;font-weight:800;margin-top:12px;white-space:nowrap">${name}</div><div style="font-size:32px;line-height:1.36;margin-top:92px">${cardLine}</div></div>
+    <div style="position:absolute;left:68px;bottom:48px;font-size:24px">quiz.bestday.ai</div>
+  </article>`;
+  await render(og, 1200, 630, asset('og', `${slug}.png`));
 
-  const story = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920">${fonts}
-    <rect width="1080" height="1920" fill="#FFDE59"/>
-    <circle cx="540" cy="570" r="390" fill="#0D0D0D"/>
-    <image href="${illustration}" x="220" y="250" width="640" height="640"/>
-    <image href="data:image/png;base64,${wordmarkBlack}" x="80" y="80" width="190" height="60" preserveAspectRatio="xMinYMid meet"/>
-    <text x="80" y="1160" font-size="44" font-weight="800" letter-spacing="4">I'M</text>
-    <text x="80" y="1300" font-size="122" font-weight="800">${name}</text>
-    ${textLines(wrap(cardLine, 27), 80, 1455, 64, 'font-size="48" font-weight="500"')}
-    <text x="80" y="1818" font-size="30" font-weight="500">quiz.bestday.ai</text>
-  </svg>`;
-  await renderPng(story, asset('cards', `${slug}.png`));
+  const story = `<article id="card" style="background:#FFDE59;color:#0D0D0D;padding:80px">
+    <img src="data:image/png;base64,${wordmarkBlack}" style="width:190px;height:60px;object-fit:contain;object-position:left center">
+    <div style="position:absolute;left:150px;top:180px;width:780px;height:780px;border-radius:50%;background:#0D0D0D;display:grid;place-items:center"><img src="${illustration}" style="width:640px;height:640px;object-fit:contain"></div>
+    <div style="position:absolute;left:80px;right:80px;top:1130px"><div style="font-size:44px;font-weight:800;letter-spacing:4px">I'M</div><div style="font-size:122px;line-height:1;font-weight:800;margin-top:22px">${name}</div><div style="font-size:48px;line-height:1.34;margin-top:78px;max-width:900px">${cardLine}</div></div>
+    <div style="position:absolute;left:80px;bottom:80px;font-size:30px">quiz.bestday.ai</div>
+  </article>`;
+  await render(story, 1080, 1920, asset('cards', `${slug}.png`));
 }
 
-const defaultOg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">${fonts}
-  <rect width="1200" height="630" fill="#0D0D0D"/>
-  <image href="data:image/png;base64,${wordmarkWhite}" x="80" y="65" width="155" height="50" preserveAspectRatio="xMinYMid meet"/>
-  <text x="80" y="270" fill="#FFFCEF" font-size="78" font-weight="800">How do you really</text>
-  <text x="80" y="360" fill="#FFFCEF" font-size="78" font-weight="800">go after a goal?</text>
-  <rect x="80" y="455" width="285" height="78" rx="39" fill="#FFDE59"/>
-  <text x="131" y="506" fill="#0D0D0D" font-size="30" font-weight="800">Find my type</text>
-</svg>`;
-await renderPng(defaultOg, asset('og', 'default.png'));
+const defaultOg = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;padding:65px 80px">
+  <img src="data:image/png;base64,${wordmarkWhite}" style="width:155px;height:50px;object-fit:contain;object-position:left center">
+  <div style="font-size:78px;line-height:1.15;font-weight:800;margin-top:125px">How do you really<br>go after a goal?</div>
+  <div style="display:grid;place-items:center;width:285px;height:78px;border-radius:999px;background:#FFDE59;color:#0D0D0D;font-size:30px;font-weight:800;margin-top:75px">Find my type</div>
+</article>`;
+await render(defaultOg, 1200, 630, asset('og', 'default.png'));
 
 const [anchorName, anchorLine, anchorPictogram] = cards.anchor;
 const anchorIllustration = await dataUri(anchorPictogram);
-const anchorDark = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920">${fonts}
-  <rect width="1080" height="1920" fill="#0D0D0D"/>
-  <image href="${anchorIllustration}" x="220" y="250" width="640" height="640"/>
-  <image href="data:image/png;base64,${wordmarkWhite}" x="80" y="80" width="190" height="60" preserveAspectRatio="xMinYMid meet"/>
-  <text x="80" y="1160" fill="#FFDE59" font-size="44" font-weight="800" letter-spacing="4">I'M</text>
-  <text x="80" y="1300" fill="#FFFCEF" font-size="122" font-weight="800">${anchorName}</text>
-  ${textLines(wrap(anchorLine, 27), 80, 1455, 64, 'fill="#FFFCEF" font-size="48" font-weight="500"')}
-  <text x="80" y="1818" fill="#FFDE59" font-size="30" font-weight="500">quiz.bestday.ai</text>
-</svg>`;
-await renderPng(anchorDark, asset('review', 'anchor-dark-1080x1920.png'));
+const anchorDark = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;padding:80px">
+  <img src="data:image/png;base64,${wordmarkWhite}" style="width:190px;height:60px;object-fit:contain;object-position:left center">
+  <img src="${anchorIllustration}" style="position:absolute;left:220px;top:250px;width:640px;height:640px;object-fit:contain">
+  <div style="position:absolute;left:80px;right:80px;top:1130px"><div style="color:#FFDE59;font-size:44px;font-weight:800;letter-spacing:4px">I'M</div><div style="font-size:122px;line-height:1;font-weight:800;margin-top:22px">${anchorName}</div><div style="font-size:48px;line-height:1.34;margin-top:78px;max-width:900px">${anchorLine}</div></div>
+  <div style="position:absolute;left:80px;bottom:80px;color:#FFDE59;font-size:30px">quiz.bestday.ai</div>
+</article>`;
+await render(anchorDark, 1080, 1920, asset('review', 'anchor-dark-1080x1920.png'));
 
-await sharp({ create: { width: 64, height: 64, channels: 4, background: '#FFDE59' } })
-  .composite([{ input: Buffer.from('<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="20" fill="#0D0D0D"/><circle cx="32" cy="32" r="8" fill="#FFDE59"/></svg>') }])
-  .png()
-  .toFile(path.join(root, 'public', 'favicon.png'));
+await browser.close();
