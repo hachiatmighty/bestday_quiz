@@ -6,12 +6,12 @@ const { slug } = Astro.props;
 const result = archetypes[slug];
 const quizUrl = new URL(`/?ref=${slug}`, Astro.site);
 ---
-<BaseLayout title={`I'm ${result.name}. What are you?`} description="A one-minute quiz on how you go after goals, and who you do it best with." image={`/assets/og/${slug}.svg`}>
+<BaseLayout title={`I'm ${result.name}. What are you?`} description="A one-minute quiz on how you go after goals, and who you do it best with." image={`/assets/og/${slug}.png`}>
   <main class="share-page">
     <div class="shell">
       <img class="wordmark" src="/assets/logos/wordmark-white.png" alt="Bestday" />
       <article class="result-card">
-        <img class="pictogram" src={`/assets/illustrations/${result.pictogram}`} alt="" />
+        <span class="pictogram"><img src={`/assets/illustrations/${result.pictogram}`} alt="" /></span>
         <p>I'm</p><h1>{result.name}</h1><strong>{result.cardLine}</strong>
       </article>
       <h2>What type are you when a goal gets real?</h2>
@@ -24,7 +24,8 @@ const quizUrl = new URL(`/?ref=${slug}`, Astro.site);
 .share-page { min-height: 100svh; padding: 28px 0 70px; }
 .wordmark { width: 112px; margin-bottom: 28px; }
 .result-card { position: relative; overflow: hidden; min-height: 510px; padding: 28px; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--yellow); color: var(--black); }
-.pictogram { position: absolute; width: 68%; height: 58%; object-fit: contain; top: 24px; right: -6%; }
+.pictogram { position: absolute; width: 68%; aspect-ratio: 1; top: 24px; right: -6%; display: grid; place-items: center; border-radius: 50%; background: var(--black); }
+.pictogram img { width: 84%; height: 84%; object-fit: contain; }
 .result-card p { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
 .result-card h1 { margin: 5px 0 8px; font-size: clamp(3.2rem, 15vw, 6rem); line-height: .88; letter-spacing: -.06em; max-width: 90%; }
 .result-card strong { font-size: 1.2rem; max-width: 440px; }
