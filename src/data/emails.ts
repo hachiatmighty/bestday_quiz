@@ -1,5 +1,7 @@
 import { archetypes, type ArchetypeSlug } from './quiz';
 
+export const postalAddress = 'Soft Signal Ltd, 20-22 Wenlock Road, London N1 7GU, United Kingdom';
+
 export const emails = [
   {
     slug: 'result', timing: 'Immediately', subject: "You're The {type}", preview: 'Your full read, and the kind of person who helps you most.',

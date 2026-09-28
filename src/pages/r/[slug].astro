@@ -13,6 +13,8 @@ const quizUrl = new URL(`/?ref=${slug}`, Astro.site);
       <article class="result-card">
         <span class="pictogram"><img src={`/assets/illustrations/${result.pictogram}`} alt="" /></span>
         <p>I'm</p><h1>{result.name}</h1><strong>{result.cardLine}</strong>
+        <img class="card-logo" src="/assets/logos/wordmark-white.png" alt="Bestday" />
+        <span class="card-url">quiz.bestday.ai</span>
       </article>
       <h2>What type are you when a goal gets real?</h2>
       <p class="lead">Take the quiz, then send your result to one person who tells you the truth.</p>
@@ -23,12 +25,14 @@ const quizUrl = new URL(`/?ref=${slug}`, Astro.site);
 <style>
 .share-page { min-height: 100svh; padding: 28px 0 70px; }
 .wordmark { width: 112px; margin-bottom: 28px; }
-.result-card { position: relative; overflow: hidden; min-height: 510px; padding: 28px; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--yellow); color: var(--black); }
-.pictogram { position: absolute; width: 68%; max-width: calc(100% - 48px); aspect-ratio: 1; top: 24px; left: 50%; transform: translateX(-50%); display: grid; place-items: center; border-radius: 50%; background: var(--black); }
+.result-card { position: relative; overflow: hidden; min-height: 510px; padding: 28px; border: 1px solid #2A2A2A; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--black); color: var(--cream); }
+.pictogram { position: absolute; width: 68%; max-width: calc(100% - 48px); aspect-ratio: 1; top: 24px; left: 50%; transform: translateX(-50%); display: grid; place-items: center; }
 .pictogram img { width: 84%; height: 84%; object-fit: contain; }
-.result-card p { margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
-.result-card h1 { margin: 5px 0 8px; font-size: clamp(3.2rem, 15vw, 6rem); line-height: .88; letter-spacing: -.06em; max-width: 90%; }
+.result-card p { color: var(--yellow); margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
+.result-card h1 { color: var(--yellow); margin: 5px 0 8px; font-size: clamp(3.2rem, 15vw, 6rem); line-height: .88; letter-spacing: -.06em; max-width: 90%; }
 .result-card strong { font-size: 1.2rem; max-width: 440px; }
+.card-logo { width: 94px; margin-top: 26px; }
+.card-url { color: var(--cream); font-size: .82rem; margin-top: 8px; }
 h2 { font-size: clamp(2rem, 9vw, 3.3rem); line-height: 1; letter-spacing: -.04em; margin: 42px 0 12px; }
 .lead { color: #d7d4c8; line-height: 1.5; margin-bottom: 25px; }
 </style>
