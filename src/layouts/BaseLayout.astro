@@ -8,6 +8,7 @@ const socialImage = new URL(image, Astro.site);
 const fontMediumUrl = assetUrl('assets/fonts/Urbanist-Medium.ttf');
 const fontBoldUrl = assetUrl('assets/fonts/Urbanist-ExtraBold.ttf');
 const fontFaces = `@font-face{font-family:Urbanist;src:url('${fontMediumUrl}') format('truetype');font-weight:500;font-display:swap}@font-face{font-family:Urbanist;src:url('${fontBoldUrl}') format('truetype');font-weight:800;font-display:swap}`;
+const noindex = import.meta.env.PUBLIC_QUIZ_NOINDEX !== 'false';
 ---
 <!doctype html>
 <html lang="en">
@@ -15,6 +16,7 @@ const fontFaces = `@font-face{font-family:Urbanist;src:url('${fontMediumUrl}') f
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/png" href={assetUrl('favicon.png')} />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
