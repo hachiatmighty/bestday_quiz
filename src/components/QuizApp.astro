@@ -1,7 +1,13 @@
-<main class="quiz" data-quiz-root>
+---
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
+const publicQuizUrl = new URL(base, Astro.site).toString();
+const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
+---
+<main class="quiz" data-quiz-root data-base-url={base} data-public-url={publicQuizUrl}>
   <section class="screen landing active" data-screen="landing">
     <div class="shell landing-inner">
-      <img class="wordmark" src="/assets/logos/wordmark-white.png" alt="Bestday" />
+      <img class="wordmark" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
       <p class="eyebrow">Goal archetype quiz</p>
       <h1 data-landing-title>How do you really go after a goal?</h1>
       <p class="lead">Twelve quick questions. One honest read on how you work, and who you work best with.</p>
@@ -27,8 +33,8 @@
       <article class="teaser-card card">
         <span class="pictogram-disc"><img data-teaser-icon alt="" /></span>
         <p class="eyebrow">You're</p><h2 data-teaser-name></h2><strong data-teaser-identity></strong>
-        <img class="result-logo" src="/assets/logos/wordmark-white.png" alt="Bestday" />
-        <span class="card-url">quiz.bestday.ai</span>
+        <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
+        <span class="card-url">{cardFooter}</span>
       </article>
       <div class="share-actions">
         <a class="button" data-whatsapp target="_blank" rel="noreferrer">Send to WhatsApp</a>
@@ -61,8 +67,8 @@
       <article class="result-card card">
         <span class="category-dot" data-category-dot></span><span class="pictogram-disc"><img data-result-icon alt="" /></span>
         <p class="eyebrow">I'm</p><h2 data-result-name></h2><strong data-card-line></strong>
-        <img class="result-logo" src="/assets/logos/wordmark-white.png" alt="Bestday" />
-        <span class="card-url">quiz.bestday.ai</span>
+        <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
+        <span class="card-url">{cardFooter}</span>
       </article>
       <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href="https://bestday.ai">Invite them onto your goal</a></article>
       <article class="result-copy">
@@ -99,6 +105,8 @@
   const captureEndpoint = import.meta.env.PUBLIC_CAPTURE_ENDPOINT;
   initAnalytics(mixpanelToken);
   const root = document.querySelector('[data-quiz-root]');
+  const baseUrl = root.dataset.baseUrl;
+  const publicQuizUrl = root.dataset.publicUrl;
   const screens = [...root.querySelectorAll('[data-screen]')];
   const params = new URLSearchParams(location.search);
   const sender = Object.hasOwn(archetypes, params.get('ref')) ? params.get('ref') : null;
@@ -114,8 +122,8 @@
   if (sender) root.querySelector('[data-landing-title]').textContent = `Someone sent you this. They're ${archetypes[sender].name}. What are you?`;
 
   const show = name => { screens.forEach(screen => screen.classList.toggle('active', screen.dataset.screen === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  const shareUrl = () => { const url = new URL(`/r/${resultSlug}`, location.origin); url.searchParams.set('ref', resultSlug); return url; };
-  const cardUrl = () => `/assets/cards/${resultSlug}.png`;
+  const shareUrl = () => { const url = new URL(`r/${resultSlug}`, publicQuizUrl); url.searchParams.set('ref', resultSlug); return url; };
+  const cardUrl = () => `${baseUrl}assets/cards/${resultSlug}.png`;
   const configureSharing = prefix => {
     const result = archetypes[resultSlug];
     const message = `${result.forward} ${shareUrl()}`;
@@ -151,7 +159,7 @@
     const result = archetypes[resultSlug];
     root.querySelector('[data-teaser-name]').textContent = result.name;
     root.querySelector('[data-teaser-identity]').textContent = result.identity;
-    root.querySelector('[data-teaser-icon]').src = `/assets/illustrations/${result.pictogram}`;
+    root.querySelector('[data-teaser-icon]').src = `${baseUrl}assets/illustrations/${result.pictogram}`;
     configureSharing('');
     track('quiz_complete', { archetype: resultSlug, category });
     setTimeout(() => { track('teaser_view', { archetype: resultSlug, category }); show('teaser'); }, 450);
@@ -161,7 +169,7 @@
     const categoryInfo = categories.find(item => item.slug === category) ?? categories[6];
     root.querySelector('[data-result-name]').textContent = result.name;
     root.querySelector('[data-card-line]').textContent = result.cardLine;
-    root.querySelector('[data-result-icon]').src = `/assets/illustrations/${result.pictogram}`;
+    root.querySelector('[data-result-icon]').src = `${baseUrl}assets/illustrations/${result.pictogram}`;
     root.querySelector('[data-result-identity]').textContent = result.identity;
     root.querySelector('[data-result-strength]').textContent = result.strength;
     root.querySelector('[data-result-tendency]').textContent = result.tendency;
@@ -187,7 +195,7 @@
     catch { status.textContent = 'Something went wrong. Your result is still here. Try again, or skip for now.'; }
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
-  root.querySelector('[data-restart]').onclick = () => location.assign('/');
+  root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);
   root.querySelector('[data-signup]').onclick = () => track('signup_click', { archetype: resultSlug, category });
   track('landing_view'); if (sender) track('referral_landing', { archetype: sender });
 </script>

@@ -1,8 +1,13 @@
 ---
 import '../styles/global.css';
-const { title = 'How do you really go after a goal?', description = 'Twelve quick questions. One honest read on how you work, and who you work best with.', image = '/assets/og/default.png' } = Astro.props;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
+const { title = 'How do you really go after a goal?', description = 'Twelve quick questions. One honest read on how you work, and who you work best with.', image = assetUrl('assets/og/default.png') } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
+const fontMediumUrl = assetUrl('assets/fonts/Urbanist-Medium.ttf');
+const fontBoldUrl = assetUrl('assets/fonts/Urbanist-ExtraBold.ttf');
+const fontFaces = `@font-face{font-family:Urbanist;src:url('${fontMediumUrl}') format('truetype');font-weight:500;font-display:swap}@font-face{font-family:Urbanist;src:url('${fontBoldUrl}') format('truetype');font-weight:800;font-display:swap}`;
 ---
 <!doctype html>
 <html lang="en">
@@ -10,7 +15,7 @@ const socialImage = new URL(image, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" href={assetUrl('favicon.png')} />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -24,6 +29,7 @@ const socialImage = new URL(image, Astro.site);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
     <title>{title} | Bestday</title>
+    <style is:inline set:html={fontFaces}></style>
   </head>
   <body><slot /></body>
 </html>

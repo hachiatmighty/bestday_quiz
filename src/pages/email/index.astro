@@ -2,8 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { emails, renderEmailPreview } from '../../data/emails';
 import { archetypeOrder, archetypes } from '../../data/quiz';
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 ---
 <BaseLayout title="Email journey preview" description="Review-only HTML previews for the Bestday quiz email journey.">
-  <main class="shell email-index"><p class="eyebrow">Review only</p><h1>Email journey</h1><p>Final copy pack v2 rendered with sample recipient Amara. No messages are sent.</p><h2>Choose a result type</h2><div class="types">{archetypeOrder.map(type => <a href={`/email/${type}/result`}>{archetypes[type].name}</a>)}</div><h2>Anchor preview</h2><div class="list">{emails.map((email, index) => <a href={`/email/anchor/${email.slug}`}><b>{index + 1}</b><span>{renderEmailPreview(email, 'anchor').subject}</span></a>)}</div></main>
+  <main class="shell email-index"><p class="eyebrow">Review only</p><h1>Email journey</h1><p>Final copy pack v2 rendered with sample recipient Amara. No messages are sent.</p><h2>Choose a result type</h2><div class="types">{archetypeOrder.map(type => <a href={`${base}email/${type}/result`}>{archetypes[type].name}</a>)}</div><h2>Anchor preview</h2><div class="list">{emails.map((email, index) => <a href={`${base}email/anchor/${email.slug}`}><b>{index + 1}</b><span>{renderEmailPreview(email, 'anchor').subject}</span></a>)}</div></main>
 </BaseLayout>
 <style>.email-index{padding:56px 0}.email-index h1{font-size:3.5rem;margin:12px 0}.email-index h2{margin:36px 0 14px}.types{display:flex;gap:8px;flex-wrap:wrap}.types a{padding:10px 14px;border-radius:999px;background:var(--yellow);color:var(--black);font-weight:800;text-decoration:none}.list{display:grid;gap:12px}.list a{display:flex;gap:16px;padding:18px;border:1px solid #3c3c36;border-radius:12px;text-decoration:none}.list b{color:var(--yellow)}</style>

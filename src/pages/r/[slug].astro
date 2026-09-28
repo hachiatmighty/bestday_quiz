@@ -4,17 +4,20 @@ import { archetypes, archetypeOrder } from '../../data/quiz';
 export function getStaticPaths() { return archetypeOrder.map(slug => ({ params: { slug }, props: { slug } })); }
 const { slug } = Astro.props;
 const result = archetypes[slug];
-const quizUrl = new URL(`/?ref=${slug}`, Astro.site);
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
+const quizUrl = new URL(`${base}?ref=${slug}`, Astro.site);
+const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 ---
-<BaseLayout title={`I'm ${result.name}. What are you?`} description="A one-minute quiz on how you go after goals, and who you do it best with." image={`/assets/og/${slug}.png`}>
+<BaseLayout title={`I'm ${result.name}. What are you?`} description="A one-minute quiz on how you go after goals, and who you do it best with." image={assetUrl(`assets/og/${slug}.png`)}>
   <main class="share-page">
     <div class="shell">
-      <img class="wordmark" src="/assets/logos/wordmark-white.png" alt="Bestday" />
+      <img class="wordmark" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
       <article class="result-card">
-        <span class="pictogram"><img src={`/assets/illustrations/${result.pictogram}`} alt="" /></span>
+        <span class="pictogram"><img src={assetUrl(`assets/illustrations/${result.pictogram}`)} alt="" /></span>
         <p>I'm</p><h1>{result.name}</h1><strong>{result.cardLine}</strong>
-        <img class="card-logo" src="/assets/logos/wordmark-white.png" alt="Bestday" />
-        <span class="card-url">quiz.bestday.ai</span>
+        <img class="card-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
+        <span class="card-url">{cardFooter}</span>
       </article>
       <h2>What type are you when a goal gets real?</h2>
       <p class="lead">Take the quiz, then send your result to one person who tells you the truth.</p>

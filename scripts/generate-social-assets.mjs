@@ -4,6 +4,8 @@ import path from 'node:path';
 import { chromium } from 'playwright-core';
 
 const root = process.cwd();
+const basePath = `/${(process.env.QUIZ_BASE_PATH ?? '/quiz').split('/').filter(Boolean).join('/')}`;
+const cardFooter = `bestday.ai${basePath}`;
 const asset = (...parts) => path.join(root, 'public', 'assets', ...parts);
 const fontMedium = (await readFile(asset('fonts', 'Urbanist-Medium.ttf'))).toString('base64');
 const fontBold = (await readFile(asset('fonts', 'Urbanist-ExtraBold.ttf'))).toString('base64');
@@ -60,7 +62,7 @@ for (const [slug, [name, cardLine, pictogram]] of Object.entries(cards)) {
     <img src="data:image/png;base64,${wordmarkWhite}" style="width:142px;height:45px;object-fit:contain;object-position:left center">
     <img src="${illustration}" style="position:absolute;right:94px;top:70px;width:316px;height:316px;object-fit:contain">
     <div style="position:absolute;left:68px;right:510px;top:218px"><div style="color:#FFDE59;font-size:32px;font-weight:800;letter-spacing:3px">I'M</div><div style="color:#FFDE59;font-size:92px;line-height:1;font-weight:800;margin-top:12px;white-space:nowrap">${name}</div><div style="font-size:32px;line-height:1.36;margin-top:92px">${cardLine}</div></div>
-    <div style="position:absolute;left:68px;bottom:48px;color:#FFFCEF;font-size:24px">quiz.bestday.ai</div>
+    <div style="position:absolute;left:68px;bottom:48px;color:#FFFCEF;font-size:24px">${cardFooter}</div>
   </article>`;
   await render(og, 1200, 630, asset('og', `${slug}.png`));
 
@@ -68,7 +70,7 @@ for (const [slug, [name, cardLine, pictogram]] of Object.entries(cards)) {
     <img src="data:image/png;base64,${wordmarkWhite}" style="width:190px;height:60px;object-fit:contain;object-position:left center">
     <img src="${illustration}" style="position:absolute;left:220px;top:250px;width:640px;height:640px;object-fit:contain">
     <div style="position:absolute;left:80px;right:80px;top:1130px"><div style="color:#FFDE59;font-size:44px;font-weight:800;letter-spacing:4px">I'M</div><div style="color:#FFDE59;font-size:122px;line-height:1;font-weight:800;margin-top:22px">${name}</div><div style="font-size:48px;line-height:1.34;margin-top:78px;max-width:900px">${cardLine}</div></div>
-    <div style="position:absolute;left:80px;bottom:80px;color:#FFFCEF;font-size:30px">quiz.bestday.ai</div>
+    <div style="position:absolute;left:80px;bottom:80px;color:#FFFCEF;font-size:30px">${cardFooter}</div>
   </article>`;
   await render(story, 1080, 1920, asset('cards', `${slug}.png`));
 }
@@ -86,7 +88,7 @@ const anchorDark = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;p
   <img src="data:image/png;base64,${wordmarkWhite}" style="width:190px;height:60px;object-fit:contain;object-position:left center">
   <img src="${anchorIllustration}" style="position:absolute;left:220px;top:250px;width:640px;height:640px;object-fit:contain">
   <div style="position:absolute;left:80px;right:80px;top:1130px"><div style="color:#FFDE59;font-size:44px;font-weight:800;letter-spacing:4px">I'M</div><div style="color:#FFDE59;font-size:122px;line-height:1;font-weight:800;margin-top:22px">${anchorName}</div><div style="font-size:48px;line-height:1.34;margin-top:78px;max-width:900px">${anchorLine}</div></div>
-  <div style="position:absolute;left:80px;bottom:80px;color:#FFFCEF;font-size:30px">quiz.bestday.ai</div>
+  <div style="position:absolute;left:80px;bottom:80px;color:#FFFCEF;font-size:30px">${cardFooter}</div>
 </article>`;
 await render(anchorDark, 1080, 1920, asset('review', 'anchor-dark-1080x1920.png'));
 
