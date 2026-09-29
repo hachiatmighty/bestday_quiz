@@ -38,4 +38,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 .card-url { color: var(--cream); font-size: .82rem; margin-top: 8px; }
 h2 { font-size: clamp(2rem, 9vw, 3.3rem); line-height: 1; letter-spacing: -.04em; margin: 42px 0 12px; }
 .lead { color: #d7d4c8; line-height: 1.5; margin-bottom: 25px; }
+@media (min-width: 720px) {
+  .result-card { min-height: 700px; padding: 52px; }
+  .pictogram { width: 42%; top: 42px; }
+}
 </style>
