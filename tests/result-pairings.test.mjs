@@ -16,13 +16,13 @@ test('pairing data gives every result five pairings including its own type', asy
   assert.match(source, /partner === type \? 'another'/);
 });
 
-test('result screen has five pairing rows and no extra share controls', async () => {
+test('result screen has five pairing rows and one shared action group', async () => {
   const source = await readFile('src/components/QuizApp.astro', 'utf8');
   const resultMarkup = source.match(/<section class="screen" data-screen="result">[\s\S]*?<section class="screen" data-screen="offer">/)?.[0] ?? '';
 
   assert.match(source, /pairingsFor\(resultSlug\)/);
   assert.equal((resultMarkup.match(/<article class="share card">/g) ?? []).length, 1);
-  assert.equal((resultMarkup.match(/data-result-(?:whatsapp|share|save)/g) ?? []).length, 3);
+  assert.equal((resultMarkup.match(/<ShareActions prefix="result-" \/>/g) ?? []).length, 1);
   assert.doesNotMatch(resultMarkup, /Send it to them and find out which one they are\./);
   assert.doesNotMatch(source.match(/<section class="fit-list"[\s\S]*?<\/section>/)?.[0] ?? '', /<(?:a|button)\b/);
 });

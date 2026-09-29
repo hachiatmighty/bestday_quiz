@@ -1,5 +1,6 @@
 ---
 import LandingPage from './LandingPage.astro';
+import ShareActions from './ShareActions.astro';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const publicQuizUrl = new URL(base, Astro.site).toString();
@@ -29,11 +30,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
         <span class="card-url">{cardFooter}</span>
       </article>
-      <div class="share-actions">
-        <a class="button" data-whatsapp target="_blank" rel="noreferrer">Send to WhatsApp</a>
-        <button class="button secondary" data-share>Share</button>
-        <a class="button secondary" data-save download>Save card</a>
-      </div>
+      <ShareActions />
       <div class="teaser-copy">
         <h2>Want the full read?</h2>
         <p>Your strengths, the pattern to watch, and the kind of people you do your best work with. We'll show it here and send you a copy.</p>
@@ -77,7 +74,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       </article>
       <article class="share card">
         <h3>Who would tell you the truth about this? Send it to them.</h3>
-        <div class="share-actions"><a class="button" data-result-whatsapp target="_blank" rel="noreferrer">Send to WhatsApp</a><button class="button secondary" data-result-share>Share</button><a class="button secondary" data-result-save download>Save card</a></div>
+        <ShareActions prefix="result-" />
       </article>
       <div class="result-nav"><button class="button secondary" data-offer>What happens next</button><button class="skip" data-restart>Take it again</button></div>
     </div>
@@ -239,4 +236,12 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   :global(.scale-dot){width:64px}
 }
 @media(min-width:720px){.category-dot{top:52px;left:52px}}
+:global(.share-actions){display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:6px}
+:global(.share-actions [data-whatsapp]),:global(.share-actions [data-result-whatsapp]){grid-column:auto}
+:global(.share-action){min-width:44px;min-height:44px;padding:0;border:0;background:none;color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
+:global(.action-icon){width:52px;height:52px;flex:0 0 52px;border:1px solid #706d63;border-radius:50%;display:grid;place-items:center}
+:global(.action-icon svg){width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+:global(.whatsapp .action-icon){background:var(--yellow);border-color:var(--yellow);color:var(--black)}
+:global(.whatsapp .action-icon svg){fill:currentColor;stroke:none}
+:global(.share-action:focus-visible){outline:3px solid var(--yellow);outline-offset:4px;border-radius:8px}
 </style>
