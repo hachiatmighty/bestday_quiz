@@ -73,3 +73,8 @@ export function scoreQuizWithDetails(answers) {
 export function scoreQuiz(answers) {
   return scoreQuizWithDetails(answers).winner;
 }
+
+export function isVeryEven(scores) {
+  const values = Object.values(scores);
+  return Math.max(...values) - Math.min(...values) <= 2;
+}

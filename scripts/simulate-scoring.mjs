@@ -1,4 +1,4 @@
-import { archetypeOrder, scoreQuizWithDetails, statementScoring } from '../src/lib/scoring.mjs';
+import { archetypeOrder, isVeryEven, scoreQuizWithDetails, statementScoring } from '../src/lib/scoring.mjs';
 
 const populationSize = 100_000;
 let seed = 0x5eed1234;
@@ -14,12 +14,14 @@ function simulate(name, answerFactory, expectedTypeFactory = null) {
   const winners = Object.fromEntries(archetypeOrder.map(slug => [slug, 0]));
   const tieStages = [0, 0, 0, 0];
   let correct = 0;
+  let veryEven = 0;
 
   for (let index = 0; index < populationSize; index += 1) {
     const expected = expectedTypeFactory?.(index) ?? null;
     const result = scoreQuizWithDetails(answersFromValues(answerFactory(expected)));
     winners[result.winner] += 1;
     tieStages[result.tieStage] += 1;
+    if (isVeryEven(result.scores)) veryEven += 1;
     if (expected === result.winner) correct += 1;
   }
 
@@ -31,6 +33,7 @@ function simulate(name, answerFactory, expectedTypeFactory = null) {
     tie1: percent(tieStages[1]),
     tie2: percent(tieStages[2]),
     tie3: percent(tieStages[3]),
+    even: percent(veryEven),
     accuracy: expectedTypeFactory ? percent(correct) : '—',
   };
 }

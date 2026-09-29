@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { archetypeOrder, scoreQuiz, scoreQuizWithDetails, statementScoring } from '../src/lib/scoring.mjs';
+import { archetypeOrder, isVeryEven, scoreQuiz, scoreQuizWithDetails, statementScoring } from '../src/lib/scoring.mjs';
 
 const answersFromValues = values => statementScoring.map((statement, index) => ({ questionId: statement.questionId, value: values[index] }));
 const valuesFor = (archetype, matchingValue = 4, otherValue = 0) => statementScoring.map(statement => statement.archetype === archetype ? matchingValue : otherValue);
@@ -42,4 +42,9 @@ test('tie-break 3 deterministically hashes the full answer string', () => {
   const second = scoreQuizWithDetails(answers);
   assert.equal(first.tieStage, 3);
   assert.deepEqual(second, first);
+});
+
+test('flags results whose highest and lowest scores differ by at most two', () => {
+  assert.equal(isVeryEven({ sprinter: 8, planner: 7, anchor: 6, explorer: 7, finisher: 8 }), true);
+  assert.equal(isVeryEven({ sprinter: 9, planner: 7, anchor: 6, explorer: 7, finisher: 8 }), false);
 });

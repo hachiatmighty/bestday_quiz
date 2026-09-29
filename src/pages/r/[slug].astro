@@ -9,7 +9,7 @@ const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const quizUrl = new URL(`${base}?ref=${slug}`, Astro.site);
 const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 ---
-<BaseLayout title={`I'm ${result.name}. What are you?`} description="A one-minute quiz on how you go after goals, and who you do it best with." image={assetUrl(`assets/og/${slug}.png`)}>
+<BaseLayout title={`I'm ${result.name}. What are you?`} description="A two-minute quiz on how you go after goals, and who you do it best with." image={assetUrl(`assets/og/${slug}.png`)}>
   <main class="share-page">
     <div class="shell">
       <img class="wordmark" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
