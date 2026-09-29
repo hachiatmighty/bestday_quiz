@@ -18,6 +18,7 @@ const previews = [
   ['anchor-quiet', 'anchor/quiet'],
   ['anchor-one-goal', 'anchor/one-goal'],
   ['sprinter-result', 'sprinter/result'],
+  ['explorer-people', 'explorer/people'],
 ];
 
 for (const [name, route] of previews) {
@@ -25,5 +26,28 @@ for (const [name, route] of previews) {
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: path.join(outputDirectory, `${name}-390.png`), fullPage: true });
 }
+
+await page.setViewportSize({ width: 360, height: 844 });
+await page.goto('http://127.0.0.1:4321/quiz/', { waitUntil: 'networkidle' });
+await page.locator('[data-start]').first().click();
+await page.locator('[data-category]').first().click();
+const anchorQuestions = new Set([4, 10, 13, 18]);
+for (let questionId = 2; questionId <= 21; questionId += 1) {
+  await page.locator(`[data-value="${anchorQuestions.has(questionId) ? 4 : 0}"]`).click();
+}
+await page.locator('[data-unlock]').click();
+await page.locator('[data-skip]').click();
+await page.evaluate(async () => {
+  await document.fonts.ready;
+  document.querySelector('.result-card').remove();
+  document.querySelector('.pairing').remove();
+  document.querySelector('.result-nav').remove();
+  const resultCopy = document.querySelector('.result-copy');
+  [...resultCopy.children].forEach(node => {
+    if (node.matches('[data-result-need], .fit-list') || node.textContent === 'What you need') return;
+    node.remove();
+  });
+});
+await page.locator('.result-shell').screenshot({ path: path.join(outputDirectory, 'anchor-fit-result-360.png') });
 
 await browser.close();

@@ -123,3 +123,11 @@ export function pairingFor(friend: ArchetypeSlug, sender: ArchetypeSlug) {
   const key = [friend, sender].sort((a, b) => archetypeOrder.indexOf(a) - archetypeOrder.indexOf(b)).join(':');
   return pairings[key];
 }
+
+export function pairingsFor(type: ArchetypeSlug) {
+  return archetypeOrder.map(partner => ({
+    partner,
+    label: `With ${partner === type ? 'another' : /^[aeiou]/.test(partner) ? 'an' : 'a'} ${archetypes[partner].name.replace('The ', '')}`,
+    line: pairingFor(type, partner),
+  }));
+}
