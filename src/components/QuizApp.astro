@@ -216,6 +216,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 .capture{margin-top:0}
 .back{align-self:flex-start}
 .category-dot{left:28px}
+[data-step-label],.teaser-card .eyebrow,.result-card .eyebrow,.centered .eyebrow{text-transform:none;letter-spacing:0}
 :global(.scale){grid-template-columns:repeat(5,1fr);row-gap:8px}
 :global(.scale-dots){display:contents}
 :global(.scale-dot:nth-child(1)){grid-column:1;grid-row:1;justify-self:start}
@@ -225,6 +226,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 :global(.scale-dot:nth-child(5)){grid-column:5;grid-row:1;justify-self:end}
 :global(.scale > span:first-child){grid-column:1;grid-row:2;justify-self:start}
 :global(.scale > span:last-child){grid-column:5;grid-row:2;justify-self:end;text-align:right}
+:global(.scale > span:first-child),:global(.scale > span:last-child){white-space:nowrap}
 @media(min-width:900px){
   .question-shell{width:min(100% - 64px,720px);min-height:calc(100svh - 112px);padding-top:0;display:flex;flex-direction:column;justify-content:center}
   .question-shell :global(h2){font-size:2.5rem;line-height:1.08;letter-spacing:-.035em;margin:20px 0 36px}
