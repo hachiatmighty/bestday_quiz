@@ -78,38 +78,28 @@ export const archetypes: Record<ArchetypeSlug, {
   },
 };
 
-const rows = [
-  ["Start that same day. The plan can catch up.", "Map it out. Steps, dates, what I'll need.", 'Get on with it quietly. No need to tell anyone.', 'Look into five different ways to do it.', "Add it to my list with everything else I'm finishing."],
-  ["I'm moving fast. The early buzz is starting to fade.", "I'm still getting the plan right.", "I'm getting on with it. I haven't told anyone.", "I've found a new angle I want to try.", "I'm ticking things off, and I've already said yes to something else."],
-  ['Tell them to just start.', 'Help them write out the steps.', 'Take some of it on myself.', 'Suggest a completely different way in.', 'Ask what the deadline is.'],
-  ['"Great, I\'m on it," even if the pace has dropped.', '"Nearly ready to really start."', '"It\'s fine," then change the subject.', '"I\'ve found a better way to do it."', '"Nearly done. I\'ve got two others going too."'],
-  ['The excitement wears off.', 'Waiting until everything is ready.', 'Carrying too much on my own.', 'Too many good options.', 'Taking on too many things at once.'],
-  ['A list I wrote in one burst of energy.', 'Plans with dates and headings.', "Nothing written down. It's all in my head.", 'Lots of ideas, half of them started.', 'Several checklists, for different people.'],
-  ['Everyone knew when I started. Fewer people know now.', "Nobody yet. I'd rather fix the plan first.", "Nobody. I don't like to burden people.", "Whoever I'm talking to that day.", 'The people waiting on the result.'],
-  ['Big bursts of progress.', 'Everything went to plan.', 'Everyone I look after was sorted.', 'I learned something new.', 'I finished something.'],
-  ['Good. Catch me when I slow down.', 'Fine, once my plan is sorted.', "That's kind, but I'll be fine.", 'Good. Help me choose what to focus on.', 'Fine, as long as we talk about deadlines.'],
-  ['"You started something real. Keep going."', '"The plan is good enough. Start."', '"You don\'t have to carry this alone."', '"This is the one. Stay with it."', '"Pick one. Finish it well."'],
-  ['Start the next thing straight away.', 'Look back at what worked, for next time.', 'Move on without telling anyone.', 'Get curious about something completely different.', 'Take a breath, then close the next one.'],
-];
-const prompts = [
-  "You've just decided on a new goal. What do you do first?",
-  "It's the second week of a new goal. What's usually happening?",
-  "A friend's plan is stuck. What do you do?",
-  'A friend asks how your goal is going. You say...',
-  'What tends to slow you down?',
-  'Which sounds most like the notes on your phone?',
-  'When a goal gets hard, who knows?',
-  'What does a good week look like?',
-  'Someone you respect offers to check in on your goal every week. Your honest first reaction?',
-  'Which would you most like someone to say to you?',
-  'When you finish something that mattered, you...',
-];
-export const questions = prompts.map((prompt, index) => ({
-  id: index + 2,
-  prompt,
-  weight: index === 1 || index === 6 ? 2 : 1,
-  options: rows[index].map((text, optionIndex) => ({ text, archetype: archetypeOrder[optionIndex] })),
-}));
+export const questions = [
+  'I start working on a new goal the same day I set it.',
+  "I don't start working on my goals until I have a clear plan.",
+  "When friends or family hit a problem, I'm the one they call.",
+  'I often abandon old plans for new, exciting ideas.',
+  "When I start a new goal, I don't stop until I finish it.",
+  'I find myself worrying about making my plans perfect instead of starting.',
+  'My energy is highest in the first few weeks after setting a goal.',
+  "I'm usually the one who spots a new way to reach a goal.",
+  "I rarely tell anyone about the goals I'm working on.",
+  'I usually have several goals on the go at the same time.',
+  'Once the early excitement of a goal fades, I tend to slow down.',
+  'My own goals often wait until everyone else is taken care of.',
+  'I like knowing every step of a goal before I begin.',
+  "People hand me important things because they know I'll deliver.",
+  'I have more ideas for goals than time to finish them.',
+  "I'd rather start a goal messy than wait until I have a plan.",
+  "I'd rather carry a goal alone than ask anyone for help.",
+  'I find it hard to say no when someone asks me to take on one more thing.',
+  'I enjoy trying new approaches more than repeating the same routine.',
+  'I enjoy planning a goal almost as much as working on it.',
+].map((prompt, index) => ({ id: index + 2, prompt }));
 
 export const pairings: Record<string, string> = {
   'sprinter:sprinter': "Two fast starts. Check on each other's middle.",

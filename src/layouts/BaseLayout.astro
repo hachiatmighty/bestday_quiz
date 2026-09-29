@@ -2,7 +2,7 @@
 import '../styles/global.css';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
-const { title = 'How do you really go after a goal?', description = 'Twelve quick questions. One honest read on how you work, and who you work best with.', image = assetUrl('assets/og/default.png') } = Astro.props;
+const { title = 'How do you really go after a goal?', description = 'Twenty quick questions. One honest read on how you work, and who you work best with.', image = assetUrl('assets/og/default.png') } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const fontMediumUrl = assetUrl('assets/fonts/Urbanist-Medium.ttf');
