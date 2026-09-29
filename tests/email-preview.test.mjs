@@ -4,15 +4,28 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const emailSlugs = ['result', 'people', 'quiet', 'one-goal'];
+const archetypeSlugs = ['sprinter', 'planner', 'anchor', 'explorer', 'finisher'];
 
 test('built email previews use real links and sentence-case styling', async () => {
-  for (const slug of emailSlugs) {
-    const file = path.resolve('dist', 'email', 'anchor', slug, 'index.html');
-    const html = await readFile(file, 'utf8');
-    assert.doesNotMatch(html, /href=["']#["']/i, `${slug} contains a placeholder link`);
-    assert.doesNotMatch(html, /text-transform\s*:\s*uppercase/i, `${slug} contains uppercase text-transform`);
-    assert.doesNotMatch(html, /letter-spacing\s*:/i, `${slug} contains letter-spacing`);
+  for (const archetype of archetypeSlugs) {
+    for (const slug of emailSlugs) {
+      const file = path.resolve('dist', 'email', archetype, slug, 'index.html');
+      const html = await readFile(file, 'utf8');
+      assert.doesNotMatch(html, /href=["']#["']/i, `${archetype}/${slug} contains a placeholder link`);
+      assert.doesNotMatch(html, /text-transform\s*:\s*uppercase/i, `${archetype}/${slug} contains uppercase text-transform`);
+      assert.doesNotMatch(html, /letter-spacing\s*:/i, `${archetype}/${slug} contains letter-spacing`);
+    }
   }
+});
+
+test('email preheaders stay hidden and the people email uses a compact list', async () => {
+  const resultHtml = await readFile(path.resolve('dist', 'email', 'anchor', 'result', 'index.html'), 'utf8');
+  assert.match(resultHtml, /display:none;max-height:0;overflow:hidden;mso-hide:all/);
+  assert.equal((resultHtml.match(/Your full read, and the kind of person who helps you most\./g) ?? []).length, 1);
+
+  const peopleHtml = await readFile(path.resolve('dist', 'email', 'anchor', 'people', 'index.html'), 'utf8');
+  assert.match(peopleHtml, /<ul[^>]*>/);
+  assert.equal((peopleHtml.match(/<li(?:\s|>)/g) ?? []).length, 3);
 });
 
 test('result email includes the card, headings, and email redirect URL', async () => {

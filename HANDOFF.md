@@ -12,11 +12,13 @@ This package is a static build of the Bestday goal-archetype quiz for the existi
 ```json
 { "source": "/quiz", "destination": "/quiz/index.html" },
 { "source": "/quiz/", "destination": "/quiz/index.html" },
+{ "source": "/quiz/start", "destination": "/quiz/start/index.html" },
+{ "source": "/quiz/start/", "destination": "/quiz/start/index.html" },
 { "source": "/quiz/r/:slug", "destination": "/quiz/r/:slug/index.html" },
 { "source": "/quiz/r/:slug/", "destination": "/quiz/r/:slug/index.html" },
 ```
 
-The quiz has no other clean-URL routes. Files under `/quiz/assets/` are served directly. The handoff archive intentionally excludes the internal `/email` previews and `/assets/review/` images.
+Files under `/quiz/assets/` are served directly. The handoff archive intentionally excludes the internal `/email` previews and `/assets/review/` images.
 
 ## Verify after deployment
 
@@ -31,6 +33,12 @@ curl -s https://bestday.ai/quiz/r/anchor | grep 'bestday.ai/quiz/assets/og/ancho
 ```
 
 Pass: the command prints the Anchor page's OG image tag. This proves the landing-page SPA did not swallow the route.
+
+```sh
+curl -sI 'https://bestday.ai/quiz/start?ref=email&type=anchor'
+```
+
+Pass: status is `200` and `content-type` includes `text/html`. This proves the landing-page SPA did not swallow the email redirect route.
 
 ```sh
 curl -sI https://bestday.ai/quiz/assets/og/anchor.png
