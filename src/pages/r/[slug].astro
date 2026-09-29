@@ -14,7 +14,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     <div class="shell">
       <img class="wordmark" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
       <article class="result-card">
-        <span class="pictogram"><img src={assetUrl(`assets/illustrations/${result.pictogram}`)} alt="" /></span>
+        <span class="pictogram"><img src={assetUrl(`assets/archetypes/${slug}.png`)} alt="" /></span>
         <p>I'm</p><h1>{result.name}</h1><strong>{result.cardLine}</strong>
         <img class="card-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
         <span class="card-url">{cardFooter}</span>
@@ -30,7 +30,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 .wordmark { width: 112px; margin-bottom: 28px; }
 .result-card { position: relative; overflow: hidden; min-height: 510px; padding: 28px; border: 1px solid #2A2A2A; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--black); color: var(--cream); }
 .pictogram { position: absolute; width: 68%; max-width: calc(100% - 48px); aspect-ratio: 1; top: 24px; left: 50%; transform: translateX(-50%); display: grid; place-items: center; }
-.pictogram img { width: 84%; height: 84%; object-fit: contain; }
+.pictogram img { width: 100%; height: 100%; object-fit: contain; }
 .result-card p { color: var(--yellow); margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
 .result-card h1 { color: var(--yellow); margin: 5px 0 8px; font-size: clamp(3.2rem, 15vw, 6rem); line-height: .88; letter-spacing: -.06em; max-width: 90%; }
 .result-card strong { font-size: 1.2rem; max-width: 440px; }

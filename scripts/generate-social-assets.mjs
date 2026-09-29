@@ -12,14 +12,14 @@ const fontBold = (await readFile(asset('fonts', 'Urbanist-ExtraBold.ttf'))).toSt
 const wordmarkWhite = (await readFile(asset('logos', 'wordmark-white.png'))).toString('base64');
 
 const cards = {
-  sprinter: ['The Sprinter', 'I bring the momentum. My circle keeps it going.', '03_willpower.png'],
-  planner: ['The Planner', 'My plan is ready. My circle knows my start date.', '02_goal.png'],
-  anchor: ['The Anchor', "I hold everyone. This goal, I'm not carrying alone.", '11_isolation_community.png'],
-  explorer: ['The Explorer', "I'll always find a new idea. My circle keeps me on the one that matters.", '06_witnessed.png'],
-  finisher: ['The Finisher', 'I finish things for everyone. My circle makes sure one is mine.', '05_success.png'],
+  sprinter: ['The Sprinter', 'I bring the momentum. My circle keeps it going.'],
+  planner: ['The Planner', 'My plan is ready. My circle knows my start date.'],
+  anchor: ['The Anchor', "I hold everyone. This goal, I'm not carrying alone."],
+  explorer: ['The Explorer', "I'll always find a new idea. My circle keeps me on the one that matters."],
+  finisher: ['The Finisher', 'I finish things for everyone. My circle makes sure one is mine.'],
 };
 
-const dataUri = async filename => `data:image/png;base64,${(await readFile(asset('illustrations', filename))).toString('base64')}`;
+const dataUri = async (...parts) => `data:image/png;base64,${(await readFile(asset(...parts))).toString('base64')}`;
 const fonts = `
   @font-face { font-family: Urbanist; src: url(data:font/ttf;base64,${fontMedium}) format('truetype'); font-weight: 500; }
   @font-face { font-family: Urbanist; src: url(data:font/ttf;base64,${fontBold}) format('truetype'); font-weight: 800; }
@@ -56,8 +56,8 @@ const render = async (content, width, height, output) => {
   await writeFile(output, stripPngMetadata(screenshot));
 };
 
-for (const [slug, [name, cardLine, pictogram]] of Object.entries(cards)) {
-  const illustration = await dataUri(pictogram);
+for (const [slug, [name, cardLine]] of Object.entries(cards)) {
+  const illustration = await dataUri('archetypes', `${slug}.png`);
   const og = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;padding:58px 68px">
     <img src="data:image/png;base64,${wordmarkWhite}" style="width:142px;height:45px;object-fit:contain;object-position:left center">
     <img src="${illustration}" style="position:absolute;right:94px;top:70px;width:316px;height:316px;object-fit:contain">
@@ -82,8 +82,8 @@ const defaultOg = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;pa
 </article>`;
 await render(defaultOg, 1200, 630, asset('og', 'default.png'));
 
-const [anchorName, anchorLine, anchorPictogram] = cards.anchor;
-const anchorIllustration = await dataUri(anchorPictogram);
+const [anchorName, anchorLine] = cards.anchor;
+const anchorIllustration = await dataUri('archetypes', 'anchor.png');
 const anchorDark = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;padding:80px">
   <img src="data:image/png;base64,${wordmarkWhite}" style="width:190px;height:60px;object-fit:contain;object-position:left center">
   <img src="${anchorIllustration}" style="position:absolute;left:220px;top:250px;width:640px;height:640px;object-fit:contain">
