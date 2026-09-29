@@ -4,5 +4,60 @@ import { emails, postalAddress, renderEmailPreview } from '../data/emails';
 const { email, type = 'anchor' } = Astro.props as { email: (typeof emails)[number], type: ArchetypeSlug };
 const preview = renderEmailPreview(email, type);
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const result = archetypes[type];
+const isResult = email.slug === 'result';
+const logoUrl = 'https://bestday.ai/quiz/assets/logos/wordmark-white.png';
+const cardUrl = `https://bestday.ai/quiz/assets/cards/${type}.png`;
+const ctaUrl = email.slug === 'people'
+  ? `https://bestday.ai/quiz/r/${type}?ref=${type}`
+  : `https://bestday.ai/quiz/start?ref=email&type=${type}`;
 ---
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>{preview.subject}</title></head><body style="margin:0;background:#ecebe5;font-family:Arial,sans-serif;color:#0D0D0D"><nav style="max-width:600px;margin:20px auto 0;padding:0 14px;display:flex;gap:8px;flex-wrap:wrap">{archetypeOrder.map(slug => <a href={`${base}email/${slug}/${email.slug}`} style={`padding:8px 12px;border-radius:999px;text-decoration:none;background:${slug === type ? '#0D0D0D' : '#FFDE59'};color:${slug === type ? '#FFDE59' : '#0D0D0D'};font-weight:700`}>{archetypes[slug].name}</a>)}</nav><div style="display:none;max-height:0;overflow:hidden">{preview.preview}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:32px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;margin:auto;background:#FFFCEF;border-radius:12px;overflow:hidden"><tr><td style="background:#0D0D0D;padding:28px;color:#FFDE59;font-weight:800;font-size:24px">Bestday</td></tr><tr><td style="padding:38px 28px"><p style="font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 16px">{preview.timing} · Review preview · {archetypes[type].name}</p><h1 style="font-size:38px;line-height:1;margin:0 0 10px">{preview.subject}</h1><p style="font-size:15px;color:#555;margin:0 0 28px">{preview.preview}</p>{preview.paragraphs.map(paragraph => paragraph.split('\n').map(line => <p style="font-size:17px;line-height:1.55;margin:0 0 16px">{line || <br />}</p>))}<a href="#" style="display:inline-block;background:#FFDE59;color:#0D0D0D;text-decoration:none;padding:16px 24px;border-radius:999px;font-weight:800">{preview.cta}</a>{preview.note && <p style="font-size:14px;margin:14px 0 0">{preview.note}</p>}<p style="font-size:17px;white-space:pre-line;line-height:1.55;margin:28px 0 0">{preview.signoff}</p></td></tr><tr><td style="padding:24px 28px;background:#FFDE59;font-size:12px;line-height:1.5">You're getting this because you took the Bestday quiz. <a href="#" style="color:#0D0D0D">Unsubscribe</a>.<br />{postalAddress}</td></tr></table></td></tr></table></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{preview.subject}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;800&display=swap" rel="stylesheet" />
+  </head>
+  <body style="margin:0;background:#ecebe5;font-family:Urbanist,Arial,sans-serif;color:#0D0D0D">
+    <nav style="max-width:600px;margin:20px auto 0;padding:0 14px;display:flex;gap:8px;flex-wrap:wrap">
+      {archetypeOrder.map(slug => <a href={`${base}email/${slug}/${email.slug}`} style={`padding:8px 12px;border-radius:999px;text-decoration:none;background:${slug === type ? '#0D0D0D' : '#FFDE59'};color:${slug === type ? '#FFDE59' : '#0D0D0D'};font-weight:700`}>{archetypes[slug].name}</a>)}
+    </nav>
+    <p style="max-width:600px;margin:14px auto 0;padding:0 14px;font-size:14px;color:#555">{preview.timing} · Review preview · {result.name}</p>
+    <div style="display:none;max-height:0;overflow:hidden">{preview.preview}</div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+      <tr><td style="padding:20px 14px 32px">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;margin:auto;background:#FFFCEF;border-radius:12px;overflow:hidden">
+          <tr><td style="background:#0D0D0D;padding:28px"><img src={logoUrl} width="126" alt="Bestday" style="display:block;width:126px;height:auto;border:0" /></td></tr>
+          <tr><td style="padding:38px 28px">
+            <h1 style="font-size:38px;line-height:1;margin:0 0 10px">{preview.subject}</h1>
+            <p style="font-size:15px;color:#555;margin:0 0 24px">{preview.preview}</p>
+            {isResult ? (
+              <>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 16px">{preview.paragraphs[0]}</p>
+                <img src={cardUrl} width="280" alt={`Your Bestday card: ${result.name}`} style="display:block;width:100%;max-width:280px;height:auto;border:0;margin:20px auto 12px" />
+                <p style="font-size:15px;line-height:1.5;text-align:center;margin:0 0 24px">Save it, or send it to someone who'd know.</p>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 16px">{preview.paragraphs[1]}</p>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 14px">{result.identity}</p>
+                <h2 style="font-size:20px;line-height:1.25;margin:22px 0 6px">Your strengths</h2>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 14px">{result.strength}</p>
+                <h2 style="font-size:20px;line-height:1.25;margin:22px 0 6px">The pattern to watch</h2>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 14px">{result.tendency}</p>
+                <h2 style="font-size:20px;line-height:1.25;margin:22px 0 6px">What you need</h2>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 16px">{result.need}</p>
+                <p style="font-size:17px;line-height:1.55;margin:0 0 16px">{preview.paragraphs[3]}</p>
+              </>
+            ) : preview.paragraphs.map(paragraph => paragraph.split('\n').map(line => <p style="font-size:17px;line-height:1.55;margin:0 0 16px">{line || <br />}</p>))}
+            <a href={ctaUrl} style="display:inline-block;background:#FFDE59;color:#0D0D0D;text-decoration:none;padding:16px 24px;border-radius:999px;font-weight:800">{preview.cta}</a>
+            {preview.note && <p style="font-size:14px;margin:14px 0 0">{preview.note}</p>}
+            <p style="font-size:17px;white-space:pre-line;line-height:1.55;margin:28px 0 0">{preview.signoff}</p>
+          </td></tr>
+          <tr><td style="padding:24px 28px;background:#FFDE59;font-size:12px;line-height:1.5">You're getting this because you took the Bestday quiz. <a href="https://bestday.ai/unsubscribe" style="color:#0D0D0D">Unsubscribe</a>.<br />{postalAddress}</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>

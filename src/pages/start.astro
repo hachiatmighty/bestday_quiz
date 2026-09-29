@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="robots" content="noindex" />
+    <title>Opening Bestday</title>
+  </head>
+  <body style="margin:0;background:#0D0D0D;color:#FFFCEF;font-family:Urbanist,Arial,sans-serif">
+    <main style="min-height:100svh;display:grid;place-items:center;padding:24px;text-align:center">
+      <div>
+        <p>Opening Bestday...</p>
+        <a data-fallback href="https://bestday.ai" style="color:#FFDE59">Continue to Bestday</a>
+      </div>
+    </main>
+    <script>
+      // @ts-nocheck
+      import { initAnalytics, track } from '../lib/analytics';
+      import { signupDestination } from '../lib/signup';
+      import { archetypes } from '../data/quiz';
+
+      const params = new URLSearchParams(location.search);
+      const type = Object.hasOwn(archetypes, params.get('type')) ? params.get('type') : null;
+      const destination = signupDestination(navigator.userAgent);
+      const fallback = document.querySelector('[data-fallback]');
+      fallback.href = destination.url;
+      initAnalytics(import.meta.env.PUBLIC_MIXPANEL_TOKEN);
+      track('signup_click', { source: 'email', archetype: type, platform: destination.platform });
+      setTimeout(() => location.replace(destination.url), 120);
+    </script>
+  </body>
+</html>

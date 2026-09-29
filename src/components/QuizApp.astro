@@ -93,6 +93,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   // @ts-nocheck
   import { initAnalytics, track, trackingContext } from '../lib/analytics';
   import { submitCapture } from '../lib/capture';
+  import { signupDestination } from '../lib/signup';
   import { isVeryEven, scoreQuizWithDetails } from '../lib/scoring.mjs';
   import { createQuizState, goBack, recordAnswer, recordCategory } from '../lib/quiz-state.mjs';
   import { archetypes, categories, pairingFor, questions } from '../data/quiz';
@@ -111,11 +112,6 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   const show = name => { screens.forEach(screen => screen.classList.toggle('active', screen.dataset.screen === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const shareUrl = () => { const url = new URL(`r/${resultSlug}`, publicQuizUrl); url.searchParams.set('ref', resultSlug); return url; };
   const cardUrl = () => `${baseUrl}assets/cards/${resultSlug}.png`;
-  const signupDestination = () => {
-    if (/Android/i.test(navigator.userAgent)) return { platform: 'android', url: 'https://play.google.com/store/apps/details?id=com.getbestday.ai' };
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) return { platform: 'ios', url: 'https://apps.apple.com/app/id6463491722' };
-    return { platform: 'desktop', url: 'https://bestday.ai' };
-  };
   const configureSharing = prefix => {
     const result = archetypes[resultSlug];
     const message = `${result.forward} ${shareUrl()}`;
@@ -203,7 +199,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
   root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);
-  const signup = signupDestination();
+  const signup = signupDestination(navigator.userAgent);
   root.querySelectorAll('[data-signup]').forEach(link => {
     link.href = signup.url;
     link.onclick = () => track('signup_click', { archetype: resultSlug, category: quizState.category, platform: signup.platform });
