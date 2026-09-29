@@ -60,6 +60,7 @@ The handoff ships with `<meta name="robots" content="noindex">`. Keep it in plac
 
 - The quiz has one category question followed by a 20-statement scale (21 question screens total).
 - Changelog: Updated result emails to match the site, added "How you fit with each type" to results and Email 2, added the `/quiz/start` app-store redirect. Adds two rewrite lines: re-apply the rewrite block.
+- Changelog: Share actions are now icons with captions.
 
 ## Not wired yet
 
