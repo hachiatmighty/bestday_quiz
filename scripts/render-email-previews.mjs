@@ -48,6 +48,6 @@ await page.evaluate(async () => {
     node.remove();
   });
 });
-await page.locator('.result-shell').screenshot({ path: path.join(outputDirectory, 'anchor-fit-result-360.png') });
+await page.screenshot({ path: path.join(outputDirectory, 'anchor-fit-result-360.png'), fullPage: true });
 
 await browser.close();
