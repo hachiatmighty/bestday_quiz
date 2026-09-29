@@ -15,7 +15,7 @@ const types = [
       <div class="hero-copy">
         <img class="landing-logo" src={assetUrl('assets/logos/wordmark-black.png')} alt="Bestday" />
         <h1 data-landing-title>Everyone in your circle goes after goals differently.</h1>
-        <p class="landing-subline">Find out how you do it, then see how your people fit with you. About two minutes, no app needed.</p>
+        <p class="landing-subline">Find out how you do it, then see how your people fit with you.</p>
         <button class="landing-cta" type="button" data-start>Find my type</button>
       </div>
       <div class="dealt-area">
@@ -27,15 +27,15 @@ const types = [
             </article>
           ))}
         </div>
-        <p class="pairing-note">One of you brings the spark. One of you keeps going when it's quiet.</p>
       </div>
+      <p class="pairing-note">One of you brings the spark. One of you keeps going when it's quiet.</p>
     </div>
   </header>
 
   <section class="types-section">
-    <div class="list-wrap">
+    <div class="landing-wrap">
       <h2>Which one sounds like you?</h2>
-      <div class="types-list">
+      <div class="type-grid">
         {types.map(type => (
           <article>
             <img src={assetUrl(`assets/archetypes/${type.slug}.png`)} alt="" />
@@ -55,7 +55,7 @@ const types = [
   .landing-page{background:var(--black);color:var(--cream)}
   .landing-wrap{width:min(100% - 96px,1320px);margin:auto}
   .landing-hero{min-height:780px;padding:52px 0 72px;background:var(--yellow);color:var(--black);overflow:hidden}
-  .hero-grid{display:grid;grid-template-columns:minmax(470px,.82fr) minmax(650px,1.18fr);gap:26px;align-items:center}
+  .hero-grid{display:grid;grid-template-columns:minmax(470px,.82fr) minmax(650px,1.18fr);column-gap:26px;row-gap:24px;align-items:center}
   .landing-logo{width:126px;margin:0 0 66px 3px}
   h1,h2,h3,p{margin-top:0}
   h1,h2,h3{font-weight:800;letter-spacing:-.045em;line-height:.96}
@@ -63,43 +63,41 @@ const types = [
   .landing-subline{max-width:630px;margin-bottom:30px;font-size:1.45rem;line-height:1.42}
   .landing-cta{min-height:62px;padding:0 32px;border:0;border-radius:999px;background:var(--black);color:var(--yellow);font-weight:800;cursor:pointer}
   .landing-cta.yellow{background:var(--yellow);color:var(--black)}
-  .dealt-area{position:relative;height:620px;margin-right:-90px}
-  .card-fan{position:absolute;inset:0}
-  .landing-type-card{position:absolute;width:190px;height:340px;padding:14px;border:1px solid #34342f;border-radius:18px;background:var(--black);color:var(--cream);overflow:hidden}
+  .dealt-area{height:500px;margin-right:-90px}
+  .card-fan{position:relative;height:100%}
+  .landing-type-card{position:absolute;top:92px;width:19%;height:340px;padding:14px;border:1px solid #34342f;border-radius:20px;background:var(--black);color:var(--cream);overflow:hidden}
   .landing-type-card img{width:100%;height:250px;object-fit:contain}
-  .landing-type-card strong{display:block;color:var(--yellow);font-size:1.05rem;white-space:nowrap}
-  .landing-type-card:nth-child(1){left:2%;top:108px;transform:rotate(-9deg);z-index:2}
-  .landing-type-card:nth-child(2){left:43%;top:58px;transform:rotate(4deg);z-index:4}
-  .landing-type-card:nth-child(3){left:20%;top:96px;transform:rotate(-2deg);z-index:3}
-  .landing-type-card:nth-child(4){left:56%;top:91px;transform:rotate(7deg);z-index:5}
-  .landing-type-card:nth-child(5){left:74%;top:49px;transform:rotate(-5deg);z-index:6}
-  .pairing-note{position:absolute;left:2%;bottom:24px;width:390px;margin:0;font-size:1.12rem;line-height:1.35}
+  .landing-type-card strong{display:block;color:var(--yellow);font-size:clamp(.8rem,1.2vw,1.15rem);white-space:nowrap}
+  .landing-type-card:nth-child(1){left:0;top:130px;transform:rotate(-11deg)}
+  .landing-type-card:nth-child(2){left:20%;top:70px;transform:rotate(-6deg)}
+  .landing-type-card:nth-child(3){left:40%;top:42px}
+  .landing-type-card:nth-child(4){left:60%;top:70px;transform:rotate(6deg)}
+  .landing-type-card:nth-child(5){left:80%;top:130px;transform:rotate(11deg)}
+  .pairing-note{grid-column:1/-1;width:390px;margin:0;font-size:1.12rem;line-height:1.35}
   .types-section{padding:92px 0 100px;background:var(--black)}
-  .list-wrap{width:min(100% - 96px,1320px);margin:auto}
   .types-section h2{margin-bottom:44px;font-size:clamp(3rem,5vw,4.8rem)}
-  .types-list article{display:grid;grid-template-columns:140px 1fr;gap:34px;align-items:center;min-height:176px;padding:18px 0;border-top:1px solid #45443f}
-  .types-list article:last-child{border-bottom:1px solid #45443f}
-  .types-list img{width:140px;height:140px;object-fit:contain}
-  .types-list h3{margin:0 0 10px;color:var(--yellow);font-size:2rem}
-  .types-list p{margin:0;color:#e0ddd3;font-size:1.35rem;line-height:1.35}
+  .type-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .type-grid article{min-height:380px;padding:18px;border:1px solid #34342f;border-radius:20px}
+  .type-grid img{width:100%;height:190px;object-fit:contain}
+  .type-grid h3{margin:12px 0;color:var(--yellow);font-size:1.7rem}
+  .type-grid p{margin:0;color:#d1cec3;line-height:1.45}
   .closing{max-width:720px;padding-top:62px}
   .closing p{margin-bottom:26px;font-size:2rem;font-weight:800;line-height:1.15;letter-spacing:-.025em}
   @media(max-width:900px){
-    .landing-wrap{width:min(100% - 48px,760px)}.landing-hero{min-height:0;padding:34px 0 58px}.hero-grid{grid-template-columns:1fr}.landing-logo{margin-bottom:42px}
-    .dealt-area{height:410px;margin:0 -20px}.landing-type-card{width:19%;height:250px;padding:9px;border-radius:13px}.landing-type-card img{height:187px}.landing-type-card strong{font-size:.72rem}
-    .landing-type-card:nth-child(1){left:0;top:64px}.landing-type-card:nth-child(2){left:42%;top:25px}.landing-type-card:nth-child(3){left:19%;top:57px}.landing-type-card:nth-child(4){left:61%;top:62px}.landing-type-card:nth-child(5){left:80%;top:19px}
-    .pairing-note{left:20px;bottom:5px;width:360px}
-    .list-wrap{width:min(100% - 48px,760px)}
+    .landing-wrap{width:min(100% - 48px,760px)}.landing-hero{min-height:0;padding:34px 0 58px}.hero-grid{grid-template-columns:1fr;row-gap:28px}.hero-copy{display:contents}.landing-logo{grid-row:1;margin-bottom:18px}.hero-copy h1{grid-row:2}.dealt-area{grid-row:3}.pairing-note{grid-row:4}.landing-subline{grid-row:5}.hero-copy .landing-cta{grid-row:6;justify-self:start}
+    .dealt-area{height:320px;margin:0 -20px}.landing-type-card{height:250px;padding:10px;border-radius:13px}.landing-type-card img{height:185px}.landing-type-card strong{font-size:.75rem}
+    .landing-type-card:nth-child(1){top:62px}.landing-type-card:nth-child(2){top:28px}.landing-type-card:nth-child(3){top:12px}.landing-type-card:nth-child(4){top:28px}.landing-type-card:nth-child(5){top:62px}
+    .pairing-note{width:390px}
+    .type-grid{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x proximity}.type-grid article{flex:0 0 220px;scroll-snap-align:start}
   }
   @media(max-width:600px){
-    .landing-wrap,.list-wrap{width:min(100% - 32px,520px)}.landing-hero{padding:28px 0 42px}.landing-logo{width:104px;margin-bottom:30px}
-    h1{font-size:3rem;margin-bottom:12px}.landing-subline{font-size:1.05rem;margin:24px 0}.landing-cta{min-height:50px;padding:0 24px}
-    .hero-grid{display:grid;gap:0}.hero-copy{display:contents}.landing-logo{grid-row:1}.hero-copy h1{grid-row:2}.dealt-area{grid-row:3}.landing-subline{grid-row:4}.hero-copy .landing-cta{grid-row:5;justify-self:start}
-    .dealt-area{height:220px;margin:0 -16px}.landing-type-card{width:21%;height:151px;padding:5px;border-radius:9px}.landing-type-card img{height:109px}.landing-type-card strong{font-size:.43rem}
-    .landing-type-card:nth-child(1){left:0;top:28px}.landing-type-card:nth-child(2){left:43%;top:5px}.landing-type-card:nth-child(3){left:20%;top:26px}.landing-type-card:nth-child(4){left:62%;top:31px}.landing-type-card:nth-child(5){left:80%;top:2px}
-    .pairing-note{left:16px;bottom:0;width:300px;font-size:.9rem}
+    .landing-wrap{width:min(100% - 32px,520px)}.landing-hero{padding:28px 0 42px}.landing-logo{width:104px;margin-bottom:6px}
+    h1{font-size:3rem;margin-bottom:0}.landing-subline{font-size:1.05rem;margin:0}.landing-cta{min-height:50px;padding:0 24px}
+    .hero-grid{row-gap:28px}.dealt-area{height:190px;margin:0 -16px}.landing-type-card{width:19%;height:142px;padding:5px;border-radius:9px}.landing-type-card img{height:101px}.landing-type-card strong{font-size:.43rem}
+    .landing-type-card:nth-child(1){left:0;top:38px;transform:rotate(-10deg)}.landing-type-card:nth-child(2){left:20%;top:16px;transform:rotate(-5deg)}.landing-type-card:nth-child(3){left:40%;top:5px}.landing-type-card:nth-child(4){left:60%;top:16px;transform:rotate(5deg)}.landing-type-card:nth-child(5){left:80%;top:38px;transform:rotate(10deg)}
+    .pairing-note{width:100%;font-size:.9rem}
     .types-section{padding:54px 0 64px}.types-section h2{margin-bottom:26px;font-size:2.7rem}
-    .types-list article{grid-template-columns:88px 1fr;gap:18px;min-height:122px;padding:16px 0}.types-list img{width:88px;height:88px}.types-list h3{margin-bottom:6px;font-size:1.45rem}.types-list p{font-size:1rem}
+    .type-grid{display:grid;grid-template-columns:1fr;overflow:visible;padding:0}.type-grid article{display:grid;grid-template-columns:110px 1fr;align-items:center;min-height:150px;padding:16px}.type-grid img{width:110px;height:110px}.type-grid h3{margin:0 0 8px;font-size:1.45rem}.type-grid p{font-size:1rem}
     .closing{padding-top:42px}.closing p{margin-bottom:22px;font-size:1.55rem}
   }
 </style>
