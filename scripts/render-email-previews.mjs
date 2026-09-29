@@ -44,7 +44,7 @@ await page.evaluate(async () => {
   document.querySelector('.result-nav').remove();
   const resultCopy = document.querySelector('.result-copy');
   [...resultCopy.children].forEach(node => {
-    if (node.matches('[data-result-need], .fit-list') || node.textContent === 'What you need') return;
+    if (node.matches('.fit-list')) return;
     node.remove();
   });
 });

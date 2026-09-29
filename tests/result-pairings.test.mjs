@@ -23,5 +23,6 @@ test('result screen has five pairing rows and no extra share controls', async ()
   assert.match(source, /pairingsFor\(resultSlug\)/);
   assert.equal((resultMarkup.match(/<article class="share card">/g) ?? []).length, 1);
   assert.equal((resultMarkup.match(/data-result-(?:whatsapp|share|save)/g) ?? []).length, 3);
+  assert.doesNotMatch(resultMarkup, /Send it to them and find out which one they are\./);
   assert.doesNotMatch(source.match(/<section class="fit-list"[\s\S]*?<\/section>/)?.[0] ?? '', /<(?:a|button)\b/);
 });
