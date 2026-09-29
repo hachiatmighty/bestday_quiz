@@ -46,6 +46,11 @@ Pass: it must not serve a quiz email-preview page. A landing-page response or `4
 
 The handoff ships with `<meta name="robots" content="noindex">`. Keep it in place for review. For launch, rebuild with `PUBLIC_QUIZ_NOINDEX=false` before replacing the folder.
 
+## Current build
+
+- The quiz has one category question followed by a 20-statement scale (21 question screens total).
+- Changelog: 20-statement scale, new landing page, new character art on all result surfaces.
+
 ## Not wired yet
 
 - There is no Mixpanel token. Analytics calls are a no-op.
