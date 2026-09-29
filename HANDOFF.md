@@ -1,5 +1,7 @@
 # Bestday quiz static handoff
 
+> **Existing installs must add the two new `/quiz/start` rewrite lines. Replacing the `public/quiz/` folder alone is not enough.**
+
 This package is a static build of the Bestday goal-archetype quiz for the existing `kayakinwunmi/bestday-ai-landing-page` Vite project. It does not need its own Vercel project.
 
 ## Install
@@ -57,7 +59,7 @@ The handoff ships with `<meta name="robots" content="noindex">`. Keep it in plac
 ## Current build
 
 - The quiz has one category question followed by a 20-statement scale (21 question screens total).
-- Changelog: 20-statement scale, new landing page, new character art on all result surfaces.
+- Changelog: Updated result emails to match the site, added "How you fit with each type" to results and Email 2, added the `/quiz/start` app-store redirect. Adds two rewrite lines: re-apply the rewrite block.
 
 ## Not wired yet
 
@@ -79,7 +81,7 @@ Replace the landing repository's entire `public/quiz/` folder with the contents 
 
 ## Rollback
 
-Delete `public/quiz/` and remove only the four `/quiz` rewrite entries added above. Leave the landing-page SPA catch-all unchanged.
+Delete `public/quiz/` and remove only the six `/quiz` rewrite entries added above. Leave the landing-page SPA catch-all unchanged.
 
 ## Local verification boundary
 
