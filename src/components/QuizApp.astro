@@ -18,6 +18,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 
   <section class="screen" data-screen="quiz">
     <div class="shell question-shell">
+      <button class="back" type="button" data-back hidden>Back</button>
       <div class="progress"><span data-progress></span></div>
       <p class="eyebrow" data-step-label>1 of 12</p>
       <div data-question></div>
@@ -54,7 +55,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       <label>First name<input name="firstName" autocomplete="given-name" required /></label>
       <label>Email<input type="email" name="email" autocomplete="email" required /></label>
       <p class="consent-copy">We'll email you your result and a few short notes over the next week. Unsubscribe any time. <a href="https://bestday.ai/privacy">Privacy</a></p>
-      <label>WhatsApp number <span>(optional)</span><input type="tel" name="whatsapp" autocomplete="tel" data-whatsapp-input /></label>
+      <label><span class="label-line">WhatsApp number <span>(optional)</span></span><input type="tel" name="whatsapp" autocomplete="tel" data-whatsapp-input /></label>
       <label class="consent whatsapp-consent" hidden><input type="checkbox" name="whatsappConsent" /> <span>Bestday may message me on WhatsApp about my result.</span></label>
       <button class="button" type="submit">Show my full result</button>
       <button class="skip" type="button" data-skip>Not now, just show me</button>
@@ -70,7 +71,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
         <span class="card-url">{cardFooter}</span>
       </article>
-      <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href="https://bestday.ai">Invite them onto your goal</a></article>
+      <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href="https://bestday.ai" data-signup>Invite them onto your goal</a></article>
       <article class="result-copy">
         <p class="identity" data-result-identity></p>
         <h3>Your strengths</h3><p data-result-strength></p>
@@ -87,7 +88,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 
   <section class="screen" data-screen="offer">
     <div class="shell centered offer">
-      <p class="eyebrow">Bestday</p><h2>Put a circle around one goal.</h2>
+      <h2>Put a circle around one goal.</h2>
       <p>On Bestday you choose one goal and invite two or three people you respect onto it. They're on it with you, and an AI companion is there for the thinking in between. No one achieves alone.</p>
       <a class="button" href="https://bestday.ai" data-signup>Start your circle</a>
       <p class="note">7 days free, then Premium is $99 a year.</p>
@@ -100,6 +101,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   import { initAnalytics, track, trackingContext } from '../lib/analytics';
   import { submitCapture } from '../lib/capture';
   import { scoreQuiz } from '../lib/scoring';
+  import { createQuizState, goBack, recordAnswer, recordCategory } from '../lib/quiz-state.mjs';
   import { archetypes, categories, pairingFor, questions } from '../data/quiz';
   const mixpanelToken = import.meta.env.PUBLIC_MIXPANEL_TOKEN;
   const captureEndpoint = import.meta.env.PUBLIC_CAPTURE_ENDPOINT;
@@ -115,15 +117,18 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     const swap = Math.floor(Math.random() * (index + 1));
     [sessionOrder[index], sessionOrder[swap]] = [sessionOrder[swap], sessionOrder[index]];
   }
-  const answers = [];
-  let category = null;
-  let questionIndex = 0;
+  const quizState = createQuizState();
   let resultSlug = null;
   if (sender) root.querySelector('[data-landing-title]').textContent = `Someone sent you this. They're ${archetypes[sender].name}. What are you?`;
 
   const show = name => { screens.forEach(screen => screen.classList.toggle('active', screen.dataset.screen === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const shareUrl = () => { const url = new URL(`r/${resultSlug}`, publicQuizUrl); url.searchParams.set('ref', resultSlug); return url; };
   const cardUrl = () => `${baseUrl}assets/cards/${resultSlug}.png`;
+  const signupDestination = () => {
+    if (/Android/i.test(navigator.userAgent)) return { platform: 'android', url: 'https://play.google.com/store/apps/details?id=com.getbestday.ai' };
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) return { platform: 'ios', url: 'https://apps.apple.com/app/id6463491722' };
+    return { platform: 'desktop', url: 'https://bestday.ai' };
+  };
   const configureSharing = prefix => {
     const result = archetypes[resultSlug];
     const message = `${result.forward} ${shareUrl()}`;
@@ -141,32 +146,44 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   };
   const renderQuestion = () => {
     const host = root.querySelector('[data-question]');
+    const { questionIndex } = quizState;
+    root.querySelector('[data-back]').hidden = questionIndex === 0;
     root.querySelector('[data-step-label]').textContent = `${questionIndex + 1} of 12`;
     root.querySelector('[data-progress]').style.width = `${((questionIndex + 1) / 12) * 100}%`;
     if (questionIndex === 0) {
       host.innerHTML = `<h2>Which goal is on your mind most right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
-      host.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => { category = button.dataset.category; track('question_answered', { index: 1, category }); questionIndex++; renderQuestion(); }));
+      host.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
+        button.classList.add('selected');
+        recordCategory(quizState, button.dataset.category);
+        track('question_answered', { index: 1, category: quizState.category });
+        setTimeout(renderQuestion, 120);
+      }));
       return;
     }
     const question = questions[questionIndex - 1];
     const options = sessionOrder.map(index => question.options[index]);
     host.innerHTML = `<h2>${question.prompt}</h2><div class="options">${options.map(option => `<button class="option" data-archetype="${option.archetype}"><span>${option.text}</span></button>`).join('')}</div>`;
-    host.querySelectorAll('[data-archetype]').forEach(button => button.addEventListener('click', () => { answers.push({ questionId: question.id, archetype: button.dataset.archetype, weight: question.weight }); track('question_answered', { index: question.id, archetype: button.dataset.archetype }); questionIndex++; if (questionIndex === 12) finishQuiz(); else renderQuestion(); }));
+    host.querySelectorAll('[data-archetype]').forEach(button => button.addEventListener('click', () => {
+      button.classList.add('selected');
+      recordAnswer(quizState, { questionId: question.id, archetype: button.dataset.archetype, weight: question.weight });
+      track('question_answered', { index: question.id, archetype: button.dataset.archetype });
+      setTimeout(() => { if (quizState.questionIndex === 12) finishQuiz(); else renderQuestion(); }, 120);
+    }));
   };
   const finishQuiz = () => {
     show('loading');
-    resultSlug = scoreQuiz(answers);
+    resultSlug = scoreQuiz(quizState.answers);
     const result = archetypes[resultSlug];
     root.querySelector('[data-teaser-name]').textContent = result.name;
     root.querySelector('[data-teaser-identity]').textContent = result.identity;
     root.querySelector('[data-teaser-icon]').src = `${baseUrl}assets/illustrations/${result.pictogram}`;
     configureSharing('');
-    track('quiz_complete', { archetype: resultSlug, category });
-    setTimeout(() => { track('teaser_view', { archetype: resultSlug, category }); show('teaser'); }, 450);
+    track('quiz_complete', { archetype: resultSlug, category: quizState.category });
+    setTimeout(() => { track('teaser_view', { archetype: resultSlug, category: quizState.category }); show('teaser'); }, 450);
   };
   const renderResult = () => {
     const result = archetypes[resultSlug];
-    const categoryInfo = categories.find(item => item.slug === category) ?? categories[6];
+    const categoryInfo = categories.find(item => item.slug === quizState.category) ?? categories[6];
     root.querySelector('[data-result-name]').textContent = result.name;
     root.querySelector('[data-card-line]').textContent = result.cardLine;
     root.querySelector('[data-result-icon]').src = `${baseUrl}assets/illustrations/${result.pictogram}`;
@@ -182,24 +199,29 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       root.querySelector('[data-pairing-heading]').textContent = `You're ${result.name}. The person who sent you this is ${archetypes[sender].name}.`;
       root.querySelector('[data-pairing-copy]').textContent = pairingFor(resultSlug, sender);
     }
-    track('result_view', { archetype: resultSlug, category }); show('result');
+    track('result_view', { archetype: resultSlug, category: quizState.category }); show('result');
   };
   root.querySelector('[data-start]').onclick = () => { track('quiz_start'); renderQuestion(); show('quiz'); };
+  root.querySelector('[data-back]').onclick = () => { goBack(quizState); renderQuestion(); };
   root.querySelector('[data-unlock]').onclick = () => show('capture');
   const whatsappInput = root.querySelector('[data-whatsapp-input]');
   whatsappInput.oninput = () => { root.querySelector('.whatsapp-consent').hidden = !whatsappInput.value.trim(); };
   root.querySelector('[data-skip]').onclick = renderResult;
   root.querySelector('[data-capture-form]').onsubmit = async event => {
     event.preventDefault(); const form = new FormData(event.currentTarget); const status = root.querySelector('[data-form-status]'); status.textContent = 'Reading your answers...';
-    try { await submitCapture({ firstName: String(form.get('firstName')), email: String(form.get('email')), whatsapp: String(form.get('whatsapp')), whatsappConsent: form.get('whatsappConsent') === 'on', consent: true, archetype: resultSlug, category, source: trackingContext() }, captureEndpoint); track('capture_submit', { archetype: resultSlug, category }); renderResult(); }
+    try { await submitCapture({ firstName: String(form.get('firstName')), email: String(form.get('email')), whatsapp: String(form.get('whatsapp')), whatsappConsent: form.get('whatsappConsent') === 'on', consent: true, archetype: resultSlug, category: quizState.category, source: trackingContext() }, captureEndpoint); track('capture_submit', { archetype: resultSlug, category: quizState.category }); renderResult(); }
     catch { status.textContent = 'Something went wrong. Your result is still here. Try again, or skip for now.'; }
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
   root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);
-  root.querySelector('[data-signup]').onclick = () => track('signup_click', { archetype: resultSlug, category });
+  const signup = signupDestination();
+  root.querySelectorAll('[data-signup]').forEach(link => {
+    link.href = signup.url;
+    link.onclick = () => track('signup_click', { archetype: resultSlug, category: quizState.category, platform: signup.platform });
+  });
   track('landing_view'); if (sender) track('referral_landing', { archetype: sender });
 </script>
 
 <style>
-.screen{display:none;min-height:100svh;padding:32px 0}.screen.active{display:block}.landing{background:radial-gradient(circle at 80% 15%,#302b17 0,#0D0D0D 34%)}.landing-inner{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start}.wordmark{width:116px;position:absolute;top:28px}h1{margin:14px 0 18px;font-size:clamp(3.2rem,12vw,6.4rem);line-height:.9;letter-spacing:-.06em;max-width:720px}h2{font-size:clamp(2rem,8vw,3.5rem);line-height:1;letter-spacing:-.04em;margin:18px 0 24px}h3{font-size:1.45rem;margin:30px 0 8px}.lead{max-width:590px;font-size:1.18rem;line-height:1.5;color:#dedbd0;margin:0 0 32px}.note{color:#a9a69d;font-size:.85rem}.question-shell{padding-top:40px}.progress{height:6px;background:#2c2c29;border-radius:10px;overflow:hidden;margin-bottom:42px}.progress span{display:block;height:100%;background:var(--yellow);transition:width .25s}:global(.options){display:grid;gap:10px}:global(.option){width:100%;display:flex;align-items:center;text-align:left;padding:16px;border:1px solid #3b3b36;border-radius:12px;background:#1A1A1A;color:var(--cream);cursor:pointer}:global(.option:hover),:global(.option:active){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}.centered{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.centered>p:not(.eyebrow){max-width:560px;color:#d1cec2;line-height:1.55}.teaser-shell{display:grid;gap:26px}.teaser-card,.result-card{position:relative;overflow:hidden;min-height:510px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--black);color:var(--cream);border:1px solid #2A2A2A}.pictogram-disc{position:absolute;width:68%;max-width:calc(100% - 48px);aspect-ratio:1;top:24px;left:50%;transform:translateX(-50%);display:grid;place-items:center}.pictogram-disc img{width:84%;height:84%;object-fit:contain}.teaser-card h2,.result-card h2{color:var(--yellow);font-size:clamp(3rem,14vw,6rem);margin:0 0 8px;max-width:90%}.teaser-card .eyebrow,.result-card .eyebrow{color:var(--yellow);margin:0}.teaser-card strong,.result-card strong{max-width:460px;font-size:1.18rem}.teaser-copy p{line-height:1.55;color:#d1cec2}.share-actions{display:flex;gap:10px;flex-wrap:wrap}.capture{margin-top:max(7vh,36px);padding:28px;background:#191917;border:1px solid #34342e}.capture label{display:grid;gap:8px;margin:18px 0;font-weight:800}.capture label span{font-weight:500;color:#a9a69d}.capture input:not([type=checkbox]){width:100%;border:1px solid #555249;border-radius:12px;padding:15px;background:#0D0D0D;color:white;font-weight:500}.consent-copy{font-size:.82rem;color:#c9c6bb;line-height:1.45}.capture .consent{grid-template-columns:auto 1fr;align-items:start;font-size:.86rem;font-weight:500;line-height:1.45;color:#c9c6bb}.skip{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:16px}.form-status{color:var(--yellow)}.result-shell{display:grid;gap:28px}.result-logo{width:94px;margin-top:26px}.card-url{color:var(--cream);font-size:.82rem;margin-top:8px}.category-dot{position:absolute;top:24px;left:24px;width:18px;height:18px;border:3px solid var(--black);border-radius:50%;z-index:2}.result-copy{line-height:1.6}.identity{font-size:1.55rem;font-weight:800;line-height:1.25}.share,.pairing{padding:26px;background:#191917;border:1px solid #34342e}.share h3{margin-top:0}.pairing{display:grid;gap:14px}.pairing[hidden]{display:none}.pairing p{margin:0;color:#d4d1c6}.pairing strong{font-size:1.2rem}.result-nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.offer .button{margin-top:12px}@media(min-width:720px){.screen{padding:56px 0}.capture{padding:42px}.teaser-card,.result-card{min-height:700px;padding:52px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.screen{display:none;min-height:100svh;padding:32px 0}.screen.active{display:block}.landing{background:radial-gradient(circle at 80% 15%,#302b17 0,#0D0D0D 34%)}.landing-inner{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start}.wordmark{width:116px;position:absolute;top:28px}h1{margin:14px 0 18px;font-size:clamp(3.2rem,12vw,6.4rem);line-height:.9;letter-spacing:-.06em;max-width:720px}h2{font-size:clamp(2rem,8vw,3.5rem);line-height:1;letter-spacing:-.04em;margin:18px 0 24px}h3{font-size:1.45rem;margin:30px 0 8px}.lead{max-width:590px;font-size:1.18rem;line-height:1.5;color:#dedbd0;margin:0 0 32px}.note{color:#a9a69d;font-size:.85rem}.question-shell{padding-top:22px}.back{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:10px 0;margin-bottom:10px}.progress{height:6px;background:#2c2c29;border-radius:10px;overflow:hidden;margin-bottom:34px}.progress span{display:block;height:100%;background:var(--yellow);transition:width .25s}:global(.options){display:grid;gap:10px}:global(.option){width:100%;display:flex;align-items:center;text-align:left;padding:16px;border:1px solid #3b3b36;border-radius:12px;background:#1A1A1A;color:var(--cream);cursor:pointer}:global(.option.selected){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}@media(hover:hover){:global(.option:hover){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}}.centered{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.centered>p:not(.eyebrow){max-width:560px;color:#d1cec2;line-height:1.55}.teaser-shell{display:grid;gap:14px}.teaser-card,.result-card{position:relative;overflow:hidden;min-height:510px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--black);color:var(--cream);border:1px solid #2A2A2A}.teaser-card{min-height:350px;padding:22px}.pictogram-disc{position:absolute;width:68%;max-width:calc(100% - 48px);aspect-ratio:1;top:24px;left:50%;transform:translateX(-50%);display:grid;place-items:center}.teaser-card .pictogram-disc{top:12px}.pictogram-disc img{width:84%;height:84%;object-fit:contain}.teaser-card h2,.result-card h2{color:var(--yellow);font-size:clamp(3rem,14vw,6rem);margin:0 0 8px;max-width:90%}.teaser-card .eyebrow,.result-card .eyebrow{color:var(--yellow);margin:0}.teaser-card strong,.result-card strong{max-width:460px;font-size:1.18rem}.teaser-copy h2{margin:6px 0 10px}.teaser-copy p{line-height:1.45;color:#d1cec2;margin:0 0 14px}.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:1/-1}.capture{margin-top:max(7vh,36px);padding:28px;background:#191917;border:1px solid #34342e}.capture label{display:grid;gap:8px;margin:18px 0;font-weight:800}.capture label span{font-weight:500;color:#a9a69d}.capture .label-line{display:inline;font-weight:800;color:inherit;white-space:nowrap}.capture input:not([type=checkbox]){width:100%;border:1px solid #555249;border-radius:12px;padding:15px;background:#0D0D0D;color:white;font-weight:500}.consent-copy{font-size:.82rem;color:#c9c6bb;line-height:1.45}.capture .consent{grid-template-columns:auto 1fr;align-items:start;font-size:.86rem;font-weight:500;line-height:1.45;color:#c9c6bb}.skip{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:16px}.form-status{color:var(--yellow)}.result-shell{display:grid;gap:28px}.result-logo{width:94px;margin-top:26px}.teaser-card .result-logo{margin-top:18px}.card-url{color:var(--cream);font-size:.82rem;margin-top:8px}.category-dot{position:absolute;top:24px;left:24px;width:18px;height:18px;border:3px solid var(--black);border-radius:50%;z-index:2}.result-copy{line-height:1.6}.identity{font-size:1.55rem;font-weight:800;line-height:1.25}.share,.pairing{padding:26px;background:#191917;border:1px solid #34342e}.share h3{margin-top:0}.pairing{display:grid;gap:14px}.pairing[hidden]{display:none}.pairing p{margin:0;color:#d4d1c6}.pairing strong{font-size:1.2rem}.result-nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.offer .button{margin-top:12px}@media(min-width:720px){.screen{padding:56px 0}.capture{padding:42px}.teaser-card,.result-card{min-height:700px;padding:52px}.share-actions{display:flex;flex-wrap:wrap}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:auto}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
