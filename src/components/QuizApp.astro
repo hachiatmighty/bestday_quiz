@@ -31,10 +31,21 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <span class="card-url">{cardFooter}</span>
       </article>
       <ShareActions />
-      <div class="teaser-copy">
-        <h2>Want the full read?</h2>
-        <p>Your strengths, the pattern to watch, and the kind of people you do your best work with. We'll show it here and send you a copy.</p>
+      <div class="teaser-copy teaser-details">
+        <h3>Your strengths</h3>
+        <p data-teaser-strength></p>
+        <h3>The pattern to watch</h3>
+        <p data-teaser-pattern></p>
+      </div>
+      <div class="teaser-copy teaser-more">
+        <h2>There's more in your full read</h2>
+        <ul>
+          <li>The rest of the pattern to watch</li>
+          <li>What you need</li>
+          <li>How you fit with each type</li>
+        </ul>
         <button class="button" data-unlock>Show my full result</button>
+        <p class="teaser-access">We'll send you a copy too.</p>
       </div>
     </div>
   </section>
@@ -96,6 +107,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   import { submitCapture } from '../lib/capture';
   import { signupDestination } from '../lib/signup';
   import { isVeryEven, scoreQuizWithDetails } from '../lib/scoring.mjs';
+  import { firstSentence } from '../lib/teaser.mjs';
   import { createQuizState, goBack, recordAnswer, recordCategory } from '../lib/quiz-state.mjs';
   import { archetypes, categories, pairingFor, pairingsFor, questions } from '../data/quiz';
   const mixpanelToken = import.meta.env.PUBLIC_MIXPANEL_TOKEN;
@@ -163,6 +175,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-teaser-name]').textContent = result.name;
     root.querySelector('[data-teaser-identity]').textContent = result.identity;
     root.querySelector('[data-teaser-icon]').src = `${baseUrl}assets/archetypes/${resultSlug}.png`;
+    root.querySelector('[data-teaser-strength]').textContent = result.strength;
+    root.querySelector('[data-teaser-pattern]').textContent = firstSentence(result.tendency);
     configureSharing('');
     track('quiz_complete', { archetype: resultSlug, category: quizState.category });
     setTimeout(() => { track('teaser_view', { archetype: resultSlug, category: quizState.category }); show('teaser'); }, 450);
@@ -244,4 +258,5 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 :global(.whatsapp .action-icon){background:var(--yellow);border-color:var(--yellow);color:var(--black)}
 :global(.whatsapp .action-icon svg){fill:currentColor;stroke:none}
 :global(.share-action:focus-visible){outline:3px solid var(--yellow);outline-offset:4px;border-radius:8px}
+.teaser-details{padding-top:14px}.teaser-details h3{margin:0 0 8px}.teaser-details h3:not(:first-child){margin-top:24px}.teaser-details p{margin-bottom:0}.teaser-more{padding-top:18px}.teaser-more h2{font-size:1.65rem}.teaser-more ul{margin:0 0 22px;padding-left:1.25rem;color:#d1cec2;line-height:1.75}.teaser-more .button{margin-top:0}.teaser-access{color:#a9a69d!important}
 </style>
