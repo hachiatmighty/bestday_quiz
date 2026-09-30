@@ -21,6 +21,7 @@ await run('npm', ['run', 'build'], {
     ...process.env,
     QUIZ_BASE_PATH: '/quiz',
     PUBLIC_QUIZ_NOINDEX: noindex,
+    PUBLIC_MIXPANEL_TOKEN: process.env.PUBLIC_MIXPANEL_TOKEN ?? '',
   },
 });
 

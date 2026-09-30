@@ -1,3 +1,5 @@
+import mixpanel from 'mixpanel-browser/src/loaders/loader-module-core';
+
 export const eventNames = [
   'landing_view', 'quiz_start', 'question_answered', 'quiz_complete',
   'teaser_view', 'capture_submit', 'result_view', 'share_click',
@@ -5,13 +7,24 @@ export const eventNames = [
 ] as const;
 
 type EventName = (typeof eventNames)[number];
-let projectToken = '';
-let distinctId = '';
+let analyticsEnabled = false;
+
+const quizVersion = import.meta.env.PUBLIC_QUIZ_VERSION || 'dev';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 
 export function initAnalytics(token?: string) {
-  projectToken = token ?? '';
-  distinctId = localStorage.getItem('bestday:quiz-id') ?? crypto.randomUUID();
-  localStorage.setItem('bestday:quiz-id', distinctId);
+  analyticsEnabled = Boolean(token);
+  if (!token) return;
+
+  mixpanel.init(token, {
+    api_host: 'https://api-eu.mixpanel.com',
+    disable_persistence: true,
+    batch_requests: false,
+    ip: false,
+    track_pageview: false,
+    autocapture: false,
+    record_sessions_percent: 0,
+  });
 }
 
 export function trackingContext() {
@@ -27,24 +40,16 @@ export function trackingContext() {
 }
 
 export function track(name: EventName, properties: Record<string, unknown> = {}) {
-  const payload = { ...trackingContext(), ...properties };
-  if (!projectToken) {
+  const payload = {
+    ...trackingContext(),
+    quiz_version: quizVersion,
+    base_path: basePath,
+    ...properties,
+  };
+  if (!analyticsEnabled) {
     console.info('[analytics:no-op]', name, payload);
     return;
   }
 
-  void fetch('https://api-js.mixpanel.com/track?ip=1', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify([{
-      event: name,
-      properties: {
-        token: projectToken,
-        distinct_id: distinctId,
-        time: Math.floor(Date.now() / 1000),
-        ...payload,
-      },
-    }]),
-    keepalive: true,
-  }).catch(error => console.warn('[analytics:error]', error));
+  mixpanel.track(name, payload);
 }

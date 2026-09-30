@@ -63,10 +63,11 @@ The handoff ships with `<meta name="robots" content="noindex">`. Keep it in plac
 - Changelog: Share actions are now icons with captions.
 - Changelog: Teaser now shows the strengths paragraph and first line of the pattern to watch.
 - Changelog: Percent progress, Back keeps your answer, full result requires email.
+- Changelog: Mixpanel on (EU, no cookies, no IP, no personal data).
 
 ## Not wired yet
 
-- There is no Mixpanel token. Analytics calls are a no-op.
+- Mixpanel is enabled only when `PUBLIC_MIXPANEL_TOKEN` is set at build time. It uses the EU endpoint without cookies, local storage, IP collection, autocapture, or session recording.
 - There is no capture endpoint or Firestore integration. The capture form stores submissions in the visitor's browser only.
 - No result or follow-up emails are collected server-side or sent.
 - `PUBLIC_MIXPANEL_TOKEN`, `PUBLIC_CAPTURE_ENDPOINT`, and `PUBLIC_QUIZ_NOINDEX` are baked into the static files at build time. Adding or changing them requires a rebuild and a fresh drop-in.
