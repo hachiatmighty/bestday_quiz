@@ -62,6 +62,7 @@ The handoff ships with `<meta name="robots" content="noindex">`. Keep it in plac
 - Changelog: Updated result emails to match the site, added "How you fit with each type" to results and Email 2, added the `/quiz/start` app-store redirect. Adds two rewrite lines: re-apply the rewrite block.
 - Changelog: Share actions are now icons with captions.
 - Changelog: Teaser now shows the strengths paragraph and first line of the pattern to watch.
+- Changelog: Percent progress, Back keeps your answer, full result requires email.
 
 ## Not wired yet
 

@@ -12,13 +12,13 @@ export function recordCategory(state, category) {
 }
 
 export function recordAnswer(state, answer) {
-  state.answers.push(answer);
+  const existingIndex = state.answers.findIndex(item => item.questionId === answer.questionId);
+  if (existingIndex === -1) state.answers.push(answer);
+  else state.answers[existingIndex] = answer;
   state.questionIndex += 1;
 }
 
 export function goBack(state) {
   if (state.questionIndex === 0) return;
-  if (state.questionIndex === 1) state.category = null;
-  else state.answers.pop();
   state.questionIndex -= 1;
 }

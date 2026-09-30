@@ -13,7 +13,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     <div class="shell question-shell">
       <button class="back" type="button" data-back hidden>Back</button>
       <div class="progress"><span data-progress></span></div>
-      <p class="eyebrow" data-step-label>1 of 21</p>
+      <p class="eyebrow" data-step-label aria-label="Question 1 of 21, 5% done">5%</p>
       <div data-question></div>
     </div>
   </section>
@@ -58,7 +58,6 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       <label><span class="label-line">WhatsApp number <span>(optional)</span></span><input type="tel" name="whatsapp" autocomplete="tel" data-whatsapp-input /></label>
       <label class="consent whatsapp-consent" hidden><input type="checkbox" name="whatsappConsent" /> <span>Bestday may message me on WhatsApp about my result.</span></label>
       <button class="button" type="submit">Show my full result</button>
-      <button class="skip" type="button" data-skip>Not now, just show me</button>
       <p class="form-status" data-form-status aria-live="polite"></p>
     </form>
   </section>
@@ -143,11 +142,15 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   const renderQuestion = () => {
     const host = root.querySelector('[data-question]');
     const { questionIndex } = quizState;
+    const position = questionIndex + 1;
+    const percent = Math.round((position / 21) * 100);
     root.querySelector('[data-back]').hidden = questionIndex === 0;
-    root.querySelector('[data-step-label]').textContent = `${questionIndex + 1} of 21`;
-    root.querySelector('[data-progress]').style.width = `${((questionIndex + 1) / 21) * 100}%`;
+    root.querySelector('[data-step-label]').textContent = `${percent}%`;
+    root.querySelector('[data-step-label]').setAttribute('aria-label', `Question ${position} of 21, ${percent}% done`);
+    root.querySelector('[data-progress]').style.width = `${percent}%`;
     if (questionIndex === 0) {
       host.innerHTML = `<h2>Which goal is on your mind most right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
+      if (quizState.category) host.querySelector(`[data-category="${quizState.category}"]`)?.classList.add('selected');
       host.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
         button.classList.add('selected');
         recordCategory(quizState, button.dataset.category);
@@ -158,6 +161,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     }
     const question = questions[questionIndex - 1];
     host.innerHTML = `<h2>${question.prompt}</h2><div class="scale" role="group" aria-label="How much does this sound like you?"><span>Not me</span><div class="scale-dots">${[0, 1, 2, 3, 4].map(value => `<button class="scale-dot" data-value="${value}" aria-label="${value + 1} of 5"></button>`).join('')}</div><span>That's me</span></div>`;
+    const storedAnswer = quizState.answers.find(answer => answer.questionId === question.id);
+    if (storedAnswer) host.querySelector(`[data-value="${storedAnswer.value}"]`)?.classList.add('selected');
     host.querySelectorAll('[data-value]').forEach(button => button.addEventListener('click', () => {
       button.classList.add('selected');
       host.querySelectorAll('[data-value]').forEach(option => { option.disabled = true; });
@@ -212,11 +217,10 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   root.querySelector('[data-unlock]').onclick = () => show('capture');
   const whatsappInput = root.querySelector('[data-whatsapp-input]');
   whatsappInput.oninput = () => { root.querySelector('.whatsapp-consent').hidden = !whatsappInput.value.trim(); };
-  root.querySelector('[data-skip]').onclick = renderResult;
   root.querySelector('[data-capture-form]').onsubmit = async event => {
     event.preventDefault(); const form = new FormData(event.currentTarget); const status = root.querySelector('[data-form-status]'); status.textContent = 'Reading your answers...';
     try { await submitCapture({ firstName: String(form.get('firstName')), email: String(form.get('email')), whatsapp: String(form.get('whatsapp')), whatsappConsent: form.get('whatsappConsent') === 'on', consent: true, archetype: resultSlug, category: quizState.category, source: trackingContext() }, captureEndpoint); track('capture_submit', { archetype: resultSlug, category: quizState.category }); renderResult(); }
-    catch { status.textContent = 'Something went wrong. Your result is still here. Try again, or skip for now.'; }
+    catch { status.textContent = 'Something went wrong. Try again to see your full result.'; }
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
   root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);

@@ -37,7 +37,26 @@ test('teaser renders the approved disclosure list without an email bypass', asyn
   assert.match(teaser, /How you fit with each type/);
   assert.match(teaser, /We'll send you a copy too\./);
   assert.doesNotMatch(source, /without an email/i);
-  assert.match(source, /data-skip>Not now, just show me/);
+  assert.doesNotMatch(source, /data-skip|Not now, just show me/);
+});
+
+test('quiz progress uses rounded percentages with an accessible question count', async () => {
+  const source = await readFile('src/components/QuizApp.astro', 'utf8');
+
+  assert.match(source, /Math\.round\(\(position \/ 21\) \* 100\)/);
+  assert.match(source, /`Question \$\{position\} of 21, \$\{percent\}% done`/);
+  assert.match(source, /style\.width = `\$\{percent\}%`/);
+  assert.equal(Math.round((1 / 21) * 100), 5);
+  assert.equal(Math.round((2 / 21) * 100), 10);
+  assert.equal(Math.round((21 / 21) * 100), 100);
+});
+
+test('quiz restores stored category and scale selections after Back', async () => {
+  const source = await readFile('src/components/QuizApp.astro', 'utf8');
+
+  assert.match(source, /if \(quizState\.category\).*classList\.add\('selected'\)/);
+  assert.match(source, /quizState\.answers\.find\(answer => answer\.questionId === question\.id\)/);
+  assert.match(source, /storedAnswer\.value.*classList\.add\('selected'\)/);
 });
 
 test('teaser keeps the required flow and analytics hooks', async () => {
