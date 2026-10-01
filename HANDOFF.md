@@ -2,6 +2,8 @@
 
 > **Existing installs must add the two new `/quiz/start` rewrite lines. Replacing the `public/quiz/` folder alone is not enough.**
 
+> **When bestday.ai/quiz serves the quiz, rebuild with `PUBLIC_SITE_ORIGIN=https://bestday.ai`.** The current release uses the live Vercel origin so link previews and share links resolve today.
+
 This package is a static build of the Bestday goal-archetype quiz for the existing `kayakinwunmi/bestday-ai-landing-page` Vite project. It does not need its own Vercel project.
 
 ## Install
@@ -64,13 +66,14 @@ The handoff ships with `<meta name="robots" content="noindex">`. Keep it in plac
 - Changelog: Teaser now shows the strengths paragraph and first line of the pattern to watch.
 - Changelog: Percent progress, Back keeps your answer, full result requires email.
 - Changelog: Mixpanel on (EU, no cookies, no IP, no personal data).
+- Changelog: Link previews now use Bestday metadata, root brand icons, approved landing copy, and a new five-card preview image.
 
 ## Not wired yet
 
 - Mixpanel is enabled only when `PUBLIC_MIXPANEL_TOKEN` is set at build time. It uses the EU endpoint without cookies, local storage, IP collection, autocapture, or session recording.
 - There is no capture endpoint or Firestore integration. The capture form stores submissions in the visitor's browser only.
 - No result or follow-up emails are collected server-side or sent.
-- `PUBLIC_MIXPANEL_TOKEN`, `PUBLIC_CAPTURE_ENDPOINT`, and `PUBLIC_QUIZ_NOINDEX` are baked into the static files at build time. Adding or changing them requires a rebuild and a fresh drop-in.
+- `PUBLIC_MIXPANEL_TOKEN`, `PUBLIC_CAPTURE_ENDPOINT`, `PUBLIC_QUIZ_NOINDEX`, and `PUBLIC_SITE_ORIGIN` are baked into the static files at build time. Adding or changing them requires a rebuild and a fresh drop-in.
 
 ## Update later
 

@@ -2,7 +2,8 @@
 import '../styles/global.css';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
-const { title = 'How do you really go after a goal?', description = 'Twenty quick questions. One honest read on how you work, and who you work best with.', image = assetUrl('assets/og/default.png') } = Astro.props;
+const defaultTitle = 'Everyone in your circle goes after goals differently.';
+const { title = defaultTitle, pageTitle = `${title} | Bestday`, description = 'Find out how you do it, then see how your people fit with you.', image = assetUrl('assets/og/default.png'), imageAlt = 'Bestday goal archetypes fanned beside the words Everyone in your circle goes after goals differently.' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const fontMediumUrl = assetUrl('assets/fonts/Urbanist-Medium.ttf');
@@ -17,20 +18,27 @@ const noindex = import.meta.env.PUBLIC_QUIZ_NOINDEX !== 'false';
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
-    <link rel="icon" type="image/png" href={assetUrl('favicon.png')} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bestday" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
-    <title>{title} | Bestday</title>
+    <meta name="twitter:image:alt" content={imageAlt} />
+    <title>{pageTitle}</title>
     <style is:inline set:html={fontFaces}></style>
   </head>
   <body><slot /></body>

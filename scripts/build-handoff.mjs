@@ -22,6 +22,7 @@ await run('npm', ['run', 'build'], {
     QUIZ_BASE_PATH: '/quiz',
     PUBLIC_QUIZ_NOINDEX: noindex,
     PUBLIC_MIXPANEL_TOKEN: process.env.PUBLIC_MIXPANEL_TOKEN ?? '',
+    PUBLIC_SITE_ORIGIN: process.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai',
   },
 });
 

@@ -8,11 +8,13 @@ const result = archetypes[type];
 const isResult = email.slug === 'result';
 const isPeople = email.slug === 'people';
 const typePairings = pairingsFor(type);
-const logoUrl = 'https://bestday.ai/quiz/assets/logos/wordmark-white.png';
-const cardUrl = `https://bestday.ai/quiz/assets/cards/${type}.png`;
+const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
+const quizOrigin = new URL(base.replace(/^\//, ''), `${siteOrigin}/`).toString();
+const logoUrl = new URL('assets/logos/wordmark-white.png', quizOrigin).toString();
+const cardUrl = new URL(`assets/cards/${type}.png`, quizOrigin).toString();
 const ctaUrl = email.slug === 'people'
-  ? `https://bestday.ai/quiz/r/${type}?ref=${type}`
-  : `https://bestday.ai/quiz/start?ref=email&type=${type}`;
+  ? new URL(`r/${type}?ref=${type}`, quizOrigin).toString()
+  : new URL(`start?ref=email&type=${type}`, quizOrigin).toString();
 ---
 <!doctype html>
 <html lang="en">

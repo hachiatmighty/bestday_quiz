@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const emailSlugs = ['result', 'people', 'quiet', 'one-goal'];
 const archetypeSlugs = ['sprinter', 'planner', 'anchor', 'explorer', 'finisher'];
+const siteOrigin = process.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
 
 test('built email previews use real links and sentence-case styling', async () => {
   for (const archetype of archetypeSlugs) {
@@ -30,17 +31,17 @@ test('email preheaders stay hidden and the people email uses a compact list', as
 
 test('result email includes the card, headings, and email redirect URL', async () => {
   const html = await readFile(path.resolve('dist', 'email', 'anchor', 'result', 'index.html'), 'utf8');
-  assert.match(html, /https:\/\/bestday\.ai\/quiz\/assets\/cards\/anchor\.png/);
+  assert.ok(html.includes(`${siteOrigin}/quiz/assets/cards/anchor.png`));
   assert.match(html, /Your Bestday card: The Anchor/);
   assert.match(html, /Your strengths/);
   assert.match(html, /The pattern to watch/);
   assert.match(html, /What you need/);
-  assert.match(html, /https:\/\/bestday\.ai\/quiz\/start\?ref=email&amp;type=anchor/);
+  assert.ok(html.includes(`${siteOrigin}/quiz/start?ref=email&amp;type=anchor`));
 });
 
 test('people email links to the sender-specific referral route', async () => {
   const html = await readFile(path.resolve('dist', 'email', 'anchor', 'people', 'index.html'), 'utf8');
-  assert.match(html, /https:\/\/bestday\.ai\/quiz\/r\/anchor\?ref=anchor/);
+  assert.ok(html.includes(`${siteOrigin}/quiz/r/anchor?ref=anchor`));
 });
 
 test('every people email shows all five pairings including another of its own type', async () => {

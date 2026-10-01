@@ -10,6 +10,7 @@ const asset = (...parts) => path.join(root, 'public', 'assets', ...parts);
 const fontMedium = (await readFile(asset('fonts', 'Urbanist-Medium.ttf'))).toString('base64');
 const fontBold = (await readFile(asset('fonts', 'Urbanist-ExtraBold.ttf'))).toString('base64');
 const wordmarkWhite = (await readFile(asset('logos', 'wordmark-white.png'))).toString('base64');
+const wordmarkBlack = (await readFile(asset('logos', 'wordmark-black.png'))).toString('base64');
 
 const cards = {
   sprinter: ['The Sprinter', 'I bring the momentum. My circle keeps it going.'],
@@ -75,10 +76,24 @@ for (const [slug, [name, cardLine]] of Object.entries(cards)) {
   await render(story, 1080, 1920, asset('cards', `${slug}.png`));
 }
 
-const defaultOg = `<article id="card" style="background:#0D0D0D;color:#FFFCEF;padding:65px 80px">
-  <img src="data:image/png;base64,${wordmarkWhite}" style="width:155px;height:50px;object-fit:contain;object-position:left center">
-  <div style="font-size:78px;line-height:1.15;font-weight:800;margin-top:125px">How do you really<br>go after a goal?</div>
-  <div style="display:grid;place-items:center;width:285px;height:78px;border-radius:999px;background:#FFDE59;color:#0D0D0D;font-size:30px;font-weight:800;margin-top:75px">Find my type</div>
+const fanCards = await Promise.all(Object.keys(cards).map(async (slug, index) => {
+  const illustration = await dataUri('archetypes', `${slug}.png`);
+  const positions = [
+    'left:708px;top:178px;transform:rotate(-12deg)',
+    'left:798px;top:128px;transform:rotate(-6deg)',
+    'left:890px;top:102px',
+    'left:982px;top:128px;transform:rotate(6deg)',
+    'left:1072px;top:178px;transform:rotate(12deg)',
+  ];
+  return `<div style="position:absolute;${positions[index]};width:164px;height:286px;padding:9px;border:2px solid #34342f;border-radius:14px;background:#0D0D0D;color:#FFFCEF;overflow:hidden;transform-origin:center center">
+    <img src="${illustration}" style="width:100%;height:220px;object-fit:contain">
+    <strong style="display:block;color:#FFDE59;font-size:17px;line-height:1.1;white-space:nowrap">${cards[slug][0]}</strong>
+  </div>`;
+}));
+const defaultOg = `<article id="card" style="background:#FFDE59;color:#0D0D0D;padding:52px 60px">
+  <img src="data:image/png;base64,${wordmarkBlack}" style="width:142px;height:45px;object-fit:contain;object-position:left center">
+  <div style="width:650px;font-size:62px;line-height:.98;font-weight:800;letter-spacing:-2.5px;margin-top:82px">Everyone in your circle goes after goals differently.</div>
+  ${fanCards.join('')}
 </article>`;
 await render(defaultOg, 1200, 630, asset('og', 'default.png'));
 
