@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { access, mkdir, readFile, readdir, rm } from 'node:fs/promises';
+import { access, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 
@@ -15,6 +15,8 @@ const run = (command, args, options = {}) => exec(command, args, {
 });
 
 const noindex = process.env.PUBLIC_QUIZ_NOINDEX ?? 'true';
+const buildOrigin = 'https://quiz-origin.invalid';
+const originPlaceholder = 'https://__QUIZ_ORIGIN__';
 
 await run('npm', ['run', 'build'], {
   env: {
@@ -22,16 +24,38 @@ await run('npm', ['run', 'build'], {
     QUIZ_BASE_PATH: '/quiz',
     PUBLIC_QUIZ_NOINDEX: noindex,
     PUBLIC_MIXPANEL_TOKEN: process.env.PUBLIC_MIXPANEL_TOKEN ?? '',
-    PUBLIC_SITE_ORIGIN: process.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai',
+    PUBLIC_SITE_ORIGIN: buildOrigin,
   },
 });
 
 await rm(path.join(dist, 'email'), { recursive: true, force: true });
 await rm(path.join(dist, 'assets', 'review'), { recursive: true, force: true });
 
+const rewriteExtensions = new Set(['.html', '.js', '.json']);
+const rewrittenFiles = [];
+const rewriteBuildOrigin = async directory => {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const target = path.join(directory, entry.name);
+    if (entry.isDirectory()) await rewriteBuildOrigin(target);
+    else if (rewriteExtensions.has(path.extname(entry.name))) {
+      const source = await readFile(target, 'utf8');
+      await writeFile(target, source.replaceAll(buildOrigin, originPlaceholder));
+      rewrittenFiles.push(target);
+    }
+  }
+};
+await rewriteBuildOrigin(dist);
+
 await access(path.join(dist, 'index.html'));
 await access(path.join(dist, 'r', 'anchor', 'index.html'));
 const home = await readFile(path.join(dist, 'index.html'), 'utf8');
+if (!home.includes(originPlaceholder)) throw new Error('handoff build is missing the origin placeholder');
+if (home.includes(buildOrigin)) throw new Error('handoff build still contains the temporary build origin');
+for (const file of rewrittenFiles) {
+  const source = await readFile(file, 'utf8');
+  if (source.includes(buildOrigin)) throw new Error(`${path.relative(dist, file)} still contains the temporary build origin`);
+  if (source.includes('https://bestday.ai') || source.includes('https://bestdayai.vercel.app')) throw new Error(`${path.relative(dist, file)} contains a hard-coded quiz origin`);
+}
 const hasNoindex = home.includes('<meta name="robots" content="noindex">');
 if (noindex !== 'false' && !hasNoindex) throw new Error('handoff build is missing the default noindex meta tag');
 if (noindex === 'false' && hasNoindex) throw new Error('launch handoff still contains the noindex meta tag');

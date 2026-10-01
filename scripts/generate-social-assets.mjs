@@ -79,15 +79,15 @@ for (const [slug, [name, cardLine]] of Object.entries(cards)) {
 const fanCards = await Promise.all(Object.keys(cards).map(async (slug, index) => {
   const illustration = await dataUri('archetypes', `${slug}.png`);
   const positions = [
-    'left:708px;top:178px;transform:rotate(-12deg)',
-    'left:798px;top:128px;transform:rotate(-6deg)',
-    'left:890px;top:102px',
-    'left:982px;top:128px;transform:rotate(6deg)',
-    'left:1072px;top:178px;transform:rotate(12deg)',
+    'left:670px;top:182px;transform:rotate(-10deg)',
+    'left:772px;top:138px;transform:rotate(-5deg)',
+    'left:874px;top:116px',
+    'left:976px;top:138px;transform:rotate(5deg)',
+    'left:1078px;top:182px;transform:rotate(10deg)',
   ];
-  return `<div style="position:absolute;${positions[index]};width:164px;height:286px;padding:9px;border:2px solid #34342f;border-radius:14px;background:#0D0D0D;color:#FFFCEF;overflow:hidden;transform-origin:center center">
-    <img src="${illustration}" style="width:100%;height:220px;object-fit:contain">
-    <strong style="display:block;color:#FFDE59;font-size:17px;line-height:1.1;white-space:nowrap">${cards[slug][0]}</strong>
+  return `<div style="position:absolute;${positions[index]};width:122px;height:252px;padding:7px;border:2px solid #34342f;border-radius:12px;background:#0D0D0D;color:#FFFCEF;overflow:hidden;transform-origin:center center">
+    <img src="${illustration}" style="width:100%;height:198px;object-fit:contain">
+    <strong style="display:block;color:#FFDE59;font-size:12px;line-height:1.1;white-space:nowrap">${cards[slug][0]}</strong>
   </div>`;
 }));
 const defaultOg = `<article id="card" style="background:#FFDE59;color:#0D0D0D;padding:52px 60px">

@@ -2,8 +2,6 @@
 
 > **Existing installs must add the two new `/quiz/start` rewrite lines. Replacing the `public/quiz/` folder alone is not enough.**
 
-> **When bestday.ai/quiz serves the quiz, rebuild with `PUBLIC_SITE_ORIGIN=https://bestday.ai`.** The current release uses the live Vercel origin so link previews and share links resolve today.
-
 This package is a static build of the Bestday goal-archetype quiz for the existing `kayakinwunmi/bestday-ai-landing-page` Vite project. It does not need its own Vercel project.
 
 ## Install
@@ -21,6 +19,20 @@ This package is a static build of the Bestday goal-archetype quiz for the existi
 { "source": "/quiz/r/:slug", "destination": "/quiz/r/:slug/index.html" },
 { "source": "/quiz/r/:slug/", "destination": "/quiz/r/:slug/index.html" },
 ```
+
+## One-time automatic origin setup
+
+1. Download `set-quiz-origin.mjs` from the same GitHub Release and place it at `scripts/set-quiz-origin.mjs` in the landing-page repository. Keep it outside `public/quiz/`.
+2. Change the landing project's build command to `vite build && node scripts/set-quiz-origin.mjs`, or append `&& node scripts/set-quiz-origin.mjs` to its equivalent existing build command.
+3. In Vercel, keep **Automatically expose System Environment Variables** enabled. It is on by default.
+
+The quiz handoff contains `https://__QUIZ_ORIGIN__` placeholders. After every landing-page build, the script rewrites all `.html`, `.js`, and `.json` files under `dist/quiz/`:
+
+- Production uses `VERCEL_PROJECT_PRODUCTION_URL`.
+- Preview uses `VERCEL_BRANCH_URL`, falling back to `VERCEL_URL`.
+- Local builds and missing Vercel variables fall back to `bestday.ai`.
+
+The script prints the selected origin and fails the build if any placeholder remains. Once `bestday.ai` is attached as the project's production domain, production deploys switch automatically with no quiz rebuild.
 
 Files under `/quiz/assets/` are served directly. The handoff archive intentionally excludes the internal `/email` previews and `/assets/review/` images.
 
@@ -67,13 +79,14 @@ The handoff ships with `<meta name="robots" content="noindex">`. Keep it in plac
 - Changelog: Percent progress, Back keeps your answer, full result requires email.
 - Changelog: Mixpanel on (EU, no cookies, no IP, no personal data).
 - Changelog: Link previews now use Bestday metadata, root brand icons, approved landing copy, and a new five-card preview image.
+- Changelog: Deploys now set the quiz origin automatically from Vercel system environment variables.
 
 ## Not wired yet
 
 - Mixpanel is enabled only when `PUBLIC_MIXPANEL_TOKEN` is set at build time. It uses the EU endpoint without cookies, local storage, IP collection, autocapture, or session recording.
 - There is no capture endpoint or Firestore integration. The capture form stores submissions in the visitor's browser only.
 - No result or follow-up emails are collected server-side or sent.
-- `PUBLIC_MIXPANEL_TOKEN`, `PUBLIC_CAPTURE_ENDPOINT`, `PUBLIC_QUIZ_NOINDEX`, and `PUBLIC_SITE_ORIGIN` are baked into the static files at build time. Adding or changing them requires a rebuild and a fresh drop-in.
+- `PUBLIC_MIXPANEL_TOKEN`, `PUBLIC_CAPTURE_ENDPOINT`, and `PUBLIC_QUIZ_NOINDEX` are baked into the static files at build time. Adding or changing them requires a rebuild and a fresh drop-in.
 
 ## Update later
 

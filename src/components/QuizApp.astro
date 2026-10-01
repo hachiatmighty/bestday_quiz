@@ -4,9 +4,10 @@ import ShareActions from './ShareActions.astro';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const publicQuizUrl = new URL(base, Astro.site).toString();
+const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
 const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 ---
-<main class="quiz" data-quiz-root data-base-url={base} data-public-url={publicQuizUrl}>
+<main class="quiz" data-quiz-root data-base-url={base} data-public-url={publicQuizUrl} data-site-origin={siteOrigin}>
   <section class="screen landing active" data-screen="landing"><LandingPage /></section>
 
   <section class="screen" data-screen="quiz">
@@ -54,7 +55,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     <form class="shell capture card" data-capture-form>
       <label>First name<input name="firstName" autocomplete="given-name" required /></label>
       <label>Email<input type="email" name="email" autocomplete="email" required /></label>
-      <p class="consent-copy">We'll email you your result and a few short notes over the next week. Unsubscribe any time. <a href="https://bestday.ai/privacy">Privacy</a></p>
+      <p class="consent-copy">We'll email you your result and a few short notes over the next week. Unsubscribe any time. <a href={`${siteOrigin}/privacy`}>Privacy</a></p>
       <label><span class="label-line">WhatsApp number <span>(optional)</span></span><input type="tel" name="whatsapp" autocomplete="tel" data-whatsapp-input /></label>
       <label class="consent whatsapp-consent" hidden><input type="checkbox" name="whatsappConsent" /> <span>Bestday may message me on WhatsApp about my result.</span></label>
       <button class="button" type="submit">Show my full result</button>
@@ -70,7 +71,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
         <span class="card-url">{cardFooter}</span>
       </article>
-      <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href="https://bestday.ai" data-signup>Invite them onto your goal</a></article>
+      <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={siteOrigin} data-signup>Invite them onto your goal</a></article>
       <article class="result-copy">
         <p class="identity" data-result-identity></p>
         <p class="even-note" data-even-note hidden>Your answers were very even, so this one was close. <a href={base}>Try again</a> with your first instinct?</p>
@@ -94,7 +95,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     <div class="shell centered offer">
       <h2>Put a circle around one goal.</h2>
       <p>On Bestday you choose one goal and invite two or three people you respect onto it. They're on it with you, and an AI companion is there for the thinking in between. No one achieves alone.</p>
-      <a class="button" href="https://bestday.ai" data-signup>Start your circle</a>
+      <a class="button" href={siteOrigin} data-signup>Start your circle</a>
       <p class="note">7 days free, then Premium is $99 a year.</p>
     </div>
   </section>
@@ -115,6 +116,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   const root = document.querySelector('[data-quiz-root]');
   const baseUrl = root.dataset.baseUrl;
   const publicQuizUrl = root.dataset.publicUrl;
+  const siteOrigin = root.dataset.siteOrigin;
   const screens = [...root.querySelectorAll('[data-screen]')];
   const params = new URLSearchParams(location.search);
   const sender = Object.hasOwn(archetypes, params.get('ref')) ? params.get('ref') : null;
@@ -224,7 +226,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
   root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);
-  const signup = signupDestination(navigator.userAgent);
+  const signup = signupDestination(navigator.userAgent, siteOrigin);
   root.querySelectorAll('[data-signup]').forEach(link => {
     link.href = signup.url;
     link.onclick = () => track('signup_click', { archetype: resultSlug, category: quizState.category, platform: signup.platform });

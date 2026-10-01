@@ -1,3 +1,6 @@
+---
+const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
+---
 <!doctype html>
 <html lang="en">
   <head>
@@ -10,7 +13,7 @@
     <main style="min-height:100svh;display:grid;place-items:center;padding:24px;text-align:center">
       <div>
         <p>Opening Bestday...</p>
-        <a data-fallback href="https://bestday.ai" style="color:#FFDE59">Continue to Bestday</a>
+        <a data-fallback href={siteOrigin} data-site-origin={siteOrigin} style="color:#FFDE59">Continue to Bestday</a>
       </div>
     </main>
     <script>
@@ -21,8 +24,8 @@
 
       const params = new URLSearchParams(location.search);
       const type = Object.hasOwn(archetypes, params.get('type')) ? params.get('type') : null;
-      const destination = signupDestination(navigator.userAgent);
       const fallback = document.querySelector('[data-fallback]');
+      const destination = signupDestination(navigator.userAgent, fallback.dataset.siteOrigin);
       fallback.href = destination.url;
       initAnalytics(import.meta.env.PUBLIC_MIXPANEL_TOKEN);
       track('signup_click', { source: 'email', archetype: type, platform: destination.platform });
