@@ -62,6 +62,14 @@ test('quiz includes the approved intro step and analytics', async () => {
   assert.match(source, /track\('intro_start', \{ category: quizState\.category \}\)/);
 });
 
+test('built CSS keeps injected intro styles global', async () => {
+  const html = await readFile('dist/index.html', 'utf8');
+
+  assert.match(html, /\.intro-copy\{[^}]*max-width:620px/);
+  assert.match(html, /\.intro-copy p\{margin:0 0 16px/);
+  assert.doesNotMatch(html, /\.intro-copy\[data-astro-cid-/);
+});
+
 test('quiz restores stored category and scale selections after Back', async () => {
   const source = await readFile('src/components/QuizApp.astro', 'utf8');
 
