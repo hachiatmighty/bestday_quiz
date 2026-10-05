@@ -162,7 +162,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       return;
     }
     if (questionIndex === 1) {
-      host.innerHTML = `<h2>Before you start</h2><div class="intro-copy"><p>This quiz shows you your goal archetype. It takes about 3 minutes.</p><p>For each statement, say how much it sounds like you, from &quot;Not me&quot; to &quot;That's me&quot;. Answer for how you are, not how you'd like to be.</p></div><button class="button" data-intro-start>Start quiz</button>`;
+      host.innerHTML = `<h2>Before you start</h2><div class="intro-copy"><p>This quiz shows you your goal archetype. It takes about 3 minutes.</p><p>For each statement, say how much it sounds like you, from “Not me” to “That’s me”. Answer for how you are, not how you’d like to be.</p></div><button class="button" data-intro-start>Start quiz</button>`;
       track('intro_view', { category: quizState.category });
       host.querySelector('[data-intro-start]').onclick = () => {
         track('intro_start', { category: quizState.category });
@@ -281,4 +281,5 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 :global(.share-action:focus-visible){outline:3px solid var(--yellow);outline-offset:4px;border-radius:8px}
 .teaser-details{padding-top:14px}.teaser-details h3{margin:0 0 8px}.teaser-details h3:not(:first-child){margin-top:24px}.teaser-details p{margin-bottom:0}.teaser-more{padding-top:18px}.teaser-more h2{font-size:1.65rem}.teaser-more ul{margin:0 0 22px;padding-left:1.25rem;color:#d1cec2;line-height:1.75}.teaser-more .button{margin-top:0}.teaser-access{color:#a9a69d!important}
 .intro-copy{max-width:620px;margin-bottom:28px;color:#d1cec2;line-height:1.6}.intro-copy p{margin:0 0 16px}
+@media(min-width:720px){.intro-copy{font-size:1.15rem;line-height:1.5}}
 </style>
