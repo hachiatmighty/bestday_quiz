@@ -1,7 +1,7 @@
 import mixpanel from 'mixpanel-browser/src/loaders/loader-module-core';
 
 export const eventNames = [
-  'landing_view', 'quiz_start', 'question_answered', 'quiz_complete',
+  'landing_view', 'quiz_start', 'intro_view', 'intro_start', 'question_answered', 'quiz_complete',
   'teaser_view', 'capture_submit', 'result_view', 'share_click',
   'card_download', 'referral_landing', 'signup_click',
 ] as const;

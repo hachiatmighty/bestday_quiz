@@ -13,8 +13,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   <section class="screen" data-screen="quiz">
     <div class="shell question-shell">
       <button class="back" type="button" data-back hidden>Back</button>
-      <div class="progress"><span data-progress></span></div>
-      <p class="eyebrow" data-step-label aria-label="Question 1 of 21, 5% done">5%</p>
+      <div class="progress" data-progress-shell hidden><span data-progress></span></div>
+      <p class="eyebrow" data-step-label hidden></p>
       <div data-question></div>
     </div>
   </section>
@@ -108,7 +108,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   import { signupDestination } from '../lib/signup';
   import { isVeryEven, scoreQuizWithDetails } from '../lib/scoring.mjs';
   import { firstSentence } from '../lib/teaser.mjs';
-  import { createQuizState, goBack, recordAnswer, recordCategory } from '../lib/quiz-state.mjs';
+  import { createQuizState, goBack, recordAnswer, recordCategory, startQuiz } from '../lib/quiz-state.mjs';
   import { archetypes, categories, pairingFor, pairingsFor, questions } from '../data/quiz';
   const mixpanelToken = import.meta.env.PUBLIC_MIXPANEL_TOKEN;
   const captureEndpoint = import.meta.env.PUBLIC_CAPTURE_ENDPOINT;
@@ -144,12 +144,12 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   const renderQuestion = () => {
     const host = root.querySelector('[data-question]');
     const { questionIndex } = quizState;
-    const position = questionIndex + 1;
-    const percent = Math.round((position / 21) * 100);
     root.querySelector('[data-back]').hidden = questionIndex === 0;
-    root.querySelector('[data-step-label]').textContent = `${percent}%`;
-    root.querySelector('[data-step-label]').setAttribute('aria-label', `Question ${position} of 21, ${percent}% done`);
-    root.querySelector('[data-progress]').style.width = `${percent}%`;
+    const progressShell = root.querySelector('[data-progress-shell]');
+    const stepLabel = root.querySelector('[data-step-label]');
+    const showProgress = questionIndex >= 2;
+    progressShell.hidden = !showProgress;
+    stepLabel.hidden = !showProgress;
     if (questionIndex === 0) {
       host.innerHTML = `<h2>Which goal is on your mind most right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
       if (quizState.category) host.querySelector(`[data-category="${quizState.category}"]`)?.classList.add('selected');
@@ -161,7 +161,22 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       }));
       return;
     }
-    const question = questions[questionIndex - 1];
+    if (questionIndex === 1) {
+      host.innerHTML = `<h2>Before you start</h2><div class="intro-copy"><p>This quiz shows you your goal archetype. It takes about 3 minutes.</p><p>For each statement, say how much it sounds like you, from &quot;Not me&quot; to &quot;That's me&quot;. Answer for how you are, not how you'd like to be.</p></div><button class="button" data-intro-start>Start quiz</button>`;
+      track('intro_view', { category: quizState.category });
+      host.querySelector('[data-intro-start]').onclick = () => {
+        track('intro_start', { category: quizState.category });
+        startQuiz(quizState);
+        renderQuestion();
+      };
+      return;
+    }
+    const position = questionIndex - 1;
+    const percent = Math.round((position / 20) * 100);
+    stepLabel.textContent = `${percent}%`;
+    stepLabel.setAttribute('aria-label', `Statement ${position} of 20, ${percent}% done`);
+    root.querySelector('[data-progress]').style.width = `${percent}%`;
+    const question = questions[questionIndex - 2];
     host.innerHTML = `<h2>${question.prompt}</h2><div class="scale" role="group" aria-label="How much does this sound like you?"><span>Not me</span><div class="scale-dots">${[0, 1, 2, 3, 4].map(value => `<button class="scale-dot" data-value="${value}" aria-label="${value + 1} of 5"></button>`).join('')}</div><span>That's me</span></div>`;
     const storedAnswer = quizState.answers.find(answer => answer.questionId === question.id);
     if (storedAnswer) host.querySelector(`[data-value="${storedAnswer.value}"]`)?.classList.add('selected');
@@ -170,7 +185,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       host.querySelectorAll('[data-value]').forEach(option => { option.disabled = true; });
       recordAnswer(quizState, { questionId: question.id, value: Number(button.dataset.value) });
       track('question_answered', { index: question.id, value: Number(button.dataset.value) });
-      setTimeout(() => { if (quizState.questionIndex === 21) finishQuiz(); else renderQuestion(); }, 120);
+      setTimeout(() => { if (quizState.questionIndex === 22) finishQuiz(); else renderQuestion(); }, 120);
     }));
   };
   const finishQuiz = () => {
@@ -265,4 +280,5 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 :global(.whatsapp .action-icon svg){fill:currentColor;stroke:none}
 :global(.share-action:focus-visible){outline:3px solid var(--yellow);outline-offset:4px;border-radius:8px}
 .teaser-details{padding-top:14px}.teaser-details h3{margin:0 0 8px}.teaser-details h3:not(:first-child){margin-top:24px}.teaser-details p{margin-bottom:0}.teaser-more{padding-top:18px}.teaser-more h2{font-size:1.65rem}.teaser-more ul{margin:0 0 22px;padding-left:1.25rem;color:#d1cec2;line-height:1.75}.teaser-more .button{margin-top:0}.teaser-access{color:#a9a69d!important}
+.intro-copy{max-width:620px;margin-bottom:28px;color:#d1cec2;line-height:1.6}.intro-copy p{margin:0 0 16px}
 </style>

@@ -40,15 +40,26 @@ test('teaser renders the approved disclosure list without an email bypass', asyn
   assert.doesNotMatch(source, /data-skip|Not now, just show me/);
 });
 
-test('quiz progress uses rounded percentages with an accessible question count', async () => {
+test('quiz progress covers only the 20 statements', async () => {
   const source = await readFile('src/components/QuizApp.astro', 'utf8');
 
-  assert.match(source, /Math\.round\(\(position \/ 21\) \* 100\)/);
-  assert.match(source, /`Question \$\{position\} of 21, \$\{percent\}% done`/);
+  assert.match(source, /Math\.round\(\(position \/ 20\) \* 100\)/);
+  assert.match(source, /`Statement \$\{position\} of 20, \$\{percent\}% done`/);
   assert.match(source, /style\.width = `\$\{percent\}%`/);
-  assert.equal(Math.round((1 / 21) * 100), 5);
-  assert.equal(Math.round((2 / 21) * 100), 10);
-  assert.equal(Math.round((21 / 21) * 100), 100);
+  assert.match(source, /const showProgress = questionIndex >= 2/);
+  assert.equal(Math.round((1 / 20) * 100), 5);
+  assert.equal(Math.round((20 / 20) * 100), 100);
+});
+
+test('quiz includes the approved intro step and analytics', async () => {
+  const source = await readFile('src/components/QuizApp.astro', 'utf8');
+
+  assert.match(source, /<h2>Before you start<\/h2>/);
+  assert.match(source, /This quiz shows you your goal archetype\. It takes about 3 minutes\./);
+  assert.match(source, /For each statement, say how much it sounds like you/);
+  assert.match(source, />Start quiz<\/button>/);
+  assert.match(source, /track\('intro_view', \{ category: quizState\.category \}\)/);
+  assert.match(source, /track\('intro_start', \{ category: quizState\.category \}\)/);
 });
 
 test('quiz restores stored category and scale selections after Back', async () => {

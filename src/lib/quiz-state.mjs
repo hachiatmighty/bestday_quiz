@@ -11,6 +11,10 @@ export function recordCategory(state, category) {
   state.questionIndex = 1;
 }
 
+export function startQuiz(state) {
+  if (state.questionIndex === 1) state.questionIndex = 2;
+}
+
 export function recordAnswer(state, answer) {
   const existingIndex = state.answers.findIndex(item => item.questionId === answer.questionId);
   if (existingIndex === -1) state.answers.push(answer);

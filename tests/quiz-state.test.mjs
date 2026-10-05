@@ -1,25 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createQuizState, goBack, recordAnswer, recordCategory } from '../src/lib/quiz-state.mjs';
+import { createQuizState, goBack, recordAnswer, recordCategory, startQuiz } from '../src/lib/quiz-state.mjs';
 import { scoreQuiz } from '../src/lib/scoring.mjs';
 
 test('going back preserves answers and replaces a changed answer without double-counting it', () => {
   const state = createQuizState();
   recordCategory(state, 'work');
+  startQuiz(state);
   for (let questionId = 2; questionId <= 6; questionId += 1) recordAnswer(state, { questionId, value: 0 });
 
   goBack(state);
   goBack(state);
   goBack(state);
 
-  assert.equal(state.questionIndex, 3);
+  assert.equal(state.questionIndex, 4);
   assert.deepEqual(state.answers.map(answer => answer.value), [0, 0, 0, 0, 0]);
 
   recordAnswer(state, { questionId: 4, value: 4 });
   recordAnswer(state, { questionId: 5, value: 0 });
   recordAnswer(state, { questionId: 6, value: 0 });
 
-  assert.equal(state.questionIndex, 6);
+  assert.equal(state.questionIndex, 7);
   assert.equal(state.answers.length, 5);
   assert.equal(state.answers.find(answer => answer.questionId === 4).value, 4);
 
@@ -34,4 +35,26 @@ test('going back to the category keeps the stored selection', () => {
 
   assert.equal(state.questionIndex, 0);
   assert.equal(state.category, 'health');
+});
+
+test('goal, intro, and first statement navigation preserves category and answers', () => {
+  const state = createQuizState();
+  recordCategory(state, 'health');
+
+  assert.equal(state.questionIndex, 1);
+  startQuiz(state);
+  assert.equal(state.questionIndex, 2);
+
+  recordAnswer(state, { questionId: 2, value: 4 });
+  goBack(state);
+  assert.equal(state.questionIndex, 2);
+  assert.deepEqual(state.answers, [{ questionId: 2, value: 4 }]);
+
+  goBack(state);
+  assert.equal(state.questionIndex, 1);
+  assert.equal(state.category, 'health');
+
+  startQuiz(state);
+  assert.equal(state.questionIndex, 2);
+  assert.deepEqual(state.answers, [{ questionId: 2, value: 4 }]);
 });
