@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createQuizState, goBack, recordAnswer, recordCategory, startQuiz } from '../src/lib/quiz-state.mjs';
+import { createQuizState, goBack, questionIndexForStep, recordAnswer, recordCategory, startQuiz, stepCount, stepFor } from '../src/lib/quiz-state.mjs';
 import { scoreQuiz } from '../src/lib/scoring.mjs';
 
 test('going back preserves answers and replaces a changed answer without double-counting it', () => {
@@ -57,4 +57,15 @@ test('goal, intro, and first statement navigation preserves category and answers
   startQuiz(state);
   assert.equal(state.questionIndex, 2);
   assert.deepEqual(state.answers, [{ questionId: 2, value: 4 }]);
+});
+
+test('each quiz screen has its own step key, and keys map back to the same screen', () => {
+  assert.deepEqual(stepFor(0), { number: 1, key: 'goal', statement: null });
+  assert.deepEqual(stepFor(1), { number: 2, key: 'intro', statement: null });
+  assert.deepEqual(stepFor(2), { number: 3, key: 'statement-1', statement: 1 });
+  assert.deepEqual(stepFor(21), { number: stepCount, key: 'statement-20', statement: 20 });
+  for (let questionIndex = 0; questionIndex < stepCount; questionIndex += 1) {
+    assert.equal(questionIndexForStep(stepFor(questionIndex).key), questionIndex);
+  }
+  for (const key of [null, '', 'statement-0', 'statement-21', 'result']) assert.equal(questionIndexForStep(key), null);
 });

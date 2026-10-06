@@ -41,10 +41,13 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       <div class="teaser-copy teaser-more">
         <h2>There's more in your full read</h2>
         <ul>
-          <li>Your strengths and how others see you</li>
-          <li>What you need and who you work best with</li>
+          <li>Your strengths</li>
+          <li>How others see you</li>
+          <li>What you need</li>
+          <li>Who you work best with</li>
           <li>How you fit with each type</li>
-          <li>A question to sit with, and your first step</li>
+          <li>A question to sit with</li>
+          <li data-teaser-first-step-item>Your first step</li>
         </ul>
         <button class="button" data-unlock>Show my full result</button>
         <p class="teaser-access">We'll send you a copy too.</p>
@@ -86,10 +89,10 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
           <h3>How you fit with each type</h3>
           <div data-fit-rows></div>
         </section>
-        <section class="reflection">
-          <h3>A question to sit with</h3><p data-result-question></p>
+        <h3>A question to sit with</h3><p data-result-question></p>
+        <section data-result-first-step-section>
+          <h3>Your first step</h3><p data-result-first-step></p>
         </section>
-        <h3>Your first step</h3><p data-result-first-step></p>
       </article>
       <article class="share card">
         <h3>Who would tell you the truth about this? Send it to them.</h3>
@@ -104,7 +107,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       <h2>Put a circle around one goal.</h2>
       <p>On Bestday you choose one goal and invite two or three people you respect onto it. They're on it with you, and an AI companion is there for the thinking in between. No one achieves alone.</p>
       <a class="button" href={siteOrigin} data-signup>Start your circle</a>
-      <p class="note">7 days free, then Premium is $99 a year.</p>
+      <p class="note">Premium is $99 a year. Your people join free.</p>
     </div>
   </section>
 </main>
@@ -115,7 +118,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   import { submitCapture } from '../lib/capture';
   import { signupDestination } from '../lib/signup';
   import { isVeryEven, scoreQuizWithDetails } from '../lib/scoring.mjs';
-  import { createQuizState, goBack, recordAnswer, recordCategory, startQuiz } from '../lib/quiz-state.mjs';
+  import { createQuizState, goBack, questionIndexForStep, recordAnswer, recordCategory, startQuiz, stepCount, stepFor } from '../lib/quiz-state.mjs';
   import { archetypes, categories, pairingFor, pairingsFor, questions } from '../data/quiz';
   const mixpanelToken = import.meta.env.PUBLIC_MIXPANEL_TOKEN;
   const captureEndpoint = import.meta.env.PUBLIC_CAPTURE_ENDPOINT;
@@ -148,7 +151,15 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       else await navigator.clipboard.writeText(message);
     };
   };
-  const renderQuestion = () => {
+  const trackStep = ({ fromHistory = false } = {}) => {
+    const step = stepFor(quizState.questionIndex);
+    const url = new URL(location.href);
+    url.searchParams.set('step', step.key);
+    if (!fromHistory && url.href !== location.href) history.pushState({ step: step.key }, '', url);
+    track('step_view', { step: step.number, step_key: step.key, statement: step.statement, step_count: stepCount, category: quizState.category });
+  };
+  const renderQuestion = ({ fromHistory = false } = {}) => {
+    trackStep({ fromHistory });
     const host = root.querySelector('[data-question]');
     const { questionIndex } = quizState;
     root.querySelector('[data-back]').hidden = questionIndex === 0;
@@ -206,6 +217,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-teaser-icon]').src = `${baseUrl}assets/archetypes/${resultSlug}.png`;
     root.querySelector('[data-teaser-at-best]').textContent = result.atBest;
     root.querySelector('[data-teaser-pattern]').textContent = result.tendency;
+    root.querySelector('[data-teaser-first-step-item]').hidden = !result.firstStep;
     configureSharing('');
     track('quiz_complete', { archetype: resultSlug, category: quizState.category });
     setTimeout(() => { track('teaser_view', { archetype: resultSlug, category: quizState.category }); show('teaser'); }, 450);
@@ -225,6 +237,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-result-works-best-with]').textContent = result.worksBestWith;
     root.querySelector('[data-result-question]').textContent = result.question;
     root.querySelector('[data-result-first-step]').textContent = result.firstStep;
+    root.querySelector('[data-result-first-step-section]').hidden = !result.firstStep;
     root.querySelector('[data-fit-rows]').innerHTML = pairingsFor(resultSlug).map(pairing => `
       <div class="fit-row">
         <img src="${baseUrl}assets/archetypes/${pairing.partner}.png" alt="" />
@@ -242,7 +255,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     track('result_view', { archetype: resultSlug, category: quizState.category }); show('result');
   };
   root.querySelectorAll('[data-start]').forEach(button => { button.onclick = () => { track('quiz_start'); renderQuestion(); show('quiz'); }; });
-  root.querySelector('[data-back]').onclick = () => { goBack(quizState); renderQuestion(); };
+  root.querySelector('[data-back]').onclick = () => { if (history.state?.step) history.back(); else { goBack(quizState); renderQuestion(); } };
   root.querySelector('[data-unlock]').onclick = () => show('capture');
   const whatsappInput = root.querySelector('[data-whatsapp-input]');
   whatsappInput.oninput = () => { root.querySelector('.whatsapp-consent').hidden = !whatsappInput.value.trim(); };
@@ -258,11 +271,21 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     link.href = signup.url;
     link.onclick = () => track('signup_click', { archetype: resultSlug, category: quizState.category, platform: signup.platform });
   });
+  window.addEventListener('popstate', () => {
+    const questionIndex = questionIndexForStep(new URLSearchParams(location.search).get('step'));
+    if (questionIndex === null) { show('landing'); return; }
+    if (questionIndex > quizState.questionIndex || (questionIndex >= 2 && !quizState.category)) return;
+    quizState.questionIndex = questionIndex;
+    renderQuestion({ fromHistory: true });
+    show('quiz');
+  });
+  if (params.has('step')) { const url = new URL(location.href); url.searchParams.delete('step'); history.replaceState(null, '', url); }
   track('landing_view'); if (sender) track('referral_landing', { archetype: sender });
+  if (params.get('start') === '1') root.querySelector('[data-start]')?.click();
 </script>
 
 <style>
-.screen{display:none;min-height:100svh;padding:32px 0}.screen.active{display:block}.screen.landing{padding:0}.question-shell{padding-top:22px}.back{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:10px 0;margin-bottom:10px}.progress{height:6px;background:#2c2c29;border-radius:10px;overflow:hidden;margin-bottom:34px}.progress span{display:block;height:100%;background:var(--yellow);transition:width .25s}:global(.options){display:grid;gap:10px}:global(.option){width:100%;display:flex;align-items:center;text-align:left;padding:16px;border:1px solid #3b3b36;border-radius:12px;background:#1A1A1A;color:var(--cream);cursor:pointer}:global(.option.selected){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}@media(hover:hover){:global(.option:hover){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}}:global(.scale){display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;color:#d6d2c7;font-size:.82rem}:global(.scale-dots){display:flex;align-items:center;justify-content:space-between;gap:8px}:global(.scale-dot){width:clamp(38px,10vw,56px);aspect-ratio:1;border-radius:50%;border:2px solid #706d63;background:#1A1A1A;cursor:pointer}:global(.scale-dot:nth-child(2)),:global(.scale-dot:nth-child(4)){transform:scale(.88)}:global(.scale-dot:nth-child(3)){transform:scale(.76)}:global(.scale-dot.selected){border-color:var(--yellow);background:var(--yellow)}@media(hover:hover){:global(.scale-dot:hover){border-color:var(--yellow)}}.centered{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.centered>p:not(.eyebrow){max-width:560px;color:#d1cec2;line-height:1.55}.teaser-shell{display:grid;gap:14px}.teaser-card,.result-card{position:relative;overflow:hidden;min-height:560px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--black);color:var(--cream);border:1px solid #2A2A2A}.teaser-card{min-height:420px;padding:22px}.pictogram-disc{position:absolute;width:64%;max-width:calc(100% - 48px);aspect-ratio:1;top:24px;left:50%;transform:translateX(-50%);display:grid;place-items:center}.teaser-card .pictogram-disc{top:18px;width:32%}.pictogram-disc img{width:100%;height:100%;object-fit:contain}.teaser-card h2,.result-card h2{color:var(--yellow);font-size:clamp(3rem,14vw,6rem);margin:0 0 8px;max-width:90%}.teaser-card .eyebrow,.result-card .eyebrow{color:var(--yellow);margin:0}.teaser-card strong,.result-card strong{max-width:460px;font-size:1.18rem}.teaser-copy h2{margin:6px 0 10px}.teaser-copy p{line-height:1.45;color:#d1cec2;margin:0 0 14px}.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:1/-1}.capture{margin-top:max(7vh,36px);padding:28px;background:#191917;border:1px solid #34342e}.capture label{display:grid;gap:8px;margin:18px 0;font-weight:800}.capture label span{font-weight:500;color:#a9a69d}.capture .label-line{display:inline;font-weight:800;color:inherit;white-space:nowrap}.capture input:not([type=checkbox]){width:100%;border:1px solid #555249;border-radius:12px;padding:15px;background:#0D0D0D;color:white;font-weight:500}.consent-copy{font-size:.82rem;color:#c9c6bb;line-height:1.45}.capture .consent{grid-template-columns:auto 1fr;align-items:start;font-size:.86rem;font-weight:500;line-height:1.45;color:#c9c6bb}.skip{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:16px}.form-status{color:var(--yellow)}.result-shell{display:grid;gap:28px}.result-logo{width:94px;margin-top:26px}.teaser-card .result-logo{margin-top:18px}.card-url{color:var(--cream);font-size:.82rem;margin-top:8px}.category-dot{position:absolute;top:24px;left:24px;width:18px;height:18px;border:3px solid var(--black);border-radius:50%;z-index:2}.result-copy{line-height:1.6}.identity{font-size:1.55rem;font-weight:800;line-height:1.25}.even-note{margin:-12px 0 0;color:var(--yellow);font-weight:800}.even-note[hidden]{display:none}.fit-list{margin-top:40px}.fit-list h3{margin-bottom:8px}:global(.fit-row){display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:16px 0;border-bottom:1px solid #34342e}:global(.fit-row img){width:36px;height:36px;object-fit:contain}:global(.fit-row strong){display:block;line-height:1.25}:global(.fit-row p){margin:3px 0 0;line-height:1.45;color:#d4d1c6}.share,.pairing{padding:26px;background:#191917;border:1px solid #34342e}.share h3{margin-top:0}.pairing{display:grid;gap:14px}.pairing[hidden]{display:none}.pairing p{margin:0;color:#d4d1c6}.pairing strong{font-size:1.2rem}.result-nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.offer .button{margin-top:12px}@media(max-width:520px){:global(.scale){grid-template-columns:1fr 1fr;row-gap:12px}:global(.scale-dots){grid-column:1/-1;grid-row:1}:global(.scale > span:last-child){text-align:right}}@media(min-width:720px){.screen:not(.landing){padding:56px 0}.capture{padding:42px}.teaser-card,.result-card{min-height:700px;padding:52px}.share-actions{display:flex;flex-wrap:wrap}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:auto}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.screen{display:none;min-height:100svh;padding:32px 0}.screen.active{display:block}.screen.landing{padding:0}.question-shell{padding-top:22px}.back{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:10px 0;margin-bottom:10px}.progress{height:6px;background:#2c2c29;border-radius:10px;overflow:hidden;margin-bottom:34px}.progress span{display:block;height:100%;background:var(--yellow);transition:width .25s}:global(.options){display:grid;gap:10px}:global(.option){width:100%;display:flex;align-items:center;text-align:left;padding:16px;border:1px solid #3b3b36;border-radius:12px;background:#1A1A1A;color:var(--cream);cursor:pointer}:global(.option.selected){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}@media(hover:hover){:global(.option:hover){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}}:global(.scale){display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;color:#d6d2c7;font-size:.82rem}:global(.scale-dots){display:flex;align-items:center;justify-content:space-between;gap:8px}:global(.scale-dot){width:clamp(38px,10vw,56px);aspect-ratio:1;border-radius:50%;border:2px solid #706d63;background:#1A1A1A;cursor:pointer}:global(.scale-dot:nth-child(2)),:global(.scale-dot:nth-child(4)){transform:scale(.88)}:global(.scale-dot:nth-child(3)){transform:scale(.76)}:global(.scale-dot.selected){border-color:var(--yellow);background:var(--yellow)}@media(hover:hover){:global(.scale-dot:hover){border-color:var(--yellow)}}.centered{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.centered>p:not(.eyebrow){max-width:560px;color:#d1cec2;line-height:1.55}.teaser-shell{display:grid;gap:14px}.teaser-card,.result-card{position:relative;overflow:hidden;min-height:560px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--black);color:var(--cream);border:1px solid #2A2A2A}.teaser-card{min-height:420px;padding:22px}.pictogram-disc{position:absolute;width:64%;max-width:calc(100% - 48px);aspect-ratio:1;top:24px;left:50%;transform:translateX(-50%);display:grid;place-items:center}.teaser-card .pictogram-disc{top:18px;width:32%}.pictogram-disc img{width:100%;height:100%;object-fit:contain}.teaser-card h2,.result-card h2{color:var(--yellow);font-size:clamp(3rem,14vw,6rem);margin:0 0 18px;line-height:1;max-width:90%}.teaser-card .eyebrow,.result-card .eyebrow{color:var(--yellow);margin:0}.teaser-card strong,.result-card strong{max-width:460px;font-size:1.18rem}.teaser-copy h2{margin:6px 0 10px}.teaser-copy p{line-height:1.45;color:#d1cec2;margin:0 0 14px}.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:1/-1}.capture{margin-top:max(7vh,36px);padding:28px;background:#191917;border:1px solid #34342e}.capture label{display:grid;gap:8px;margin:18px 0;font-weight:800}.capture label span{font-weight:500;color:#a9a69d}.capture .label-line{display:inline;font-weight:800;color:inherit;white-space:nowrap}.capture input:not([type=checkbox]){width:100%;border:1px solid #555249;border-radius:12px;padding:15px;background:#0D0D0D;color:white;font-weight:500}.consent-copy{font-size:.82rem;color:#c9c6bb;line-height:1.45}.capture .consent{grid-template-columns:auto 1fr;align-items:start;font-size:.86rem;font-weight:500;line-height:1.45;color:#c9c6bb}.skip{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:16px}.form-status{color:var(--yellow)}.result-shell{display:grid;gap:28px}.result-logo{width:94px;margin-top:26px}.teaser-card .result-logo{margin-top:18px}.card-url{color:var(--cream);font-size:.82rem;margin-top:8px}.category-dot{position:absolute;top:24px;left:24px;width:18px;height:18px;border:3px solid var(--black);border-radius:50%;z-index:2}.result-copy{line-height:1.6}.identity{font-size:1.55rem;font-weight:800;line-height:1.25}.even-note{margin:-12px 0 0;color:var(--yellow);font-weight:800}.even-note[hidden]{display:none}.fit-list{margin:40px 0}.fit-list h3{margin-bottom:8px}:global(.fit-row){display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:16px 0;border-bottom:1px solid #34342e}:global(.fit-row img){width:36px;height:36px;object-fit:contain}:global(.fit-row strong){display:block;line-height:1.25}:global(.fit-row p){margin:3px 0 0;line-height:1.45;color:#d4d1c6}.share,.pairing{padding:26px;background:#191917;border:1px solid #34342e}.share h3{margin-top:0}.pairing{display:grid;gap:14px}.pairing[hidden]{display:none}.pairing p{margin:0;color:#d4d1c6}.pairing strong{font-size:1.2rem}.result-nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.offer .button{margin-top:12px}@media(max-width:520px){:global(.scale){grid-template-columns:1fr 1fr;row-gap:12px}:global(.scale-dots){grid-column:1/-1;grid-row:1}:global(.scale > span:last-child){text-align:right}}@media(min-width:720px){.screen:not(.landing){padding:56px 0}.capture{padding:42px}.teaser-card,.result-card{min-height:700px;padding:52px}.share-actions{display:flex;flex-wrap:wrap}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:auto}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 .capture{margin-top:0}
 .back{align-self:flex-start}
 .category-dot{left:28px}
@@ -295,5 +318,4 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
 :global(.intro-copy){max-width:620px;margin-bottom:28px;color:#d1cec2;line-height:1.6}:global(.intro-copy p){margin:0 0 16px}
 @media(min-width:720px){:global(.intro-copy){font-size:1.15rem;line-height:1.5}}
 @media(min-width:720px){:global(.result-copy p),.teaser-details p{max-width:66ch;font-size:1.1rem;line-height:1.65}}
-.reflection{margin:40px 0}.reflection p{font-size:1.3rem;font-style:italic;line-height:1.45;color:var(--cream)}
 </style>
