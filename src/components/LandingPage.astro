@@ -49,21 +49,21 @@ const types = [
 </div>
 
 <script>
-  // Each line fades up as it scrolls into view, and its figure makes one move in the manner of its type.
-  // Without JavaScript, or with reduced motion, the lines are simply shown.
+  // Each line waits in grey and lights up as it reaches the middle of the screen; its figure then makes one move in
+  // the manner of its type (not with reduced motion). Without JavaScript the lines are simply shown.
   const lines = document.querySelector('[data-lines]');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // The hero cards jump to their type's line. Buttons, not #links: a hash change fires popstate, which the quiz uses for its steps.
   document.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach(button => button.addEventListener('click', () => {
     document.getElementById(`type-${button.dataset.jump}`)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
   }));
-  if (lines && 'IntersectionObserver' in window && !reducedMotion) {
+  if (lines && 'IntersectionObserver' in window) {
     lines.setAttribute('data-reveal', '');
     const observer = new IntersectionObserver(entries => entries.forEach(entry => {
       if (!entry.isIntersecting) return;
       entry.target.classList.add('seen');
       observer.unobserve(entry.target);
-    }), { rootMargin: '0px 0px -30% 0px' });
+    }), { rootMargin: '0px 0px -45% 0px' });
     lines.querySelectorAll('.line').forEach(line => observer.observe(line));
   }
 </script>
@@ -99,20 +99,31 @@ const types = [
   .line.flip{grid-template-columns:1fr 170px;text-align:right}
   .line.flip h2{margin-left:auto}
   .line.flip img{order:2}
-  .lines[data-reveal] .line{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
-  .lines[data-reveal] .line.seen{opacity:1;transform:none}
-  /* each figure moves once, in the manner of its type, as its line arrives */
-  .lines[data-reveal] .line.seen img{animation:1.5s cubic-bezier(.16,1,.3,1) .35s both}
-  .lines[data-reveal] .line.seen[data-type="sprinter"] img{animation-name:sprint}
-  .lines[data-reveal] .line.seen[data-type="planner"] img{animation-name:step}
-  .lines[data-reveal] .line.seen[data-type="anchor"] img{animation-name:gather}
-  .lines[data-reveal] .line.seen[data-type="explorer"] img{animation-name:look;animation-duration:1.9s}
-  .lines[data-reveal] .line.seen[data-type="finisher"] img{animation-name:swing;animation-duration:1.7s}
-  @keyframes sprint{from{opacity:0;transform:translateX(-180px) skewX(-18deg)}55%{opacity:1;transform:translateX(16px) skewX(6deg)}to{transform:none}}
-  @keyframes step{from{opacity:0;transform:translateX(-60px)}40%{opacity:1;transform:translateX(-60px)}to{transform:none}}
-  @keyframes gather{from{opacity:0;transform:scaleX(1.7)}20%{opacity:1}to{transform:none}}
-  @keyframes look{from{opacity:0;transform:rotate(0)}25%{opacity:1;transform:rotate(-18deg)}60%{transform:rotate(14deg)}to{transform:none}}
-  @keyframes swing{from{opacity:0;transform:rotate(-70deg) translateY(-40px)}50%{opacity:1;transform:rotate(16deg)}78%{transform:rotate(-6deg)}to{transform:none}}
+  /* each line waits in grey, with its figure greyed and in its starting pose, and lights up as it reaches the middle of the screen */
+  .lines[data-reveal] .line h2{color:#3d3c37;transition:color .8s ease}
+  .lines[data-reveal] .line h2 span{color:#4d4a38;transition:color .8s ease}
+  .lines[data-reveal] .line img{filter:grayscale(1) brightness(.42);transition:filter .8s ease}
+  .lines[data-reveal] .line.seen h2{color:var(--cream)}
+  .lines[data-reveal] .line.seen h2 span{color:var(--yellow)}
+  .lines[data-reveal] .line.seen img{filter:none}
+  @media(prefers-reduced-motion:no-preference){
+    /* then its figure makes one move in the manner of its type, starting from the pose it waited in */
+    .lines[data-reveal] .line[data-type="sprinter"] img{transform:translateX(-90px) skewX(-12deg)}
+    .lines[data-reveal] .line[data-type="planner"] img{transform:translateX(-50px)}
+    .lines[data-reveal] .line[data-type="anchor"] img{transform:scaleX(1.35)}
+    .lines[data-reveal] .line[data-type="finisher"] img{transform:rotate(-40deg) translateY(-20px)}
+    .lines[data-reveal] .line.seen img{animation-duration:1.5s;animation-timing-function:cubic-bezier(.16,1,.3,1);animation-delay:.15s;animation-fill-mode:both}
+    .lines[data-reveal] .line.seen[data-type="sprinter"] img{animation-name:sprint}
+    .lines[data-reveal] .line.seen[data-type="planner"] img{animation-name:step}
+    .lines[data-reveal] .line.seen[data-type="anchor"] img{animation-name:gather}
+    .lines[data-reveal] .line.seen[data-type="explorer"] img{animation-name:look;animation-duration:1.9s}
+    .lines[data-reveal] .line.seen[data-type="finisher"] img{animation-name:swing;animation-duration:1.7s}
+  }
+  @keyframes sprint{from{transform:translateX(-90px) skewX(-12deg)}55%{transform:translateX(16px) skewX(6deg)}to{transform:none}}
+  @keyframes step{from{transform:translateX(-50px)}35%{transform:translateX(-50px)}to{transform:none}}
+  @keyframes gather{from{transform:scaleX(1.35)}to{transform:none}}
+  @keyframes look{from{transform:none}25%{transform:rotate(-18deg)}60%{transform:rotate(14deg)}to{transform:none}}
+  @keyframes swing{from{transform:rotate(-40deg) translateY(-20px)}50%{transform:rotate(16deg)}78%{transform:rotate(-6deg)}to{transform:none}}
   .closing{padding:110px 0 140px;text-align:center}
   .closing h2{margin-bottom:36px;font-size:clamp(3rem,6vw,5rem)}
   @media(max-width:900px){
