@@ -2,7 +2,6 @@
 import LandingPage from './LandingPage.astro';
 import ShareActions from './ShareActions.astro';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
-const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const publicQuizUrl = new URL(base, Astro.site).toString();
 const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
 const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
@@ -26,12 +25,10 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   <section class="screen" data-screen="teaser">
     <div class="shell teaser-shell">
       <article class="teaser-card card">
-        <span class="pictogram-disc"><img data-teaser-icon alt="" /></span>
-        <p class="eyebrow">You're</p><h2 data-teaser-name></h2><strong data-teaser-identity></strong>
-        <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
-        <span class="card-url">{cardFooter}</span>
+        <img class="card-figure" data-teaser-icon alt="" />
+        <div class="card-head"><p class="eyebrow">You're</p><h2 data-teaser-name></h2><strong data-teaser-identity></strong></div>
+        <div class="card-share"><ShareActions /></div>
       </article>
-      <ShareActions />
       <div class="teaser-copy teaser-details">
         <h3>At your best</h3>
         <p data-teaser-at-best></p>
@@ -39,8 +36,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <p data-teaser-pattern></p>
       </div>
       <div class="teaser-copy teaser-more">
-        <h2>There's more in your full read</h2>
-        <ul>
+        <h2 data-teaser-more-heading>Seven more parts of your read</h2>
+        <ul class="locked">
           <li>Your strengths</li>
           <li>How others see you</li>
           <li>What you need</li>
@@ -49,8 +46,10 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
           <li>A question to sit with</li>
           <li data-teaser-first-step-item>Your first step</li>
         </ul>
-        <button class="button" data-unlock>Show my full result</button>
-        <p class="teaser-access">We'll send you a copy too.</p>
+        <div class="unlock">
+          <button class="button" data-unlock>Show my full result</button>
+          <p class="teaser-access">We'll send you a copy too.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -68,36 +67,47 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   </section>
 
   <section class="screen" data-screen="result">
-    <div class="shell result-shell">
-      <article class="result-card card">
-        <span class="category-dot" data-category-dot></span><span class="pictogram-disc"><img data-result-icon alt="" /></span>
-        <p class="eyebrow">I'm</p><h2 data-result-name></h2><strong data-card-line></strong>
-        <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
-        <span class="card-url">{cardFooter}</span>
-      </article>
-      <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={siteOrigin} data-signup>Invite them onto your goal</a></article>
-      <article class="result-copy">
-        <p class="identity" data-result-identity></p>
-        <p class="even-note" data-even-note hidden>Your answers were very even, so this one was close. <a href={base}>Try again</a> with your first instinct?</p>
-        <h3>At your best</h3><p data-result-at-best></p>
-        <h3>Your strengths</h3><p data-result-strength></p>
-        <h3>How others see you</h3><p data-result-others-see></p>
-        <h3>The pattern to watch</h3><p data-result-tendency></p>
-        <h3>What you need</h3><p data-result-need></p>
-        <h3>Who you work best with</h3><p data-result-works-best-with></p>
-        <section class="fit-list" data-fit-list>
-          <h3>How you fit with each type</h3>
-          <div data-fit-rows></div>
-        </section>
-        <h3>A question to sit with</h3><p data-result-question></p>
-        <section data-result-first-step-section>
+    <div class="result-shell">
+      <div class="result-split">
+        <aside class="result-aside">
+          <article class="result-card card">
+            <span class="category-dot" data-category-dot></span>
+            <img class="card-figure" data-result-icon alt="" />
+            <div class="card-head"><p class="eyebrow">I'm</p><h2 data-result-name></h2><strong data-card-line></strong><span class="card-url">{cardFooter}</span></div>
+            <div class="card-share"><ShareActions prefix="result-" /></div>
+          </article>
+        </aside>
+        <div class="result-main">
+          <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={siteOrigin} data-signup>Invite them onto your goal</a></article>
+          <article class="result-copy">
+            <p class="identity" data-result-identity></p>
+            <p class="even-note" data-even-note hidden>Your answers were very even, so this one was close. <a href={base}>Try again</a> with your first instinct?</p>
+            <section><h3>At your best</h3><p data-result-at-best></p></section>
+            <section><h3>Your strengths</h3><p data-result-strength></p></section>
+            <section><h3>How others see you</h3><p data-result-others-see></p></section>
+            <section class="pattern"><h3>The pattern to watch</h3><blockquote data-result-tendency-lead></blockquote><p data-result-tendency></p></section>
+            <section><h3>What you need</h3><p data-result-need></p></section>
+            <section><h3>Who you work best with</h3><p data-result-works-best-with></p></section>
+            <section class="fit-list" data-fit-list>
+              <h3>How you fit with each type</h3>
+              <div class="fit-types" data-fit-rows role="group" aria-label="Choose a type"></div>
+              <p class="fit-line" data-fit-line aria-live="polite"></p>
+            </section>
+          </article>
+        </div>
+      </div>
+      <section class="question-band"><h3>A question to sit with</h3><p data-result-question></p></section>
+      <div class="result-close">
+        <section class="first-step" data-result-first-step-section>
           <h3>Your first step</h3><p data-result-first-step></p>
+          <a class="button" href={siteOrigin} data-signup>Start your circle</a>
         </section>
-      </article>
-      <article class="share card">
-        <h3>Who would tell you the truth about this? Send it to them.</h3>
-        <ShareActions prefix="result-" />
-      </article>
+        <article class="share card">
+          <h3>Who would tell you the truth about this?</h3>
+          <p class="share-message" data-result-message></p>
+          <ShareActions prefix="end-" />
+        </article>
+      </div>
       <div class="result-nav"><button class="button secondary" data-offer>What happens next</button><button class="skip" data-restart>Take it again</button></div>
     </div>
   </section>
@@ -136,11 +146,30 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   const show = name => { screens.forEach(screen => screen.classList.toggle('active', screen.dataset.screen === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const shareUrl = () => { const url = new URL(`r/${resultSlug}`, publicQuizUrl); url.searchParams.set('ref', resultSlug); return url; };
   const cardUrl = () => `${baseUrl}assets/cards/${resultSlug}.png`;
+  // Instagram has no web link that opens a post with the card in it. On phones the Instagram button hands the card
+  // image to the share sheet, where Instagram is one of the choices; elsewhere it falls back to downloading the card.
+  let cardFile = null;
+  const loadCardFile = () => {
+    const slug = resultSlug;
+    if (cardFile?.name === `bestday-${slug}.png`) return;
+    fetch(cardUrl()).then(response => response.blob()).then(blob => {
+      if (slug === resultSlug) cardFile = new File([blob], `bestday-${slug}.png`, { type: 'image/png' });
+    }).catch(() => {});
+  };
   const configureSharing = prefix => {
     const result = archetypes[resultSlug];
     const message = `${result.forward} ${shareUrl()}`;
     const whatsappLink = root.querySelector(`[data-${prefix}whatsapp]`);
+    const instagramLink = root.querySelector(`[data-${prefix}instagram]`);
     const saveLink = root.querySelector(`[data-${prefix}save]`);
+    loadCardFile();
+    instagramLink.href = cardUrl();
+    instagramLink.onclick = event => {
+      track('share_click', { channel: 'instagram', archetype: resultSlug });
+      if (!cardFile || !navigator.canShare?.({ files: [cardFile] })) return;
+      event.preventDefault();
+      navigator.share({ files: [cardFile], text: message }).catch(() => {});
+    };
     whatsappLink.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
     whatsappLink.onclick = () => track('share_click', { channel: 'whatsapp', archetype: resultSlug });
     saveLink.href = cardUrl();
@@ -218,6 +247,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-teaser-at-best]').textContent = result.atBest;
     root.querySelector('[data-teaser-pattern]').textContent = result.tendency;
     root.querySelector('[data-teaser-first-step-item]').hidden = !result.firstStep;
+    root.querySelector('[data-teaser-more-heading]').textContent = `${result.firstStep ? 'Seven' : 'Six'} more parts of your read`;
     configureSharing('');
     track('quiz_complete', { archetype: resultSlug, category: quizState.category });
     setTimeout(() => { track('teaser_view', { archetype: resultSlug, category: quizState.category }); show('teaser'); }, 450);
@@ -232,20 +262,38 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-result-at-best]').textContent = result.atBest;
     root.querySelector('[data-result-strength]').textContent = result.strength;
     root.querySelector('[data-result-others-see]').textContent = result.othersSee;
-    root.querySelector('[data-result-tendency]').textContent = result.tendency;
+    const [tendencyLead, ...tendencyRest] = result.tendency.split(/(?<=\.)\s+/);
+    root.querySelector('[data-result-tendency-lead]').textContent = tendencyLead;
+    root.querySelector('[data-result-tendency]').textContent = tendencyRest.join(' ');
     root.querySelector('[data-result-need]').textContent = result.need;
     root.querySelector('[data-result-works-best-with]').textContent = result.worksBestWith;
     root.querySelector('[data-result-question]').textContent = result.question;
     root.querySelector('[data-result-first-step]').textContent = result.firstStep;
     root.querySelector('[data-result-first-step-section]').hidden = !result.firstStep;
-    root.querySelector('[data-fit-rows]').innerHTML = pairingsFor(resultSlug).map(pairing => `
-      <div class="fit-row">
-        <img src="${baseUrl}assets/archetypes/${pairing.partner}.png" alt="" />
-        <div><strong>${pairing.label}</strong><p>${pairing.line}</p></div>
-      </div>
+    // How you fit: one figure per type (yours tagged "You"); choosing one shows that pairing's line.
+    const pairings = pairingsFor(resultSlug);
+    const fitTypes = root.querySelector('[data-fit-rows]');
+    const fitLine = root.querySelector('[data-fit-line]');
+    fitTypes.innerHTML = pairings.map(pairing => `
+      <button type="button" class="fit-type${pairing.partner === resultSlug ? ' me' : ''}" data-partner="${pairing.partner}" aria-pressed="false">
+        <img src="${baseUrl}assets/archetypes/${pairing.partner}.png" alt="" /><span>${archetypes[pairing.partner].name.replace('The ', '')}</span>
+      </button>
     `).join('');
+    const showFit = partner => {
+      const pairing = pairings.find(item => item.partner === partner);
+      fitTypes.querySelectorAll('[data-partner]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.partner === partner)));
+      fitLine.innerHTML = '<span></span>';
+      fitLine.firstChild.textContent = pairing.label;
+      fitLine.append(pairing.line);
+    };
+    fitTypes.querySelectorAll('[data-partner]').forEach(button => {
+      button.onclick = () => { showFit(button.dataset.partner); track('fit_view', { archetype: resultSlug, partner: button.dataset.partner }); };
+    });
+    showFit(sender ?? pairings.find(item => item.partner !== resultSlug).partner);
     root.querySelector('[data-category-dot]').style.background = categoryInfo.color;
+    root.querySelector('[data-result-message]').textContent = `${result.forward} ${shareUrl()}`;
     configureSharing('result-');
+    configureSharing('end-');
     if (sender) {
       const pairing = root.querySelector('[data-pairing]');
       pairing.hidden = false;
@@ -306,16 +354,92 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   :global(.scale-dot){width:64px}
 }
 @media(min-width:720px){.category-dot{top:52px;left:52px}}
-:global(.share-actions){display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:6px}
-:global(.share-actions [data-whatsapp]),:global(.share-actions [data-result-whatsapp]){grid-column:auto}
+:global(.share-actions){display:grid;grid-template-columns:repeat(4,1fr);align-items:start;gap:6px;max-width:360px}
+:global(.share-actions [data-whatsapp]),:global(.share-actions [data-result-whatsapp]),:global(.share-actions [data-end-whatsapp]){grid-column:auto}
 :global(.share-action){min-width:44px;min-height:44px;padding:0;border:0;background:none;color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
 :global(.action-icon){width:52px;height:52px;flex:0 0 52px;border:1px solid #706d63;border-radius:50%;display:grid;place-items:center}
 :global(.action-icon svg){width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-:global(.whatsapp .action-icon){background:var(--yellow);border-color:var(--yellow);color:var(--black)}
-:global(.whatsapp .action-icon svg){fill:currentColor;stroke:none}
+:global(.whatsapp .action-icon svg),:global(.brand .action-icon svg){fill:currentColor;stroke:none}
+:global(.brand .action-icon svg){width:20px;height:20px}
+:global(.share-action .caption){white-space:nowrap}
 :global(.share-action:focus-visible){outline:3px solid var(--yellow);outline-offset:4px;border-radius:8px}
 .teaser-details{padding-top:14px}.teaser-details h3{margin:0 0 8px}.teaser-details h3:not(:first-child){margin-top:24px}.teaser-details p{margin-bottom:0}.teaser-more{padding-top:18px}.teaser-more h2{font-size:1.65rem}.teaser-more ul{margin:0 0 22px;padding-left:1.25rem;color:#d1cec2;line-height:1.75}.teaser-more .button{margin-top:0}.teaser-access{color:#a9a69d!important}
 :global(.intro-copy){max-width:620px;margin-bottom:28px;color:#d1cec2;line-height:1.6}:global(.intro-copy p){margin:0 0 16px}
 @media(min-width:720px){:global(.intro-copy){font-size:1.15rem;line-height:1.5}}
 @media(min-width:720px){:global(.result-copy p),.teaser-details p{max-width:66ch;font-size:1.1rem;line-height:1.65}}
+</style>
+
+<style>
+/* Result pages. Teaser: a compact card (figure, name, share), the two free sections, then the locked sections in grey.
+   Full result: the card stays pinned beside the read on wide screens; the pattern and the question get cream moments;
+   it ends on the first step and a ready-to-send share. */
+.teaser-card,.result-card{min-height:0;padding:24px;display:grid;grid-template-columns:96px 1fr;column-gap:18px;row-gap:16px;align-items:center;justify-content:normal;background:#121211;border:1px solid #2a2a2a;border-radius:20px}
+.card-figure{width:96px;height:auto}
+.card-head h2{margin:2px 0 10px}
+.teaser-card h2,.result-card h2{font-size:clamp(2.3rem,9vw,4.4rem);letter-spacing:-.055em;margin-bottom:12px;max-width:none}
+.teaser-card strong,.result-card strong{display:block;font-size:1rem;line-height:1.35}
+.card-share{grid-column:1/-1}
+.card-url{display:block;margin-top:14px;color:#a9a69d;font-size:.8rem}
+.category-dot{top:16px;left:16px;width:14px;height:14px}
+.teaser-more{margin-top:40px;padding-top:36px;border-top:1px solid #262622}
+.teaser-more h2{font-size:clamp(1.9rem,4vw,2.5rem);margin-bottom:22px}
+.teaser-more .locked{display:grid;grid-template-columns:1fr;gap:8px;margin:0 0 26px;padding:0;list-style:none;color:inherit;line-height:1.3}
+.locked li{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-radius:14px;background:#141413;color:#55534b;font-weight:800}
+.locked li::after{content:"";width:12px;height:10px;border:2px solid #44433d;border-radius:3px;box-shadow:0 -6px 0 -2px #121211,0 -7px 0 -2px #44433d}
+.locked li[hidden]{display:none}
+.unlock{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.unlock .teaser-access{margin:0}
+.result-shell{width:min(100% - 32px,1200px);margin:0 auto;display:grid;gap:0}
+.result-split{display:grid;gap:36px}
+.result-main{display:grid;gap:28px}
+.result-copy{display:grid;gap:40px}
+.result-copy section h3{margin:0 0 10px;color:var(--yellow);font-size:1.15rem}
+.result-copy section p{margin:0;color:#d8d5c9}
+.result-copy .identity{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);line-height:1.08;letter-spacing:-.04em;max-width:20ch}
+.even-note{margin:-24px 0 0}
+.result-copy .pattern{padding:30px 26px;border-radius:24px;background:var(--cream);color:var(--black)}
+.result-copy .pattern h3{color:#6b6553}
+.pattern blockquote{margin:0 0 16px;font-size:clamp(1.6rem,3vw,2.1rem);font-weight:800;line-height:1.12;letter-spacing:-.035em;max-width:22ch}
+.result-copy .pattern p{color:#3d3a30}
+.fit-types{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+:global(.fit-type){position:relative;display:grid;justify-items:center;gap:4px;padding:10px 2px 8px;border:1px solid #2f2f2b;border-radius:14px;background:none;color:#b9b6aa;font:inherit;font-size:.7rem;font-weight:800;cursor:pointer}
+:global(.fit-type img){width:44px;height:44px;object-fit:contain}
+:global(.fit-type[aria-pressed="true"]){border:2px solid var(--yellow);background:#19180f;color:var(--yellow)}
+:global(.fit-type.me)::after{content:"You";position:absolute;top:-9px;left:50%;transform:translateX(-50%);padding:1px 7px;border-radius:999px;background:var(--yellow);color:var(--black);font-size:.62rem}
+:global(.fit-type:focus-visible){outline:3px solid var(--yellow);outline-offset:3px}
+.fit-line{margin:12px 0 0;padding:16px 18px;border-radius:14px;background:#19180f;color:var(--cream)!important;font-weight:800;font-size:1.08rem;line-height:1.4}
+.fit-line :global(span){display:block;margin-bottom:6px;color:var(--yellow);font-size:.82rem}
+.question-band{margin:56px 0 0;padding:64px 0;background:var(--cream);color:var(--black);text-align:center;box-shadow:0 0 0 100vmax var(--cream);clip-path:inset(0 -100vmax)}
+.question-band h3{margin:0;color:#6b6553;font-size:1rem}
+.question-band p{max-width:20ch;margin:16px auto 0;font-size:clamp(2.1rem,4.6vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.05em}
+.result-close{display:grid;gap:20px;padding:64px 0 28px}
+.first-step{display:flex;flex-direction:column;gap:14px;padding:28px;border:2px solid var(--yellow);border-radius:24px}
+.first-step[hidden]{display:none}
+.first-step h3{margin:0;color:var(--yellow);font-size:1.15rem}
+.first-step p{margin:0;font-size:1.2rem;font-weight:800;line-height:1.35}
+.first-step .button{align-self:flex-start;margin-top:6px}
+.result-close .share{display:flex;flex-direction:column;gap:16px;padding:28px;border:0;border-radius:24px;background:#141413}
+.result-close .share h3{margin:0}
+.share-message{margin:0;padding:16px 18px;border-radius:18px 18px 18px 4px;background:#1d2a22;color:#e9f2ea;line-height:1.45;overflow-wrap:anywhere}
+.result-nav{padding-bottom:40px}
+@media(min-width:720px){
+  .teaser-card{grid-template-columns:200px 1fr;column-gap:28px;padding:30px 34px}
+  .teaser-card .card-figure{width:200px;grid-row:span 2}
+  .teaser-card .card-share{grid-column:2}
+  .teaser-more .locked{grid-template-columns:1fr 1fr;gap:10px}
+  .teaser-more .locked li:last-child{grid-column:1/-1}
+  .result-copy .pattern{padding:40px 44px}
+  .result-close{grid-template-columns:1fr 1fr;width:min(100%,1000px);margin:0 auto;padding-top:96px}
+  :global(.fit-type){font-size:.82rem;padding:12px 6px 10px}
+  :global(.fit-type img){width:70px;height:70px}
+}
+@media(min-width:980px){
+  .result-split{grid-template-columns:360px 1fr;gap:72px;align-items:start}
+  .result-aside{position:sticky;top:30px}
+  .result-card{grid-template-columns:1fr;padding:26px}
+  .result-card .card-figure{width:220px;margin:0 auto}
+  .result-card h2{font-size:3.3rem}
+  .question-band{margin-top:96px;padding:110px 0}
+}
+@media(min-width:720px) and (max-width:979px){.result-card{grid-template-columns:140px 1fr}.result-card .card-figure{width:140px}}
 </style>

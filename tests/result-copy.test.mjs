@@ -75,7 +75,7 @@ test('result renders all approved sections in order', async () => {
     assert.ok(position > previous, `${marker} must appear in the approved order`);
     previous = position;
   }
-  assert.match(result, /<section data-result-first-step-section>\s*<h3>Your first step<\/h3>/);
+  assert.match(result, /<section class="first-step" data-result-first-step-section>\s*<h3>Your first step<\/h3>/);
   assert.match(source, /\[data-result-first-step-section\]'\)\.hidden = !result\.firstStep/);
 });
 

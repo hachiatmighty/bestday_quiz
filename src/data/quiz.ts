@@ -104,6 +104,15 @@ export const archetypes: Record<ArchetypeSlug, {
   },
 };
 
+// One manifesto line per archetype: the landing page and the shared result pages lead with these.
+export const manifestoLines: Record<ArchetypeSlug, string> = {
+  sprinter: "Some start before they're ready.",
+  planner: 'Some plan it perfectly, then wait.',
+  anchor: "Some carry everyone else's goals.",
+  explorer: 'Some have a new idea by Friday.',
+  finisher: 'Some finish everything but their own.',
+};
+
 export const questions = [
   'I start working on a new goal the same day I set it.',
   "I don't start working on my goals until I have a clear plan.",

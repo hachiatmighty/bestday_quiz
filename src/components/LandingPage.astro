@@ -1,13 +1,8 @@
 ---
+import { archetypeOrder, archetypes, manifestoLines } from '../data/quiz';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
-const types = [
-  { slug: 'sprinter', name: 'The Sprinter', line: "Some start before they're ready." },
-  { slug: 'planner', name: 'The Planner', line: 'Some plan it perfectly, then wait.' },
-  { slug: 'anchor', name: 'The Anchor', line: "Some carry everyone else's goals." },
-  { slug: 'explorer', name: 'The Explorer', line: 'Some have a new idea by Friday.' },
-  { slug: 'finisher', name: 'The Finisher', line: 'Some finish everything but their own.' },
-];
+const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, line: manifestoLines[slug] }));
 ---
 <div class="landing-page">
   <header class="landing-hero">
