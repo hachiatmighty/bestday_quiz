@@ -66,7 +66,7 @@ test('result renders all approved sections in order', async () => {
   const markers = [
     'data-result-identity', 'data-even-note', '>At your best<', '>Your strengths<',
     '>How others see you<', '>The pattern to watch<', '>What you need<',
-    '>Who you work best with<', '>How you fit with each type<',
+    '>Who you work best with<', '>How you fit with each archetype<',
     '>A question to sit with<', '>Your first step<',
   ];
   let previous = -1;

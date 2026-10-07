@@ -12,8 +12,8 @@ const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, l
     <div class="landing-wrap hero-body">
       <h1 data-landing-title>No one achieves alone.</h1>
       <p class="landing-subline">But everyone goes after goals differently. Find your goal archetype.</p>
-      <button class="landing-cta" type="button" data-start>Find my type</button>
-      <div class="hero-types" role="group" aria-label="Jump to a type">
+      <button class="landing-cta" type="button" data-start>Find my archetype</button>
+      <div class="hero-types" role="group" aria-label="Jump to an archetype">
         {types.map(type => (
           <button type="button" data-jump={type.slug} aria-label={type.name}>
             <img src={assetUrl(`assets/archetypes/${type.slug}.png`)} alt="" />
@@ -38,7 +38,7 @@ const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, l
   <section class="closing">
     <div class="landing-wrap">
       <h2>Which one are you?</h2>
-      <button class="landing-cta yellow" type="button" data-start>Find my type</button>
+      <button class="landing-cta yellow" type="button" data-start>Find my archetype</button>
     </div>
   </section>
 </div>

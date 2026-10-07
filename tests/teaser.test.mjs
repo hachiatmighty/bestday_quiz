@@ -8,9 +8,9 @@ test('teaser renders the approved disclosure list without an email bypass', asyn
 
   assert.match(teaser, /data-teaser-at-best/);
   assert.match(teaser, /data-teaser-pattern/);
-  assert.match(teaser, /<h2 data-teaser-more-heading>Seven more parts of your read<\/h2>/);
-  assert.match(source, /\$\{result\.firstStep \? 'Seven' : 'Six'\} more parts of your read/);
-  for (const item of ['Your strengths', 'How others see you', 'What you need', 'Who you work best with', 'How you fit with each type', 'A question to sit with']) {
+  assert.match(teaser, /<h2 data-teaser-more-heading>Seven more things in your result<\/h2>/);
+  assert.match(source, /\$\{result\.firstStep \? 'Seven' : 'Six'\} more things in your result/);
+  for (const item of ['Your strengths', 'How others see you', 'What you need', 'Who you work best with', 'How you fit with each archetype', 'A question to sit with']) {
     assert.match(teaser, new RegExp(`<li>${item}</li>`));
   }
   assert.match(teaser, /<li data-teaser-first-step-item>Your first step<\/li>/);

@@ -15,7 +15,7 @@ export type CategorySlug = (typeof categories)[number]['slug'];
 export const archetypes: Record<ArchetypeSlug, {
   name: string; identity: string; atBest: string; strength: string; othersSee: string;
   tendency: string; need: string; worksBestWith: string; question: string; firstStep: string;
-  cardLine: string; caption: string; forward: string; pictogram: string; emailPick: string;
+  cardLine: string; forward: string; pictogram: string; emailPick: string;
 }> = {
   sprinter: {
     name: 'The Sprinter',
@@ -29,8 +29,7 @@ export const archetypes: Record<ArchetypeSlug, {
     question: "What's one goal you started with real excitement that deserves a second chance?",
     firstStep: "Choose one goal and two or three people you trust. Tell them what it is and when you'd like to reach it. Ask them to check in later on, once the early excitement has settled. That's where your momentum gets to last.",
     cardLine: 'I bring the momentum. My circle keeps it going.',
-    caption: "Apparently I'm a Sprinter. Fast start, needs someone to notice the middle. Sounds about right. What are you?",
-    forward: "I'm a Sprinter, apparently. You'd know if that's true. Do it and tell me yours",
+    forward: "I'm a Sprinter, apparently. You'd know if that's true. Take the quiz and tell me yours:",
     pictogram: '03_willpower.png',
     emailPick: "Pick someone who'll check in during the quiet middle, not only at the start.",
   },
@@ -46,8 +45,7 @@ export const archetypes: Record<ArchetypeSlug, {
     question: "What would you start this week if you trusted that your plan was already good enough?",
     firstStep: "Choose one goal you've been preparing for. Share it with two or three people who would tell you the truth, and give them a start date. Let them see the first rough step. A good plan with a witness goes further than a perfect one kept private.",
     cardLine: 'My plan is ready. My circle knows my start date.',
-    caption: "I'm a Planner. Great plans, slow starts. Needs someone to say go. Do the quiz and tell me yours.",
-    forward: "I'm a Planner, apparently. You'd know if that's true. Do it and tell me yours",
+    forward: "I'm a Planner, apparently. You'd know if that's true. Take the quiz and tell me yours:",
     pictogram: '02_goal.png',
     emailPick: "Pick someone who'll hold you to a start date.",
   },
@@ -63,8 +61,7 @@ export const archetypes: Record<ArchetypeSlug, {
     question: "If someone offered to carry something for you this month, what would you let them take?",
     firstStep: "Choose one goal that belongs only to you. Tell two or three people you trust, and include at least one person you usually look after. Ask them to check on it, even when you say you're fine.",
     cardLine: "I hold everyone. This goal, I'm not carrying alone.",
-    caption: "I'm an Anchor. Holds everyone, rarely asks for help. Annoyingly accurate. Which one are you?",
-    forward: "I'm an Anchor, apparently. You'd know if that's true. Do it and tell me yours",
+    forward: "I'm an Anchor, apparently. You'd know if that's true. Take the quiz and tell me yours:",
     pictogram: '11_isolation_community.png',
     emailPick: 'Pick someone you usually look after. Let it go the other way for once.',
   },
@@ -80,8 +77,7 @@ export const archetypes: Record<ArchetypeSlug, {
     question: "Of all the things you've been curious about lately, which one would you most like to see through?",
     firstStep: "Choose one goal to stay with for the next few months. Tell two or three people you trust what it is, and ask them to notice if it starts to change. Keep a list of your other ideas somewhere safe. They'll still be there when you're ready.",
     cardLine: "I'll always find a new idea. My circle keeps me on the one that matters.",
-    caption: 'Got Explorer. Curious about everything, needs someone to keep me on one thing. Try it.',
-    forward: "I'm an Explorer, apparently. You'd know if that's true. Do it and tell me yours",
+    forward: "I'm an Explorer, apparently. You'd know if that's true. Take the quiz and tell me yours:",
     pictogram: '06_witnessed.png',
     emailPick: "Pick someone who'll ask about the same goal twice.",
   },
@@ -97,8 +93,7 @@ export const archetypes: Record<ArchetypeSlug, {
     question: "If you could only finish one thing this year, which would you choose for yourself?",
     firstStep: "Choose the one goal that's yours. Share it with two or three people you trust and give it a real date. Ask them to notice when you say yes to something new, and to ask what it might cost your goal.",
     cardLine: 'I finish things for everyone. My circle makes sure one is mine.',
-    caption: 'Finisher. I finish things, sometimes too many at once. What did you get?',
-    forward: "I'm a Finisher, apparently. You'd know if that's true. Do it and tell me yours",
+    forward: "I'm a Finisher, apparently. You'd know if that's true. Take the quiz and tell me yours:",
     pictogram: '05_success.png',
     emailPick: "Pick someone who'll ask which goal is really yours.",
   },

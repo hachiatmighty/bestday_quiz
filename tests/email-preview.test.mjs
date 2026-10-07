@@ -47,7 +47,7 @@ test('people email links to the sender-specific referral route', async () => {
 test('every people email shows all five pairings including another of its own type', async () => {
   for (const archetype of archetypeSlugs) {
     const html = await readFile(path.resolve('dist', 'email', archetype, 'people', 'index.html'), 'utf8');
-    assert.match(html, /How you fit with each type/);
+    assert.match(html, /How you fit with each archetype/);
     assert.match(html, new RegExp(`With another ${archetype[0].toUpperCase()}${archetype.slice(1)}`));
     assert.equal((html.match(/<strong style="display:block;font-size:17px;line-height:1.3">With /g) ?? []).length, 5);
     assert.match(html, /Send it to them and find out which one they are\./);

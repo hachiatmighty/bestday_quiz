@@ -1,6 +1,7 @@
 ---
 import LandingPage from './LandingPage.astro';
 import ShareActions from './ShareActions.astro';
+import { appLinks } from '../lib/signup';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const publicQuizUrl = new URL(base, Astro.site).toString();
 const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
@@ -36,13 +37,13 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <p data-teaser-pattern></p>
       </div>
       <div class="teaser-copy teaser-more">
-        <h2 data-teaser-more-heading>Seven more parts of your read</h2>
+        <h2 data-teaser-more-heading>Seven more things in your result</h2>
         <ul class="locked">
           <li>Your strengths</li>
           <li>How others see you</li>
           <li>What you need</li>
           <li>Who you work best with</li>
-          <li>How you fit with each type</li>
+          <li>How you fit with each archetype</li>
           <li>A question to sit with</li>
           <li data-teaser-first-step-item>Your first step</li>
         </ul>
@@ -78,7 +79,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
           </article>
         </aside>
         <div class="result-main">
-          <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={siteOrigin} data-signup>Invite them onto your goal</a></article>
+          <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={appLinks.web} data-signup>Add them to your circle</a></article>
           <article class="result-copy">
             <p class="identity" data-result-identity></p>
             <p class="even-note" data-even-note hidden>Your answers were very even, so this one was close. <a href={base}>Try again</a> with your first instinct?</p>
@@ -89,8 +90,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
             <section><h3>What you need</h3><p data-result-need></p></section>
             <section><h3>Who you work best with</h3><p data-result-works-best-with></p></section>
             <section class="fit-list" data-fit-list>
-              <h3>How you fit with each type</h3>
-              <div class="fit-types" data-fit-rows role="group" aria-label="Choose a type"></div>
+              <h3>How you fit with each archetype</h3>
+              <div class="fit-types" data-fit-rows role="group" aria-label="Choose an archetype"></div>
               <p class="fit-line" data-fit-line aria-live="polite"></p>
             </section>
           </article>
@@ -100,10 +101,10 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       <div class="result-close">
         <section class="first-step" data-result-first-step-section>
           <h3>Your first step</h3><p data-result-first-step></p>
-          <a class="button" href={siteOrigin} data-signup>Start your circle</a>
+          <a class="button" href={appLinks.web} data-signup>Start your circle</a>
         </section>
         <article class="share card">
-          <h3>Who would tell you the truth about this?</h3>
+          <h3>Who would tell you if this is true?</h3>
           <p class="share-message" data-result-message></p>
           <ShareActions prefix="end-" />
         </article>
@@ -115,8 +116,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   <section class="screen" data-screen="offer">
     <div class="shell centered offer">
       <h2>Put a circle around one goal.</h2>
-      <p>On Bestday you choose one goal and invite two or three people you respect onto it. They're on it with you, and an AI companion is there for the thinking in between. No one achieves alone.</p>
-      <a class="button" href={siteOrigin} data-signup>Start your circle</a>
+      <p>Choose the goal that matters most and invite two or three people you trust to follow it with you. Bestday's AI companion is there when you want to think something through. No one achieves alone.</p>
+      <a class="button" href={appLinks.web} data-signup>Start your circle</a>
       <p class="note">Premium is $99 a year. Your people join free.</p>
     </div>
   </section>
@@ -198,7 +199,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     progressShell.hidden = !showProgress;
     stepLabel.hidden = !showProgress;
     if (questionIndex === 0) {
-      host.innerHTML = `<h2>Which goal is on your mind most right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
+      host.innerHTML = `<h2>Which goal is top of mind for you right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
       if (quizState.category) host.querySelector(`[data-category="${quizState.category}"]`)?.classList.add('selected');
       host.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
         button.classList.add('selected');
@@ -247,7 +248,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-teaser-at-best]').textContent = result.atBest;
     root.querySelector('[data-teaser-pattern]').textContent = result.tendency;
     root.querySelector('[data-teaser-first-step-item]').hidden = !result.firstStep;
-    root.querySelector('[data-teaser-more-heading]').textContent = `${result.firstStep ? 'Seven' : 'Six'} more parts of your read`;
+    root.querySelector('[data-teaser-more-heading]').textContent = `${result.firstStep ? 'Seven' : 'Six'} more things in your result`;
     configureSharing('');
     track('quiz_complete', { archetype: resultSlug, category: quizState.category });
     setTimeout(() => { track('teaser_view', { archetype: resultSlug, category: quizState.category }); show('teaser'); }, 450);
@@ -297,7 +298,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     if (sender) {
       const pairing = root.querySelector('[data-pairing]');
       pairing.hidden = false;
-      root.querySelector('[data-pairing-heading]').textContent = `You're ${result.name}. The person who sent you this is ${archetypes[sender].name}.`;
+      const withArticle = name => { const short = name.replace('The ', ''); return `${/^[AEIOU]/.test(short) ? 'an' : 'a'} ${short}`; };
+      root.querySelector('[data-pairing-heading]').textContent = `You're ${withArticle(result.name)}. Your friend's ${withArticle(archetypes[sender].name)}.`;
       root.querySelector('[data-pairing-copy]').textContent = pairingFor(resultSlug, sender);
     }
     track('result_view', { archetype: resultSlug, category: quizState.category }); show('result');
@@ -314,7 +316,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
   root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);
-  const signup = signupDestination(navigator.userAgent, siteOrigin);
+  const signup = signupDestination(navigator.userAgent, 'web');
   root.querySelectorAll('[data-signup]').forEach(link => {
     link.href = signup.url;
     link.onclick = () => track('signup_click', { archetype: resultSlug, category: quizState.category, platform: signup.platform });
