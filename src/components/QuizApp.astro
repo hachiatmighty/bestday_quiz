@@ -1,8 +1,8 @@
 ---
 import LandingPage from './LandingPage.astro';
 import ShareActions from './ShareActions.astro';
+import { appLinks } from '../lib/signup';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
-const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const publicQuizUrl = new URL(base, Astro.site).toString();
 const siteOrigin = import.meta.env.PUBLIC_SITE_ORIGIN ?? 'https://bestday.ai';
 const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
@@ -26,12 +26,10 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   <section class="screen" data-screen="teaser">
     <div class="shell teaser-shell">
       <article class="teaser-card card">
-        <span class="pictogram-disc"><img data-teaser-icon alt="" /></span>
-        <p class="eyebrow">You're</p><h2 data-teaser-name></h2><strong data-teaser-identity></strong>
-        <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
-        <span class="card-url">{cardFooter}</span>
+        <img class="card-figure" data-teaser-icon alt="" />
+        <div class="card-head"><p class="eyebrow">You're</p><h2 data-teaser-name></h2><strong data-teaser-identity></strong></div>
+        <div class="card-share"><ShareActions /></div>
       </article>
-      <ShareActions />
       <div class="teaser-copy teaser-details">
         <h3>At your best</h3>
         <p data-teaser-at-best></p>
@@ -39,15 +37,20 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
         <p data-teaser-pattern></p>
       </div>
       <div class="teaser-copy teaser-more">
-        <h2>There's more in your full read</h2>
-        <ul>
-          <li>Your strengths and how others see you</li>
-          <li>What you need and who you work best with</li>
-          <li>How you fit with each type</li>
-          <li>A question to sit with, and your first step</li>
+        <h2 data-teaser-more-heading>Seven more things in your result</h2>
+        <ul class="locked">
+          <li>Your strengths</li>
+          <li>How others see you</li>
+          <li>What you need</li>
+          <li>Who you work best with</li>
+          <li>How you fit with each archetype</li>
+          <li>A question to sit with</li>
+          <li data-teaser-first-step-item>Your first step</li>
         </ul>
-        <button class="button" data-unlock>Show my full result</button>
-        <p class="teaser-access">We'll send you a copy too.</p>
+        <div class="unlock">
+          <button class="button" data-unlock>Show my full result</button>
+          <p class="teaser-access">We'll send you a copy too.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -65,36 +68,47 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   </section>
 
   <section class="screen" data-screen="result">
-    <div class="shell result-shell">
-      <article class="result-card card">
-        <span class="category-dot" data-category-dot></span><span class="pictogram-disc"><img data-result-icon alt="" /></span>
-        <p class="eyebrow">I'm</p><h2 data-result-name></h2><strong data-card-line></strong>
-        <img class="result-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
-        <span class="card-url">{cardFooter}</span>
-      </article>
-      <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={siteOrigin} data-signup>Invite them onto your goal</a></article>
-      <article class="result-copy">
-        <p class="identity" data-result-identity></p>
-        <p class="even-note" data-even-note hidden>Your answers were very even, so this one was close. <a href={base}>Try again</a> with your first instinct?</p>
-        <h3>At your best</h3><p data-result-at-best></p>
-        <h3>Your strengths</h3><p data-result-strength></p>
-        <h3>How others see you</h3><p data-result-others-see></p>
-        <h3>The pattern to watch</h3><p data-result-tendency></p>
-        <h3>What you need</h3><p data-result-need></p>
-        <h3>Who you work best with</h3><p data-result-works-best-with></p>
-        <section class="fit-list" data-fit-list>
-          <h3>How you fit with each type</h3>
-          <div data-fit-rows></div>
+    <div class="result-shell">
+      <div class="result-split">
+        <aside class="result-aside">
+          <article class="result-card card">
+            <span class="category-dot" data-category-dot></span>
+            <img class="card-figure" data-result-icon alt="" />
+            <div class="card-head"><p class="eyebrow">I'm</p><h2 data-result-name></h2><strong data-card-line></strong><span class="card-url">{cardFooter}</span></div>
+            <div class="card-share"><ShareActions prefix="result-" /></div>
+          </article>
+        </aside>
+        <div class="result-main">
+          <article class="pairing card" data-pairing hidden><p data-pairing-heading></p><strong data-pairing-copy></strong><a class="button" href={appLinks.web} data-signup>Add them to your circle</a></article>
+          <article class="result-copy">
+            <p class="identity" data-result-identity></p>
+            <p class="even-note" data-even-note hidden>Your answers were very even, so this one was close. <a href={base}>Try again</a> with your first instinct?</p>
+            <section><h3>At your best</h3><p data-result-at-best></p></section>
+            <section><h3>Your strengths</h3><p data-result-strength></p></section>
+            <section><h3>How others see you</h3><p data-result-others-see></p></section>
+            <section class="pattern"><h3>The pattern to watch</h3><blockquote data-result-tendency-lead></blockquote><p data-result-tendency></p></section>
+            <section><h3>What you need</h3><p data-result-need></p></section>
+            <section><h3>Who you work best with</h3><p data-result-works-best-with></p></section>
+            <section class="fit-list" data-fit-list>
+              <h3>How you fit with each archetype</h3>
+              <div class="fit-types" data-fit-rows role="group" aria-label="Choose an archetype"></div>
+              <p class="fit-line" data-fit-line aria-live="polite"></p>
+            </section>
+          </article>
+        </div>
+      </div>
+      <section class="question-band"><h3>A question to sit with</h3><p data-result-question></p></section>
+      <div class="result-close">
+        <section class="first-step" data-result-first-step-section>
+          <h3>Your first step</h3><p data-result-first-step></p>
+          <a class="button" href={appLinks.web} data-signup>Start your circle</a>
         </section>
-        <section class="reflection">
-          <h3>A question to sit with</h3><p data-result-question></p>
-        </section>
-        <h3>Your first step</h3><p data-result-first-step></p>
-      </article>
-      <article class="share card">
-        <h3>Who would tell you the truth about this? Send it to them.</h3>
-        <ShareActions prefix="result-" />
-      </article>
+        <article class="share card">
+          <h3>Who would tell you if this is true?</h3>
+          <p class="share-message" data-result-message></p>
+          <ShareActions prefix="end-" />
+        </article>
+      </div>
       <div class="result-nav"><button class="button secondary" data-offer>What happens next</button><button class="skip" data-restart>Take it again</button></div>
     </div>
   </section>
@@ -102,9 +116,9 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   <section class="screen" data-screen="offer">
     <div class="shell centered offer">
       <h2>Put a circle around one goal.</h2>
-      <p>On Bestday you choose one goal and invite two or three people you respect onto it. They're on it with you, and an AI companion is there for the thinking in between. No one achieves alone.</p>
-      <a class="button" href={siteOrigin} data-signup>Start your circle</a>
-      <p class="note">7 days free, then Premium is $99 a year.</p>
+      <p>Choose the goal that matters most and invite two or three people you trust to follow it with you. Bestday's AI companion is there when you want to think something through. No one achieves alone.</p>
+      <a class="button" href={appLinks.web} data-signup>Start your circle</a>
+      <p class="note">Premium is $99 a year. Your people join free.</p>
     </div>
   </section>
 </main>
@@ -115,7 +129,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   import { submitCapture } from '../lib/capture';
   import { signupDestination } from '../lib/signup';
   import { isVeryEven, scoreQuizWithDetails } from '../lib/scoring.mjs';
-  import { createQuizState, goBack, recordAnswer, recordCategory, startQuiz } from '../lib/quiz-state.mjs';
+  import { createQuizState, goBack, questionIndexForStep, recordAnswer, recordCategory, startQuiz, stepCount, stepFor } from '../lib/quiz-state.mjs';
   import { archetypes, categories, pairingFor, pairingsFor, questions } from '../data/quiz';
   const mixpanelToken = import.meta.env.PUBLIC_MIXPANEL_TOKEN;
   const captureEndpoint = import.meta.env.PUBLIC_CAPTURE_ENDPOINT;
@@ -133,11 +147,30 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   const show = name => { screens.forEach(screen => screen.classList.toggle('active', screen.dataset.screen === name)); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const shareUrl = () => { const url = new URL(`r/${resultSlug}`, publicQuizUrl); url.searchParams.set('ref', resultSlug); return url; };
   const cardUrl = () => `${baseUrl}assets/cards/${resultSlug}.png`;
+  // Instagram has no web link that opens a post with the card in it. On phones the Instagram button hands the card
+  // image to the share sheet, where Instagram is one of the choices; elsewhere it falls back to downloading the card.
+  let cardFile = null;
+  const loadCardFile = () => {
+    const slug = resultSlug;
+    if (cardFile?.name === `bestday-${slug}.png`) return;
+    fetch(cardUrl()).then(response => response.blob()).then(blob => {
+      if (slug === resultSlug) cardFile = new File([blob], `bestday-${slug}.png`, { type: 'image/png' });
+    }).catch(() => {});
+  };
   const configureSharing = prefix => {
     const result = archetypes[resultSlug];
     const message = `${result.forward} ${shareUrl()}`;
     const whatsappLink = root.querySelector(`[data-${prefix}whatsapp]`);
+    const instagramLink = root.querySelector(`[data-${prefix}instagram]`);
     const saveLink = root.querySelector(`[data-${prefix}save]`);
+    loadCardFile();
+    instagramLink.href = cardUrl();
+    instagramLink.onclick = event => {
+      track('share_click', { channel: 'instagram', archetype: resultSlug });
+      if (!cardFile || !navigator.canShare?.({ files: [cardFile] })) return;
+      event.preventDefault();
+      navigator.share({ files: [cardFile], text: message }).catch(() => {});
+    };
     whatsappLink.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
     whatsappLink.onclick = () => track('share_click', { channel: 'whatsapp', archetype: resultSlug });
     saveLink.href = cardUrl();
@@ -148,7 +181,15 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
       else await navigator.clipboard.writeText(message);
     };
   };
-  const renderQuestion = () => {
+  const trackStep = ({ fromHistory = false } = {}) => {
+    const step = stepFor(quizState.questionIndex);
+    const url = new URL(location.href);
+    url.searchParams.set('step', step.key);
+    if (!fromHistory && url.href !== location.href) history.pushState({ step: step.key }, '', url);
+    track('step_view', { step: step.number, step_key: step.key, statement: step.statement, step_count: stepCount, category: quizState.category });
+  };
+  const renderQuestion = ({ fromHistory = false } = {}) => {
+    trackStep({ fromHistory });
     const host = root.querySelector('[data-question]');
     const { questionIndex } = quizState;
     root.querySelector('[data-back]').hidden = questionIndex === 0;
@@ -158,7 +199,7 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     progressShell.hidden = !showProgress;
     stepLabel.hidden = !showProgress;
     if (questionIndex === 0) {
-      host.innerHTML = `<h2>Which goal is on your mind most right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
+      host.innerHTML = `<h2>Which goal is top of mind for you right now?</h2><div class="options">${categories.map(item => `<button class="option" data-category="${item.slug}"><span>${item.label}</span></button>`).join('')}</div>`;
       if (quizState.category) host.querySelector(`[data-category="${quizState.category}"]`)?.classList.add('selected');
       host.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
         button.classList.add('selected');
@@ -206,6 +247,8 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-teaser-icon]').src = `${baseUrl}assets/archetypes/${resultSlug}.png`;
     root.querySelector('[data-teaser-at-best]').textContent = result.atBest;
     root.querySelector('[data-teaser-pattern]').textContent = result.tendency;
+    root.querySelector('[data-teaser-first-step-item]').hidden = !result.firstStep;
+    root.querySelector('[data-teaser-more-heading]').textContent = `${result.firstStep ? 'Seven' : 'Six'} more things in your result`;
     configureSharing('');
     track('quiz_complete', { archetype: resultSlug, category: quizState.category });
     setTimeout(() => { track('teaser_view', { archetype: resultSlug, category: quizState.category }); show('teaser'); }, 450);
@@ -220,29 +263,49 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
     root.querySelector('[data-result-at-best]').textContent = result.atBest;
     root.querySelector('[data-result-strength]').textContent = result.strength;
     root.querySelector('[data-result-others-see]').textContent = result.othersSee;
-    root.querySelector('[data-result-tendency]').textContent = result.tendency;
+    const [tendencyLead, ...tendencyRest] = result.tendency.split(/(?<=\.)\s+/);
+    root.querySelector('[data-result-tendency-lead]').textContent = tendencyLead;
+    root.querySelector('[data-result-tendency]').textContent = tendencyRest.join(' ');
     root.querySelector('[data-result-need]').textContent = result.need;
     root.querySelector('[data-result-works-best-with]').textContent = result.worksBestWith;
     root.querySelector('[data-result-question]').textContent = result.question;
     root.querySelector('[data-result-first-step]').textContent = result.firstStep;
-    root.querySelector('[data-fit-rows]').innerHTML = pairingsFor(resultSlug).map(pairing => `
-      <div class="fit-row">
-        <img src="${baseUrl}assets/archetypes/${pairing.partner}.png" alt="" />
-        <div><strong>${pairing.label}</strong><p>${pairing.line}</p></div>
-      </div>
+    root.querySelector('[data-result-first-step-section]').hidden = !result.firstStep;
+    // How you fit: one figure per type (yours tagged "You"); choosing one shows that pairing's line.
+    const pairings = pairingsFor(resultSlug);
+    const fitTypes = root.querySelector('[data-fit-rows]');
+    const fitLine = root.querySelector('[data-fit-line]');
+    fitTypes.innerHTML = pairings.map(pairing => `
+      <button type="button" class="fit-type${pairing.partner === resultSlug ? ' me' : ''}" data-partner="${pairing.partner}" aria-pressed="false">
+        <img src="${baseUrl}assets/archetypes/${pairing.partner}.png" alt="" /><span>${archetypes[pairing.partner].name.replace('The ', '')}</span>
+      </button>
     `).join('');
+    const showFit = partner => {
+      const pairing = pairings.find(item => item.partner === partner);
+      fitTypes.querySelectorAll('[data-partner]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.partner === partner)));
+      fitLine.innerHTML = '<span></span>';
+      fitLine.firstChild.textContent = pairing.label;
+      fitLine.append(pairing.line);
+    };
+    fitTypes.querySelectorAll('[data-partner]').forEach(button => {
+      button.onclick = () => { showFit(button.dataset.partner); track('fit_view', { archetype: resultSlug, partner: button.dataset.partner }); };
+    });
+    showFit(sender ?? pairings.find(item => item.partner !== resultSlug).partner);
     root.querySelector('[data-category-dot]').style.background = categoryInfo.color;
+    root.querySelector('[data-result-message]').textContent = `${result.forward} ${shareUrl()}`;
     configureSharing('result-');
+    configureSharing('end-');
     if (sender) {
       const pairing = root.querySelector('[data-pairing]');
       pairing.hidden = false;
-      root.querySelector('[data-pairing-heading]').textContent = `You're ${result.name}. The person who sent you this is ${archetypes[sender].name}.`;
+      const withArticle = name => { const short = name.replace('The ', ''); return `${/^[AEIOU]/.test(short) ? 'an' : 'a'} ${short}`; };
+      root.querySelector('[data-pairing-heading]').textContent = `You're ${withArticle(result.name)}. Your friend's ${withArticle(archetypes[sender].name)}.`;
       root.querySelector('[data-pairing-copy]').textContent = pairingFor(resultSlug, sender);
     }
     track('result_view', { archetype: resultSlug, category: quizState.category }); show('result');
   };
   root.querySelectorAll('[data-start]').forEach(button => { button.onclick = () => { track('quiz_start'); renderQuestion(); show('quiz'); }; });
-  root.querySelector('[data-back]').onclick = () => { goBack(quizState); renderQuestion(); };
+  root.querySelector('[data-back]').onclick = () => { if (history.state?.step) history.back(); else { goBack(quizState); renderQuestion(); } };
   root.querySelector('[data-unlock]').onclick = () => show('capture');
   const whatsappInput = root.querySelector('[data-whatsapp-input]');
   whatsappInput.oninput = () => { root.querySelector('.whatsapp-consent').hidden = !whatsappInput.value.trim(); };
@@ -253,16 +316,26 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   };
   root.querySelector('[data-offer]').onclick = () => show('offer');
   root.querySelector('[data-restart]').onclick = () => location.assign(baseUrl);
-  const signup = signupDestination(navigator.userAgent, siteOrigin);
+  const signup = signupDestination(navigator.userAgent, 'web');
   root.querySelectorAll('[data-signup]').forEach(link => {
     link.href = signup.url;
     link.onclick = () => track('signup_click', { archetype: resultSlug, category: quizState.category, platform: signup.platform });
   });
+  window.addEventListener('popstate', () => {
+    const questionIndex = questionIndexForStep(new URLSearchParams(location.search).get('step'));
+    if (questionIndex === null) { show('landing'); return; }
+    if (questionIndex > quizState.questionIndex || (questionIndex >= 2 && !quizState.category)) return;
+    quizState.questionIndex = questionIndex;
+    renderQuestion({ fromHistory: true });
+    show('quiz');
+  });
+  if (params.has('step')) { const url = new URL(location.href); url.searchParams.delete('step'); history.replaceState(null, '', url); }
   track('landing_view'); if (sender) track('referral_landing', { archetype: sender });
+  if (params.get('start') === '1') root.querySelector('[data-start]')?.click();
 </script>
 
 <style>
-.screen{display:none;min-height:100svh;padding:32px 0}.screen.active{display:block}.screen.landing{padding:0}.question-shell{padding-top:22px}.back{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:10px 0;margin-bottom:10px}.progress{height:6px;background:#2c2c29;border-radius:10px;overflow:hidden;margin-bottom:34px}.progress span{display:block;height:100%;background:var(--yellow);transition:width .25s}:global(.options){display:grid;gap:10px}:global(.option){width:100%;display:flex;align-items:center;text-align:left;padding:16px;border:1px solid #3b3b36;border-radius:12px;background:#1A1A1A;color:var(--cream);cursor:pointer}:global(.option.selected){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}@media(hover:hover){:global(.option:hover){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}}:global(.scale){display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;color:#d6d2c7;font-size:.82rem}:global(.scale-dots){display:flex;align-items:center;justify-content:space-between;gap:8px}:global(.scale-dot){width:clamp(38px,10vw,56px);aspect-ratio:1;border-radius:50%;border:2px solid #706d63;background:#1A1A1A;cursor:pointer}:global(.scale-dot:nth-child(2)),:global(.scale-dot:nth-child(4)){transform:scale(.88)}:global(.scale-dot:nth-child(3)){transform:scale(.76)}:global(.scale-dot.selected){border-color:var(--yellow);background:var(--yellow)}@media(hover:hover){:global(.scale-dot:hover){border-color:var(--yellow)}}.centered{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.centered>p:not(.eyebrow){max-width:560px;color:#d1cec2;line-height:1.55}.teaser-shell{display:grid;gap:14px}.teaser-card,.result-card{position:relative;overflow:hidden;min-height:560px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--black);color:var(--cream);border:1px solid #2A2A2A}.teaser-card{min-height:420px;padding:22px}.pictogram-disc{position:absolute;width:64%;max-width:calc(100% - 48px);aspect-ratio:1;top:24px;left:50%;transform:translateX(-50%);display:grid;place-items:center}.teaser-card .pictogram-disc{top:18px;width:32%}.pictogram-disc img{width:100%;height:100%;object-fit:contain}.teaser-card h2,.result-card h2{color:var(--yellow);font-size:clamp(3rem,14vw,6rem);margin:0 0 8px;max-width:90%}.teaser-card .eyebrow,.result-card .eyebrow{color:var(--yellow);margin:0}.teaser-card strong,.result-card strong{max-width:460px;font-size:1.18rem}.teaser-copy h2{margin:6px 0 10px}.teaser-copy p{line-height:1.45;color:#d1cec2;margin:0 0 14px}.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:1/-1}.capture{margin-top:max(7vh,36px);padding:28px;background:#191917;border:1px solid #34342e}.capture label{display:grid;gap:8px;margin:18px 0;font-weight:800}.capture label span{font-weight:500;color:#a9a69d}.capture .label-line{display:inline;font-weight:800;color:inherit;white-space:nowrap}.capture input:not([type=checkbox]){width:100%;border:1px solid #555249;border-radius:12px;padding:15px;background:#0D0D0D;color:white;font-weight:500}.consent-copy{font-size:.82rem;color:#c9c6bb;line-height:1.45}.capture .consent{grid-template-columns:auto 1fr;align-items:start;font-size:.86rem;font-weight:500;line-height:1.45;color:#c9c6bb}.skip{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:16px}.form-status{color:var(--yellow)}.result-shell{display:grid;gap:28px}.result-logo{width:94px;margin-top:26px}.teaser-card .result-logo{margin-top:18px}.card-url{color:var(--cream);font-size:.82rem;margin-top:8px}.category-dot{position:absolute;top:24px;left:24px;width:18px;height:18px;border:3px solid var(--black);border-radius:50%;z-index:2}.result-copy{line-height:1.6}.identity{font-size:1.55rem;font-weight:800;line-height:1.25}.even-note{margin:-12px 0 0;color:var(--yellow);font-weight:800}.even-note[hidden]{display:none}.fit-list{margin-top:40px}.fit-list h3{margin-bottom:8px}:global(.fit-row){display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:16px 0;border-bottom:1px solid #34342e}:global(.fit-row img){width:36px;height:36px;object-fit:contain}:global(.fit-row strong){display:block;line-height:1.25}:global(.fit-row p){margin:3px 0 0;line-height:1.45;color:#d4d1c6}.share,.pairing{padding:26px;background:#191917;border:1px solid #34342e}.share h3{margin-top:0}.pairing{display:grid;gap:14px}.pairing[hidden]{display:none}.pairing p{margin:0;color:#d4d1c6}.pairing strong{font-size:1.2rem}.result-nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.offer .button{margin-top:12px}@media(max-width:520px){:global(.scale){grid-template-columns:1fr 1fr;row-gap:12px}:global(.scale-dots){grid-column:1/-1;grid-row:1}:global(.scale > span:last-child){text-align:right}}@media(min-width:720px){.screen:not(.landing){padding:56px 0}.capture{padding:42px}.teaser-card,.result-card{min-height:700px;padding:52px}.share-actions{display:flex;flex-wrap:wrap}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:auto}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.screen{display:none;min-height:100svh;padding:32px 0}.screen.active{display:block}.screen.landing{padding:0}.question-shell{padding-top:22px}.back{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:10px 0;margin-bottom:10px}.progress{height:6px;background:#2c2c29;border-radius:10px;overflow:hidden;margin-bottom:34px}.progress span{display:block;height:100%;background:var(--yellow);transition:width .25s}:global(.options){display:grid;gap:10px}:global(.option){width:100%;display:flex;align-items:center;text-align:left;padding:16px;border:1px solid #3b3b36;border-radius:12px;background:#1A1A1A;color:var(--cream);cursor:pointer}:global(.option.selected){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}@media(hover:hover){:global(.option:hover){border-color:var(--yellow);background:#2b2715;transform:translateY(-1px)}}:global(.scale){display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;color:#d6d2c7;font-size:.82rem}:global(.scale-dots){display:flex;align-items:center;justify-content:space-between;gap:8px}:global(.scale-dot){width:clamp(38px,10vw,56px);aspect-ratio:1;border-radius:50%;border:2px solid #706d63;background:#1A1A1A;cursor:pointer}:global(.scale-dot:nth-child(2)),:global(.scale-dot:nth-child(4)){transform:scale(.88)}:global(.scale-dot:nth-child(3)){transform:scale(.76)}:global(.scale-dot.selected){border-color:var(--yellow);background:var(--yellow)}@media(hover:hover){:global(.scale-dot:hover){border-color:var(--yellow)}}.centered{min-height:calc(100svh - 64px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.centered>p:not(.eyebrow){max-width:560px;color:#d1cec2;line-height:1.55}.teaser-shell{display:grid;gap:14px}.teaser-card,.result-card{position:relative;overflow:hidden;min-height:560px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--black);color:var(--cream);border:1px solid #2A2A2A}.teaser-card{min-height:420px;padding:22px}.pictogram-disc{position:absolute;width:64%;max-width:calc(100% - 48px);aspect-ratio:1;top:24px;left:50%;transform:translateX(-50%);display:grid;place-items:center}.teaser-card .pictogram-disc{top:18px;width:32%}.pictogram-disc img{width:100%;height:100%;object-fit:contain}.teaser-card h2,.result-card h2{color:var(--yellow);font-size:clamp(3rem,14vw,6rem);margin:0 0 18px;line-height:1;max-width:90%}.teaser-card .eyebrow,.result-card .eyebrow{color:var(--yellow);margin:0}.teaser-card strong,.result-card strong{max-width:460px;font-size:1.18rem}.teaser-copy h2{margin:6px 0 10px}.teaser-copy p{line-height:1.45;color:#d1cec2;margin:0 0 14px}.share-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:1/-1}.capture{margin-top:max(7vh,36px);padding:28px;background:#191917;border:1px solid #34342e}.capture label{display:grid;gap:8px;margin:18px 0;font-weight:800}.capture label span{font-weight:500;color:#a9a69d}.capture .label-line{display:inline;font-weight:800;color:inherit;white-space:nowrap}.capture input:not([type=checkbox]){width:100%;border:1px solid #555249;border-radius:12px;padding:15px;background:#0D0D0D;color:white;font-weight:500}.consent-copy{font-size:.82rem;color:#c9c6bb;line-height:1.45}.capture .consent{grid-template-columns:auto 1fr;align-items:start;font-size:.86rem;font-weight:500;line-height:1.45;color:#c9c6bb}.skip{border:0;background:none;color:#d6d2c7;text-decoration:underline;cursor:pointer;padding:16px}.form-status{color:var(--yellow)}.result-shell{display:grid;gap:28px}.result-logo{width:94px;margin-top:26px}.teaser-card .result-logo{margin-top:18px}.card-url{color:var(--cream);font-size:.82rem;margin-top:8px}.category-dot{position:absolute;top:24px;left:24px;width:18px;height:18px;border:3px solid var(--black);border-radius:50%;z-index:2}.result-copy{line-height:1.6}.identity{font-size:1.55rem;font-weight:800;line-height:1.25}.even-note{margin:-12px 0 0;color:var(--yellow);font-weight:800}.even-note[hidden]{display:none}.fit-list{margin:40px 0}.fit-list h3{margin-bottom:8px}:global(.fit-row){display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:16px 0;border-bottom:1px solid #34342e}:global(.fit-row img){width:36px;height:36px;object-fit:contain}:global(.fit-row strong){display:block;line-height:1.25}:global(.fit-row p){margin:3px 0 0;line-height:1.45;color:#d4d1c6}.share,.pairing{padding:26px;background:#191917;border:1px solid #34342e}.share h3{margin-top:0}.pairing{display:grid;gap:14px}.pairing[hidden]{display:none}.pairing p{margin:0;color:#d4d1c6}.pairing strong{font-size:1.2rem}.result-nav{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.offer .button{margin-top:12px}@media(max-width:520px){:global(.scale){grid-template-columns:1fr 1fr;row-gap:12px}:global(.scale-dots){grid-column:1/-1;grid-row:1}:global(.scale > span:last-child){text-align:right}}@media(min-width:720px){.screen:not(.landing){padding:56px 0}.capture{padding:42px}.teaser-card,.result-card{min-height:700px;padding:52px}.share-actions{display:flex;flex-wrap:wrap}.share-actions [data-whatsapp],.share-actions [data-result-whatsapp]{grid-column:auto}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 .capture{margin-top:0}
 .back{align-self:flex-start}
 .category-dot{left:28px}
@@ -283,17 +356,92 @@ const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
   :global(.scale-dot){width:64px}
 }
 @media(min-width:720px){.category-dot{top:52px;left:52px}}
-:global(.share-actions){display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:6px}
-:global(.share-actions [data-whatsapp]),:global(.share-actions [data-result-whatsapp]){grid-column:auto}
+:global(.share-actions){display:grid;grid-template-columns:repeat(4,1fr);align-items:start;gap:6px;max-width:360px}
+:global(.share-actions [data-whatsapp]),:global(.share-actions [data-result-whatsapp]),:global(.share-actions [data-end-whatsapp]){grid-column:auto}
 :global(.share-action){min-width:44px;min-height:44px;padding:0;border:0;background:none;color:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-decoration:none;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
 :global(.action-icon){width:52px;height:52px;flex:0 0 52px;border:1px solid #706d63;border-radius:50%;display:grid;place-items:center}
 :global(.action-icon svg){width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-:global(.whatsapp .action-icon){background:var(--yellow);border-color:var(--yellow);color:var(--black)}
-:global(.whatsapp .action-icon svg){fill:currentColor;stroke:none}
+:global(.whatsapp .action-icon svg),:global(.brand .action-icon svg){fill:currentColor;stroke:none}
+:global(.brand .action-icon svg){width:20px;height:20px}
+:global(.share-action .caption){white-space:nowrap}
 :global(.share-action:focus-visible){outline:3px solid var(--yellow);outline-offset:4px;border-radius:8px}
 .teaser-details{padding-top:14px}.teaser-details h3{margin:0 0 8px}.teaser-details h3:not(:first-child){margin-top:24px}.teaser-details p{margin-bottom:0}.teaser-more{padding-top:18px}.teaser-more h2{font-size:1.65rem}.teaser-more ul{margin:0 0 22px;padding-left:1.25rem;color:#d1cec2;line-height:1.75}.teaser-more .button{margin-top:0}.teaser-access{color:#a9a69d!important}
 :global(.intro-copy){max-width:620px;margin-bottom:28px;color:#d1cec2;line-height:1.6}:global(.intro-copy p){margin:0 0 16px}
 @media(min-width:720px){:global(.intro-copy){font-size:1.15rem;line-height:1.5}}
 @media(min-width:720px){:global(.result-copy p),.teaser-details p{max-width:66ch;font-size:1.1rem;line-height:1.65}}
-.reflection{margin:40px 0}.reflection p{font-size:1.3rem;font-style:italic;line-height:1.45;color:var(--cream)}
+</style>
+
+<style>
+/* Result pages. Teaser: a compact card (figure, name, share), the two free sections, then the locked sections in grey.
+   Full result: the card stays pinned beside the read on wide screens; the pattern and the question get cream moments;
+   it ends on the first step and a ready-to-send share. */
+.teaser-card,.result-card{min-height:0;padding:24px;display:grid;grid-template-columns:96px 1fr;column-gap:18px;row-gap:16px;align-items:center;justify-content:normal;background:#121211;border:1px solid #2a2a2a;border-radius:20px}
+.card-figure{width:96px;height:auto}
+.card-head h2{margin:2px 0 10px}
+.teaser-card h2,.result-card h2{font-size:clamp(2.3rem,9vw,4.4rem);letter-spacing:-.055em;margin-bottom:12px;max-width:none}
+.teaser-card strong,.result-card strong{display:block;font-size:1rem;line-height:1.35}
+.card-share{grid-column:1/-1}
+.card-url{display:block;margin-top:14px;color:#a9a69d;font-size:.8rem}
+.category-dot{top:16px;left:16px;width:14px;height:14px}
+.teaser-more{margin-top:40px;padding-top:36px;border-top:1px solid #262622}
+.teaser-more h2{font-size:clamp(1.9rem,4vw,2.5rem);margin-bottom:22px}
+.teaser-more .locked{display:grid;grid-template-columns:1fr;gap:8px;margin:0 0 26px;padding:0;list-style:none;color:inherit;line-height:1.3}
+.locked li{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-radius:14px;background:#141413;color:#55534b;font-weight:800}
+.locked li::after{content:"";width:12px;height:10px;border:2px solid #44433d;border-radius:3px;box-shadow:0 -6px 0 -2px #121211,0 -7px 0 -2px #44433d}
+.locked li[hidden]{display:none}
+.unlock{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.unlock .teaser-access{margin:0}
+.result-shell{width:min(100% - 32px,1200px);margin:0 auto;display:grid;gap:0}
+.result-split{display:grid;gap:36px}
+.result-main{display:grid;gap:28px}
+.result-copy{display:grid;gap:40px}
+.result-copy section h3{margin:0 0 10px;color:var(--yellow);font-size:1.15rem}
+.result-copy section p{margin:0;color:#d8d5c9}
+.result-copy .identity{margin:0;font-size:clamp(1.9rem,3.4vw,2.6rem);line-height:1.08;letter-spacing:-.04em;max-width:20ch}
+.even-note{margin:-24px 0 0}
+.result-copy .pattern{padding:30px 26px;border-radius:24px;background:var(--cream);color:var(--black)}
+.result-copy .pattern h3{color:#6b6553}
+.pattern blockquote{margin:0 0 16px;font-size:clamp(1.6rem,3vw,2.1rem);font-weight:800;line-height:1.12;letter-spacing:-.035em;max-width:22ch}
+.result-copy .pattern p{color:#3d3a30}
+.fit-types{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+:global(.fit-type){position:relative;display:grid;justify-items:center;gap:4px;padding:10px 2px 8px;border:1px solid #2f2f2b;border-radius:14px;background:none;color:#b9b6aa;font:inherit;font-size:.7rem;font-weight:800;cursor:pointer}
+:global(.fit-type img){width:44px;height:44px;object-fit:contain}
+:global(.fit-type[aria-pressed="true"]){border:2px solid var(--yellow);background:#19180f;color:var(--yellow)}
+:global(.fit-type.me)::after{content:"You";position:absolute;top:-9px;left:50%;transform:translateX(-50%);padding:1px 7px;border-radius:999px;background:var(--yellow);color:var(--black);font-size:.62rem}
+:global(.fit-type:focus-visible){outline:3px solid var(--yellow);outline-offset:3px}
+.fit-line{margin:12px 0 0;padding:16px 18px;border-radius:14px;background:#19180f;color:var(--cream)!important;font-weight:800;font-size:1.08rem;line-height:1.4}
+.fit-line :global(span){display:block;margin-bottom:6px;color:var(--yellow);font-size:.82rem}
+.question-band{margin:56px 0 0;padding:64px 0;background:var(--cream);color:var(--black);text-align:center;box-shadow:0 0 0 100vmax var(--cream);clip-path:inset(0 -100vmax)}
+.question-band h3{margin:0;color:#6b6553;font-size:1rem}
+.question-band p{max-width:20ch;margin:16px auto 0;font-size:clamp(2.1rem,4.6vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.05em}
+.result-close{display:grid;gap:20px;padding:64px 0 28px}
+.first-step{display:flex;flex-direction:column;gap:14px;padding:28px;border:2px solid var(--yellow);border-radius:24px}
+.first-step[hidden]{display:none}
+.first-step h3{margin:0;color:var(--yellow);font-size:1.15rem}
+.first-step p{margin:0;font-size:1.2rem;font-weight:800;line-height:1.35}
+.first-step .button{align-self:flex-start;margin-top:6px}
+.result-close .share{display:flex;flex-direction:column;gap:16px;padding:28px;border:0;border-radius:24px;background:#141413}
+.result-close .share h3{margin:0}
+.share-message{margin:0;padding:16px 18px;border-radius:18px 18px 18px 4px;background:#1d2a22;color:#e9f2ea;line-height:1.45;overflow-wrap:anywhere}
+.result-nav{padding-bottom:40px}
+@media(min-width:720px){
+  .teaser-card{grid-template-columns:200px 1fr;column-gap:28px;padding:30px 34px}
+  .teaser-card .card-figure{width:200px;grid-row:span 2}
+  .teaser-card .card-share{grid-column:2}
+  .teaser-more .locked{grid-template-columns:1fr 1fr;gap:10px}
+  .teaser-more .locked li:last-child{grid-column:1/-1}
+  .result-copy .pattern{padding:40px 44px}
+  .result-close{grid-template-columns:1fr 1fr;width:min(100%,1000px);margin:0 auto;padding-top:96px}
+  :global(.fit-type){font-size:.82rem;padding:12px 6px 10px}
+  :global(.fit-type img){width:70px;height:70px}
+}
+@media(min-width:980px){
+  .result-split{grid-template-columns:360px 1fr;gap:72px;align-items:start}
+  .result-aside{position:sticky;top:30px}
+  .result-card{grid-template-columns:1fr;padding:26px}
+  .result-card .card-figure{width:220px;margin:0 auto}
+  .result-card h2{font-size:3.3rem}
+  .question-band{margin-top:96px;padding:110px 0}
+}
+@media(min-width:720px) and (max-width:979px){.result-card{grid-template-columns:140px 1fr}.result-card .card-figure{width:140px}}
 </style>

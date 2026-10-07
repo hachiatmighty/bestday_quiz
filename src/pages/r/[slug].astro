@@ -1,45 +1,66 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { archetypes, archetypeOrder } from '../../data/quiz';
+import { archetypes, archetypeOrder, manifestoLines } from '../../data/quiz';
 export function getStaticPaths() { return archetypeOrder.map(slug => ({ params: { slug }, props: { slug } })); }
 const { slug } = Astro.props;
 const result = archetypes[slug];
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
-const quizUrl = new URL(`${base}?ref=${slug}`, Astro.site);
-const cardFooter = new URL(base, Astro.site).host + base.replace(/\/$/, '');
+const quizUrl = `${base}?ref=${slug}&start=1`;
 ---
-<BaseLayout title={`I'm ${result.name}. What are you?`} description="A two-minute quiz on how you go after goals, and who you do it best with." image={assetUrl(`assets/og/${slug}.png`)} imageAlt={`Bestday result card for ${result.name}.`}>
+<BaseLayout title={`I'm ${result.name}. What are you?`} description="A three-minute quiz on how you go after goals, and who you do it best with." image={assetUrl(`assets/og/${slug}.png`)} imageAlt={`Bestday result card for ${result.name}.`}>
   <main class="share-page">
-    <div class="shell">
+    <div class="wrap">
       <img class="wordmark" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
-      <article class="result-card">
-        <span class="pictogram"><img src={assetUrl(`assets/archetypes/${slug}.png`)} alt="" /></span>
-        <p>I'm</p><h1>{result.name}</h1><strong>{result.cardLine}</strong>
-        <img class="card-logo" src={assetUrl('assets/logos/wordmark-white.png')} alt="Bestday" />
-        <span class="card-url">{cardFooter}</span>
-      </article>
-      <h2>What type are you when a goal gets real?</h2>
-      <p class="lead">Take the quiz, then send your result to one person who tells you the truth.</p>
-      <a class="button" href={quizUrl}>Find my type</a>
+      <header class="hero">
+        <div class="copy">
+          <h1>Your friend is <em>{result.name}.</em></h1>
+          <p class="lead">Find your goal archetype, and how you two work together.</p>
+          <a class="button" href={quizUrl}>Find my archetype</a>
+        </div>
+        <div class="duo">
+          <img class="friend-card" src={assetUrl(`assets/cards/${slug}.png`)} alt={`Your friend's result card: ${result.name}. ${result.cardLine}`} />
+          <div class="slot" aria-hidden="true"><b>?</b><span>I'm</span><strong>You</strong></div>
+        </div>
+      </header>
+      <section class="their-line">
+        <img src={assetUrl(`assets/archetypes/${slug}.png`)} alt="" />
+        <h2>{manifestoLines[slug]}<span>{result.name}</span></h2>
+      </section>
     </div>
   </main>
 </BaseLayout>
 <style>
-.share-page { min-height: 100svh; padding: 28px 0 70px; }
-.wordmark { width: 112px; margin-bottom: 28px; }
-.result-card { position: relative; overflow: hidden; min-height: 510px; padding: 28px; border: 1px solid #2A2A2A; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--black); color: var(--cream); }
-.pictogram { position: absolute; width: 68%; max-width: calc(100% - 48px); aspect-ratio: 1; top: 24px; left: 50%; transform: translateX(-50%); display: grid; place-items: center; }
-.pictogram img { width: 100%; height: 100%; object-fit: contain; }
-.result-card p { color: var(--yellow); margin: 0; font-weight: 800; }
-.result-card h1 { color: var(--yellow); margin: 5px 0 8px; font-size: clamp(3.2rem, 15vw, 6rem); line-height: .88; letter-spacing: -.06em; max-width: 90%; }
-.result-card strong { font-size: 1.2rem; max-width: 440px; }
-.card-logo { width: 94px; margin-top: 26px; }
-.card-url { color: var(--cream); font-size: .82rem; margin-top: 8px; }
-h2 { font-size: clamp(2rem, 9vw, 3.3rem); line-height: 1; letter-spacing: -.04em; margin: 42px 0 12px; }
-.lead { color: #d7d4c8; line-height: 1.5; margin-bottom: 25px; }
-@media (min-width: 720px) {
-  .result-card { min-height: 700px; padding: 52px; }
-  .pictogram { width: 42%; top: 42px; }
+.share-page { min-height: 100svh; padding: 28px 0 40px; }
+.wrap { width: min(100% - 80px, 1160px); margin: 0 auto; }
+.wordmark { width: 112px; }
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 56px 0 100px; }
+h1 { margin: 0; font-size: clamp(3rem, 6vw, 5rem); line-height: 1; letter-spacing: -.055em; max-width: 11ch; }
+h1 em { font-style: normal; color: var(--yellow); }
+.lead { margin: 24px 0 34px; color: #d1cec2; font-size: 1.35rem; line-height: 1.45; max-width: 30ch; }
+.duo { position: relative; height: 560px; }
+.friend-card { position: absolute; left: 0; top: 30px; width: 262px; border: 1px solid #2c2c28; border-radius: 22px; transform: rotate(-5deg); box-shadow: 0 30px 60px rgba(0, 0, 0, .5); }
+.slot { position: absolute; right: 0; top: 70px; width: 262px; height: 466px; padding: 30px; border: 2px dashed #5b5a52; border-radius: 22px; transform: rotate(4deg); display: flex; flex-direction: column; justify-content: flex-end; }
+.slot b { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); color: #3a3a35; font-size: 8rem; font-weight: 800; }
+.slot span { color: #8d8a7f; font-weight: 800; }
+.slot strong { color: #8d8a7f; font-size: 2.4rem; letter-spacing: -.04em; }
+.their-line { display: grid; grid-template-columns: 170px 1fr; gap: 40px; align-items: center; padding: 90px 0 100px; border-top: 1px solid #23231f; }
+.their-line img { width: 170px; }
+.their-line h2 { margin: 0; font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1; letter-spacing: -.05em; max-width: 18ch; }
+.their-line h2 span { display: block; margin-top: 14px; color: var(--yellow); font-size: 1.05rem; letter-spacing: 0; }
+@media (max-width: 760px) {
+  .wrap { width: calc(100% - 32px); }
+  .wordmark { width: 100px; }
+  .hero { grid-template-columns: 1fr; gap: 10px; padding: 18px 0 56px; }
+  .duo { order: -1; height: 300px; }
+  .friend-card { left: 6%; top: 10px; width: 150px; }
+  .slot { right: 6%; top: 24px; width: 150px; height: 266px; padding: 16px; }
+  .slot b { top: 60px; font-size: 4.5rem; }
+  .slot span { font-size: .75rem; }
+  .slot strong { font-size: 1.3rem; }
+  .lead { margin: 16px 0 22px; font-size: 1.08rem; }
+  .button { width: 100%; }
+  .their-line { grid-template-columns: 64px 1fr; gap: 16px; padding: 50px 0 60px; }
+  .their-line img { width: 64px; }
 }
 </style>

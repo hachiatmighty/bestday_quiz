@@ -1,103 +1,154 @@
 ---
+import { archetypeOrder, archetypes, manifestoLines } from '../data/quiz';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
-const types = [
-  { slug: 'sprinter', name: 'The Sprinter', line: "You start before you're ready." },
-  { slug: 'planner', name: 'The Planner', line: 'Your plan is better than your start date.' },
-  { slug: 'anchor', name: 'The Anchor', line: 'Everyone leans on you.' },
-  { slug: 'explorer', name: 'The Explorer', line: "You've already found a new idea." },
-  { slug: 'finisher', name: 'The Finisher', line: "You finish everyone's things but yours." },
-];
+const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, line: manifestoLines[slug] }));
 ---
 <div class="landing-page">
   <header class="landing-hero">
-    <div class="landing-wrap hero-grid">
-      <div class="hero-copy">
-        <img class="landing-logo" src={assetUrl('assets/logos/wordmark-black.png')} alt="Bestday" />
-        <h1 data-landing-title>Everyone in your circle goes after goals differently.</h1>
-        <p class="landing-subline">Find out how you do it, then see how your people fit with you.</p>
-        <button class="landing-cta" type="button" data-start>Find my type</button>
+    <div class="landing-wrap hero-head">
+      <img class="landing-logo" src={assetUrl('assets/logos/wordmark-black.png')} alt="Bestday" />
+    </div>
+    <div class="landing-wrap hero-body">
+      <h1 data-landing-title>No one achieves alone.</h1>
+      <p class="landing-subline">But everyone goes after goals differently. Find your goal archetype.</p>
+      <button class="landing-cta" type="button" data-start>Find my archetype</button>
+      <div class="hero-types" role="group" aria-label="Jump to an archetype">
+        {types.map(type => (
+          <button type="button" data-jump={type.slug} aria-label={type.name}>
+            <img src={assetUrl(`assets/archetypes/${type.slug}.png`)} alt="" />
+            <span>{type.name}</span>
+          </button>
+        ))}
       </div>
-      <div class="dealt-area">
-        <div class="card-fan" aria-label="The five Bestday goal archetypes">
-          {types.map(type => (
-            <article class="landing-type-card">
-              <img src={assetUrl(`assets/archetypes/${type.slug}.png`)} alt="" />
-              <strong>{type.name}</strong>
-            </article>
-          ))}
-        </div>
-      </div>
-      <p class="pairing-note">One of you brings the spark. One of you keeps going when it's quiet.</p>
     </div>
   </header>
 
-  <section class="types-section">
+  <section class="lines" data-lines aria-label="The five goal archetypes">
     <div class="landing-wrap">
-      <h2>Which one sounds like you?</h2>
-      <div class="type-grid">
-        {types.map(type => (
-          <article>
-            <img src={assetUrl(`assets/archetypes/${type.slug}.png`)} alt="" />
-            <div><h3>{type.name}</h3><p>{type.line}</p></div>
-          </article>
-        ))}
-      </div>
-      <div class="closing">
-        <p>Then send it to the two or three people who'd tell you the truth.</p>
-        <button class="landing-cta yellow" type="button" data-start>Find my type</button>
-      </div>
+      {types.map((type, index) => (
+        <article class:list={['line', { flip: index % 2 === 1 }]} id={`type-${type.slug}`} data-type={type.slug}>
+          <img src={assetUrl(`assets/archetypes/${type.slug}.png`)} alt="" />
+          <h2>{type.line}<span>{type.name}</span></h2>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="landing-wrap">
+      <h2>Which one are you?</h2>
+      <button class="landing-cta yellow" type="button" data-start>Find my archetype</button>
     </div>
   </section>
 </div>
 
+<script>
+  // Each line waits in grey and lights up as it reaches the middle of the screen; its figure then makes one move in
+  // the manner of its type (not with reduced motion). Without JavaScript the lines are simply shown.
+  const lines = document.querySelector('[data-lines]');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The hero cards jump to their type's line. Buttons, not #links: a hash change fires popstate, which the quiz uses for its steps.
+  document.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach(button => button.addEventListener('click', () => {
+    document.getElementById(`type-${button.dataset.jump}`)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
+  }));
+  if (lines && 'IntersectionObserver' in window) {
+    lines.setAttribute('data-reveal', '');
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('seen');
+      observer.unobserve(entry.target);
+    }), { rootMargin: '0px 0px -45% 0px' });
+    lines.querySelectorAll('.line').forEach(line => observer.observe(line));
+  }
+</script>
+
 <style>
   .landing-page{background:var(--black);color:var(--cream)}
   .landing-wrap{width:min(100% - 96px,1320px);margin:auto}
-  .landing-hero{min-height:780px;padding:52px 0 72px;background:var(--yellow);color:var(--black);overflow:hidden}
-  .hero-grid{display:grid;grid-template-columns:minmax(470px,.82fr) minmax(650px,1.18fr);column-gap:26px;row-gap:24px;align-items:center}
-  .landing-logo{width:126px;margin:0 0 66px 3px}
-  h1,h2,h3,p{margin-top:0}
-  h1,h2,h3{font-weight:800;letter-spacing:-.045em;line-height:.96}
-  h1{max-width:710px;margin-bottom:26px;font-size:clamp(4rem,6.2vw,6.3rem)}
-  .landing-subline{max-width:630px;margin-bottom:30px;font-size:1.45rem;line-height:1.42}
-  .landing-cta{min-height:62px;padding:0 32px;border:0;border-radius:999px;background:var(--black);color:var(--yellow);font-weight:800;cursor:pointer}
+  h1,h2,p{margin-top:0}
+  h1,h2{font-weight:800;letter-spacing:-.045em;line-height:1}
+  .landing-hero{padding:40px 0 104px;background:var(--cream);color:var(--black)}
+  .hero-head{position:relative;margin-bottom:96px}
+  .landing-logo{display:block;width:126px}
+  .hero-body{display:flex;flex-direction:column;align-items:center;text-align:center}
+  h1{margin-bottom:28px;font-size:clamp(3.4rem,7.6vw,7.4rem);letter-spacing:-.055em}
+  .landing-subline{max-width:30ch;margin-bottom:38px;color:#3d3a30;font-size:1.45rem;line-height:1.45}
+  .landing-cta{min-height:62px;padding:0 34px;border:0;border-radius:999px;background:var(--black);color:var(--yellow);font-weight:800;font-size:1.05rem;cursor:pointer;transition:transform .2s}
+  .landing-cta:active{transform:scale(.98)}
   .landing-cta.yellow{background:var(--yellow);color:var(--black)}
-  .dealt-area{height:500px;margin-right:-90px}
-  .card-fan{position:relative;height:100%}
-  .landing-type-card{position:absolute;top:92px;width:19%;height:340px;padding:14px;border:1px solid #34342f;border-radius:20px;background:var(--black);color:var(--cream);overflow:hidden}
-  .landing-type-card img{width:100%;height:250px;object-fit:contain}
-  .landing-type-card strong{display:block;color:var(--yellow);font-size:clamp(.8rem,1.2vw,1.15rem);white-space:nowrap}
-  .landing-type-card:nth-child(1){left:0;top:130px;transform:rotate(-11deg)}
-  .landing-type-card:nth-child(2){left:20%;top:70px;transform:rotate(-6deg)}
-  .landing-type-card:nth-child(3){left:40%;top:42px}
-  .landing-type-card:nth-child(4){left:60%;top:70px;transform:rotate(6deg)}
-  .landing-type-card:nth-child(5){left:80%;top:130px;transform:rotate(11deg)}
-  .pairing-note{grid-column:1/-1;width:390px;margin:0;font-size:1.12rem;line-height:1.35}
-  .types-section{padding:92px 0 100px;background:var(--black)}
-  .types-section h2{margin-bottom:44px;font-size:clamp(3rem,5vw,4.8rem)}
-  .type-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-  .type-grid article{min-height:380px;padding:18px;border:1px solid #34342f;border-radius:20px}
-  .type-grid img{width:100%;height:190px;object-fit:contain}
-  .type-grid h3{margin:12px 0;color:var(--yellow);font-size:1.7rem}
-  .type-grid p{margin:0;color:#d1cec3;line-height:1.45}
-  .closing{max-width:720px;padding-top:62px}
-  .closing p{margin-bottom:26px;font-size:2rem;font-weight:800;line-height:1.15;letter-spacing:-.025em}
+  .hero-types{display:flex;gap:12px;margin-top:64px;padding-bottom:30px}
+  .hero-types button{--drop:0px;position:relative;display:grid;place-items:center;width:96px;height:120px;padding:0;border:0;border-radius:16px;background:var(--black);box-shadow:0 14px 30px rgba(60,50,20,.16);cursor:pointer;transform:translateY(var(--drop));transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+  .hero-types button:nth-child(odd){--drop:10px}
+  .hero-types button:hover,.hero-types button:focus-visible{transform:translateY(calc(var(--drop) - 10px)) rotate(-2deg);box-shadow:0 22px 40px rgba(60,50,20,.24)}
+  .hero-types button:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+  .hero-types button:active{transform:translateY(calc(var(--drop) - 6px)) scale(.97)}
+  .hero-types img{width:78px}
+  .hero-types button span{position:absolute;top:calc(100% + 10px);left:50%;color:var(--black);font-size:.85rem;font-weight:800;white-space:nowrap;opacity:0;transform:translate(-50%,-4px);transition:opacity .25s,transform .25s;pointer-events:none}
+  .hero-types button:hover span,.hero-types button:focus-visible span{opacity:1;transform:translate(-50%,0)}
+  .lines{padding:110px 0 30px}
+  .line{display:grid;grid-template-columns:170px 1fr;gap:40px;align-items:center;padding:34px 0}
+  .line img{width:170px}
+  .line h2{max-width:18ch;margin:0;font-size:clamp(2.4rem,4.4vw,3.9rem);letter-spacing:-.05em}
+  .line h2 span{display:block;margin-top:14px;color:var(--yellow);font-size:1.05rem;letter-spacing:0}
+  .line.flip{grid-template-columns:1fr 170px;text-align:right}
+  .line.flip h2{margin-left:auto}
+  .line.flip img{order:2}
+  /* each line waits in grey, with its figure greyed and in its starting pose, and lights up as it reaches the middle of the screen */
+  .lines[data-reveal] .line h2{color:#3d3c37;transition:color .8s ease}
+  .lines[data-reveal] .line h2 span{color:#4d4a38;transition:color .8s ease}
+  .lines[data-reveal] .line img{filter:grayscale(1) brightness(.42);transition:filter .8s ease}
+  .lines[data-reveal] .line.seen h2{color:var(--cream)}
+  .lines[data-reveal] .line.seen h2 span{color:var(--yellow)}
+  .lines[data-reveal] .line.seen img{filter:none}
+  @media(prefers-reduced-motion:no-preference){
+    /* then its figure makes one move in the manner of its type, starting from the pose it waited in */
+    .lines[data-reveal] .line[data-type="sprinter"] img{transform:translateX(-90px) skewX(-12deg)}
+    .lines[data-reveal] .line[data-type="planner"] img{transform:translateX(-50px)}
+    .lines[data-reveal] .line[data-type="anchor"] img{transform:scaleX(1.35)}
+    .lines[data-reveal] .line[data-type="finisher"] img{transform:rotate(-40deg) translateY(-20px)}
+    .lines[data-reveal] .line.seen img{animation-duration:1.5s;animation-timing-function:cubic-bezier(.16,1,.3,1);animation-delay:.15s;animation-fill-mode:both}
+    .lines[data-reveal] .line.seen[data-type="sprinter"] img{animation-name:sprint}
+    .lines[data-reveal] .line.seen[data-type="planner"] img{animation-name:step}
+    .lines[data-reveal] .line.seen[data-type="anchor"] img{animation-name:gather}
+    .lines[data-reveal] .line.seen[data-type="explorer"] img{animation-name:look;animation-duration:1.9s}
+    .lines[data-reveal] .line.seen[data-type="finisher"] img{animation-name:swing;animation-duration:1.7s}
+  }
+  @keyframes sprint{from{transform:translateX(-90px) skewX(-12deg)}55%{transform:translateX(16px) skewX(6deg)}to{transform:none}}
+  @keyframes step{from{transform:translateX(-50px)}35%{transform:translateX(-50px)}to{transform:none}}
+  @keyframes gather{from{transform:scaleX(1.35)}to{transform:none}}
+  @keyframes look{from{transform:none}25%{transform:rotate(-18deg)}60%{transform:rotate(14deg)}to{transform:none}}
+  @keyframes swing{from{transform:rotate(-40deg) translateY(-20px)}50%{transform:rotate(16deg)}78%{transform:rotate(-6deg)}to{transform:none}}
+  .closing{padding:110px 0 140px;text-align:center}
+  .closing h2{margin-bottom:36px;font-size:clamp(3rem,6vw,5rem)}
   @media(max-width:900px){
-    .landing-wrap{width:min(100% - 48px,760px)}.landing-hero{min-height:0;padding:34px 0 58px}.hero-grid{grid-template-columns:1fr;row-gap:28px}.hero-copy{display:contents}.landing-logo{grid-row:1;margin-bottom:18px}.hero-copy h1{grid-row:2}.dealt-area{grid-row:3}.pairing-note{grid-row:4}.landing-subline{grid-row:5}.hero-copy .landing-cta{grid-row:6;justify-self:start}
-    .dealt-area{height:320px;margin:0 -20px}.landing-type-card{height:250px;padding:10px;border-radius:13px}.landing-type-card img{height:185px}.landing-type-card strong{font-size:.75rem}
-    .landing-type-card:nth-child(1){top:62px}.landing-type-card:nth-child(2){top:28px}.landing-type-card:nth-child(3){top:12px}.landing-type-card:nth-child(4){top:28px}.landing-type-card:nth-child(5){top:62px}
-    .pairing-note{width:390px}
-    .type-grid{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x proximity}.type-grid article{flex:0 0 220px;scroll-snap-align:start}
+    .landing-wrap{width:min(100% - 48px,760px)}
+    .hero-head{margin-bottom:72px}
+    .line,.line.flip{grid-template-columns:110px 1fr;gap:24px;text-align:left}
+    .line img{width:110px}
+    .line.flip img{order:0}
+    .line.flip h2{margin-left:0}
   }
   @media(max-width:600px){
-    .landing-wrap{width:min(100% - 32px,520px)}.landing-hero{padding:28px 0 42px}.landing-logo{width:104px;margin-bottom:6px}
-    h1{font-size:3rem;margin-bottom:0}.landing-subline{font-size:1.05rem;margin:0}.landing-cta{min-height:50px;padding:0 24px}
-    .hero-grid{row-gap:28px}.dealt-area{height:190px;margin:0 -16px}.landing-type-card{width:19%;height:142px;padding:5px;border-radius:9px}.landing-type-card img{height:101px}.landing-type-card strong{font-size:.43rem}
-    .landing-type-card:nth-child(1){left:0;top:38px;transform:rotate(-10deg)}.landing-type-card:nth-child(2){left:20%;top:16px;transform:rotate(-5deg)}.landing-type-card:nth-child(3){left:40%;top:5px}.landing-type-card:nth-child(4){left:60%;top:16px;transform:rotate(5deg)}.landing-type-card:nth-child(5){left:80%;top:38px;transform:rotate(10deg)}
-    .pairing-note{width:100%;font-size:.9rem}
-    .types-section{padding:54px 0 64px}.types-section h2{margin-bottom:26px;font-size:2.7rem}
-    .type-grid{display:grid;grid-template-columns:1fr;overflow:visible;padding:0}.type-grid article{display:grid;grid-template-columns:110px 1fr;align-items:center;min-height:150px;padding:16px}.type-grid img{width:110px;height:110px}.type-grid h3{margin:0 0 8px;font-size:1.45rem}.type-grid p{font-size:1rem}
-    .closing{padding-top:42px}.closing p{margin-bottom:22px;font-size:1.55rem}
+    .landing-wrap{width:min(100% - 32px,520px)}
+    .landing-hero{padding:28px 0 64px}
+    .landing-logo{width:104px}
+    .hero-head{margin-bottom:56px}
+    .landing-subline{font-size:1.1rem;margin-bottom:26px}
+    .hero-body .landing-cta{align-self:stretch}
+    .landing-cta{min-height:56px}
+    .hero-types{gap:8px;margin-top:40px;padding-bottom:12px}
+    .hero-types button{width:58px;height:74px;border-radius:12px}
+    .hero-types button:nth-child(odd){--drop:8px}
+    .hero-types img{width:48px}
+    .hero-types button span{display:none}
+    .lines{padding:56px 0 10px}
+    .line,.line.flip{grid-template-columns:64px 1fr;gap:16px;padding:22px 0}
+    .line img{width:64px}
+    .line h2{font-size:2rem}
+    .line h2 span{margin-top:8px;font-size:.95rem}
+    .closing{padding:64px 0 80px}
+    .closing h2{font-size:2.7rem;margin-bottom:26px}
+    .closing .landing-cta{width:100%}
   }
 </style>

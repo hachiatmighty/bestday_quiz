@@ -3,7 +3,7 @@ import '../styles/global.css';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const defaultTitle = 'Everyone in your circle goes after goals differently.';
-const { title = defaultTitle, pageTitle = `${title} | Bestday`, description = 'Find out how you do it, then see how your people fit with you.', image = assetUrl('assets/og/default.png'), imageAlt = 'Bestday goal archetypes fanned beside the words Everyone in your circle goes after goals differently.' } = Astro.props;
+const { title = defaultTitle, pageTitle = `${title} | Bestday`, description = 'Find your goal archetype, then see how your people fit with you.', image = assetUrl('assets/og/default.png'), imageAlt = 'Bestday goal archetypes fanned beside the words Everyone in your circle goes after goals differently.' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const fontMediumUrl = assetUrl('assets/fonts/Urbanist-Medium.ttf');
