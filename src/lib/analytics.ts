@@ -1,3 +1,4 @@
+import { lifeAuditProperties } from './life-audit-analytics.mjs';
 import mixpanel from 'mixpanel-browser/src/loaders/loader-module-core';
 
 export const eventNames = [
@@ -51,5 +52,15 @@ export function track(name: EventName, properties: Record<string, unknown> = {})
     return;
   }
 
+  mixpanel.track(name, payload);
+}
+
+// Life Audit shares initialization and privacy settings, with its own payload boundary.
+export function trackLifeAudit(name: EventName | 'step_view', properties: Record<string, unknown> = {}) {
+  const payload = lifeAuditProperties({ ...trackingContext(), quiz_version: quizVersion, ...properties });
+  if (!analyticsEnabled) {
+    console.info('[analytics:no-op]', name, payload);
+    return;
+  }
   mixpanel.track(name, payload);
 }

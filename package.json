@@ -11,7 +11,9 @@
     "review:emails": "node scripts/render-email-previews.mjs",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "dev:life-audit": "ASTRO_TELEMETRY_DISABLED=1 astro dev --config astro.life-audit.config.mjs",
+    "build:life-audit": "ASTRO_TELEMETRY_DISABLED=1 astro check --config astro.life-audit.config.mjs && ASTRO_TELEMETRY_DISABLED=1 astro build --config astro.life-audit.config.mjs"
   },
   "dependencies": {
     "astro": "^7.3.5",

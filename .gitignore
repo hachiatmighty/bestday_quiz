@@ -6,3 +6,5 @@ handoff/
 .env
 .env.*
 !.env.example
+
+dist-life-audit/
