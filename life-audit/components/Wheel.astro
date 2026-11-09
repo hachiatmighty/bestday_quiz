@@ -1,0 +1,14 @@
+---
+import { copy as c } from '../data/copy.mjs';
+import { areas } from '../data/audit.mjs';
+import { wheelGeometry } from '../../src/lib/life-audit.mjs';
+const ratings: Record<string, number> = {work:7,money:5,health:8,relationships:6,growth:7,rest:4,home:8,meaning:6};
+---
+<div class="wheel" data-wheel>
+<svg viewBox="-55 -40 310 280" role="img" aria-label={c.wheel}>
+{wheelGeometry(ratings).map((s,i) => <g><path class="guide" d={s.sectorPath}/><path class="petal" style={`--order:${i}`} d={s.path}/></g>)}
+{[0,50,100].map(r => <circle class="guide" cx="100" cy="100" r={r || 1}/>)}
+{areas.map((a,i) => {const angle=-Math.PI/2+(i+.5)*Math.PI/4; return <text x={100+Math.cos(angle)*125} y={100+Math.sin(angle)*125} text-anchor="middle" dominant-baseline="middle">{a.short}</text>})}
+</svg>
+<ul class="sr-only">{areas.map(a => <li>{a.name}: {ratings[a.id]} {c.outOf}</li>)}</ul>
+</div>

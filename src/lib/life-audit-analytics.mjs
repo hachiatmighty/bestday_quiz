@@ -12,6 +12,7 @@ export function lifeAuditProperties(properties = {}) {
   const clean = { quiz: 'life_audit' };
   for (const [key, value] of Object.entries(properties)) {
     const valid =
+      (key === 'edited' && typeof value === 'boolean') ||
       (key === 'step' && Number.isInteger(value) && value >= 0 && value <= 32) ||
       (['area_id', 'focus_area_id'].includes(key) && areaIds.has(value)) ||
       (key === 'segment' && segments.has(value)) ||

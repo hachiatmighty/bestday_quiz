@@ -130,3 +130,18 @@ test('review output is isolated and has canonical, metadata and default noindex'
   assert.match(config, /srcDir: '\.\/life-audit'/);
   assert.match(config, /outDir: '\.\/dist-life-audit'/);
 });
+
+test('completed result restores choices without trusting malformed storage', () => {
+  const saved = {state:{ratings:{work:0,money:null},segment:'curious',focusArea:'work',timeOption:'hour'},screen:'result',selected:2,goal:'My own goal',firstStep:'Ask a friend',horizon:8,day:'Wed'};
+  const restored = audit.restoreAuditProgress(JSON.stringify(saved));
+  assert.equal(restored.state.questionIndex,12);
+  assert.equal(restored.state.ratings.work,0);
+  assert.equal(restored.state.ratings.money,null);
+  assert.equal(restored.goal,'My own goal');
+  assert.equal(restored.horizon,8);
+  assert.equal(restored.selected,2);
+  assert.equal(restored.day,'Wed');
+  for (const raw of [null,'broken','{}',JSON.stringify({...saved,state:{...saved.state,focusArea:'money'}}),JSON.stringify({...saved,state:{...saved.state,ratings:{work:99}}})]) assert.equal(audit.restoreAuditProgress(raw),null);
+  const fallback=audit.restoreAuditProgress(JSON.stringify({...saved,selected:90,horizon:90,day:'private',goal:[]}));
+  assert.equal(fallback.selected,0); assert.equal(fallback.horizon,4); assert.equal(fallback.day,null); assert.equal(fallback.goal,'');
+});

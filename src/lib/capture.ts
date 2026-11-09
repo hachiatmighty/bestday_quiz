@@ -4,6 +4,12 @@ export type CapturePayload = {
   whatsapp: string;
   whatsappConsent: boolean;
   consent: boolean;
+  quiz?: 'life_audit';
+  focusArea?: string;
+  segment?: string;
+  timeOption?: string;
+  horizon?: number;
+  ratings?: Record<string, number | null>;
   archetype: string;
   category: string;
   source: Record<string, string | null>;

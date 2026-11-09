@@ -62,3 +62,38 @@ export function wheelGeometry(ratings, radius = 100) {
       path: missing ? null : sector(startAngle, endAngle, valueRadius) };
   });
 }
+
+import { wheelWords } from '../../life-audit/data/copy.mjs';
+export function wheelReflection(ratings) {
+  const entries = areas.filter(area => rated(ratings[area.id]));
+  if (!entries.length) return wheelWords.none;
+  const values = entries.map(area => ratings[area.id]);
+  const high = Math.max(...values), low = Math.min(...values);
+  const names = entries.filter(area => ratings[area.id] === high).slice(0, 2).map(area => area.short).join(' and ');
+  const sentences = [wheelWords.strength(names, Math.min(2, entries.filter(area => ratings[area.id] === high).length))];
+  sentences.push(entries.length === 1 ? wheelWords.sparse : low === high ? wheelWords.equal : wheelWords.range(low, high));
+  if (entries.length < areas.length) sentences.push(wheelWords.missing(areas.length - entries.length));
+  return sentences.join(' ');
+}
+
+// Storage is optional and untrusted. Only completed wheels may restore a gated screen.
+export function restoreAuditProgress(raw) {
+  try {
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.state || !['result', 'teaser', 'gate'].includes(saved.screen)) return null;
+    const state = saved.state;
+    if (!state.ratings || typeof state.ratings !== 'object' || Array.isArray(state.ratings)) return null;
+    if (Object.entries(state.ratings).some(([id, value]) => !hasId(areas, id) || (value !== null && !rated(value)))) return null;
+    if (!hasId(contextOptions, state.segment) || !hasId(timeOptions, state.timeOption)) return null;
+    if (!focusOptions(state).some(area => area.id === state.focusArea)) return null;
+    return {
+      state: { ratings: { ...state.ratings }, segment: state.segment, focusArea: state.focusArea, timeOption: state.timeOption, questionIndex: 12 },
+      screen: saved.screen,
+      selected: Number.isInteger(saved.selected) && saved.selected >= 0 && saved.selected < 3 ? saved.selected : 0,
+      goal: typeof saved.goal === 'string' ? saved.goal.slice(0, 300) : '',
+      firstStep: typeof saved.firstStep === 'string' ? saved.firstStep.slice(0, 400) : '',
+      horizon: [4, 8, 12].includes(saved.horizon) ? saved.horizon : 4,
+      day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].includes(saved.day) ? saved.day : null,
+    };
+  } catch { return null; }
+}

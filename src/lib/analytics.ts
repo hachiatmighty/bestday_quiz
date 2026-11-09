@@ -56,7 +56,7 @@ export function track(name: EventName, properties: Record<string, unknown> = {})
 }
 
 // Life Audit shares initialization and privacy settings, with its own payload boundary.
-export function trackLifeAudit(name: EventName | 'step_view', properties: Record<string, unknown> = {}) {
+export function trackLifeAudit(name: EventName | 'step_view' | 'goal_selected' | 'goal_edited' | 'horizon_selected', properties: Record<string, unknown> = {}) {
   const payload = lifeAuditProperties({ ...trackingContext(), quiz_version: quizVersion, ...properties });
   if (!analyticsEnabled) {
     console.info('[analytics:no-op]', name, payload);

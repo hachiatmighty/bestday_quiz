@@ -3,5 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] }
-  }
+  },
+  "exclude": ["dist", "dist-life-audit", "handoff", "review", "node_modules"]
 }

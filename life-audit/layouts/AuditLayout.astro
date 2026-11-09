@@ -1,5 +1,6 @@
 ---
 import '../../src/styles/global.css';
+import { copy as c } from '../data/copy.mjs';
 const noindex = import.meta.env.PUBLIC_LIFE_AUDIT_NOINDEX !== 'false';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const fontFaces = `@font-face{font-family:Urbanist;src:url('${base}/assets/fonts/Urbanist-Medium.ttf') format('truetype');font-weight:500;font-display:swap}@font-face{font-family:Urbanist;src:url('${base}/assets/fonts/Urbanist-ExtraBold.ttf') format('truetype');font-weight:800;font-display:swap}`;
@@ -9,8 +10,8 @@ const fontFaces = `@font-face{font-family:Urbanist;src:url('${base}/assets/fonts
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Bestday Life Audit | Bestday</title>
-    <meta name="description" content="See which part of your life deserves attention, then choose one achievable goal. About three minutes." />
+    <title>{c.pageTitle}</title>
+    <meta name="description" content={c.description} />
     <link rel="canonical" href="https://bestday.ai/life-audit/" />
     {noindex && <meta name="robots" content="noindex" />}
     <style is:inline set:html={fontFaces}></style>
