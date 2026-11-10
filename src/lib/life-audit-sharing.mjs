@@ -4,10 +4,28 @@ export const exampleRatings = {work:7,money:5,health:8,relationships:6,growth:7,
 export const validArea = id => areas.some(a => a.id === id) ? id : null;
 export const escapeXml = value => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 export function wheelGrid() {
- return `<g fill="none" stroke="#FFFCEF" stroke-width=".6" opacity=".18">${[1,50,100].map(r=>`<circle cx="100" cy="100" r="${r}"/>`).join('')}${areas.map((_,i)=>{const a=-Math.PI/2+i*Math.PI/4;return `<path d="M 100 100 L ${100+Math.cos(a)*100} ${100+Math.sin(a)*100}"/>`}).join('')}</g>`;
+ const rings = [1,50,100].map(r=>`<circle cx="100" cy="100" r="${r}"/>`).join('');
+ return `<g fill="none" stroke="#0D0D0D" stroke-width="1" opacity=".22">${rings}</g><g fill="none" stroke="#FFFCEF" stroke-width=".6" opacity=".18">${[1,50,100].map(r=>`<circle cx="100" cy="100" r="${r}"/>`).join('')}${areas.map((_,i)=>{const a=-Math.PI/2+i*Math.PI/4;return `<path d="M 100 100 L ${100+Math.cos(a)*100} ${100+Math.sin(a)*100}"/>`}).join('')}</g>`;
+}
+// All wheel surfaces draw petals first and the continuous guide grid last.
+export function wheelArtwork(ratings, focus=null, {mini=false,liveArea=null}={}) {
+ let order=0;
+ return wheelGeometry(ratings).map(s=>{
+  const angle=(s.startAngle+s.endAngle)/2, delay=s.id===focus?7:order++;
+  return s.missing?`<path class="missing" d="${s.sectorPath}" fill="none" stroke="#FFFCEF" stroke-dasharray="3 3" opacity=".45"/>${ratings[s.id]===null&&!mini?`<text class="skip-label" x="${100+Math.cos(angle)*73}" y="${100+Math.sin(angle)*73}" text-anchor="middle" font-size="6" fill="#FFFCEF">skipped</text>`:''}`:`<path class="petal ${s.id===focus?'focus':''} ${s.id===liveArea?'live-petal':''}" style="--order:${delay}" d="${s.path}" fill="${s.id===focus?'#FFDE59':'#FFFCEF'}"/>`;
+ }).join('')+wheelGrid();
 }
 export function exampleWheel(focus='relationships', ratings=exampleRatings) {
- return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 220 220">${wheelGeometry(ratings).map(s=>s.missing?`<path d="${s.sectorPath}" fill="none" stroke="#FFFCEF" stroke-dasharray="3 3" opacity=".45"/><text x="${100+Math.cos((s.startAngle+s.endAngle)/2)*73}" y="${100+Math.sin((s.startAngle+s.endAngle)/2)*73}" text-anchor="middle" font-size="6" fill="#FFFCEF">skipped</text>`:`<path d="${s.path}" fill="${s.id===focus?'#FFDE59':'#FFFCEF'}"/>`).join('')}${wheelGrid()}</svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 220 220" role="img" aria-label="Example wheel">${wheelArtwork(ratings,focus)}</svg>`;
+}
+// 920px is the card's text column; measure against 840 so a fallback font used for measuring cannot push the real glyphs past the edge.
+export const CARD_TEXT_WIDTH = 840;
+export function fitCardGoal(text, measure) {
+ for(const size of [60,54,48,42,36,32,28,24]) {
+  const lines=wrapLines(text,s=>measure(s,size),CARD_TEXT_WIDTH,Math.max(1,Math.floor(250/(size*1.22))));
+  if(!lines.at(-1)?.endsWith('…'))return {size,lines};
+ }
+ return {size:24,lines:wrapLines(text,s=>measure(s,24),CARD_TEXT_WIDTH,8)};
 }
 export function referralLine(ref, focus) {
  if (!validArea(ref) || !validArea(focus)) return null;

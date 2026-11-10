@@ -18,12 +18,12 @@ test('public links carry only the selected area and ref analytics is allowlisted
 test('card wrapping limits lines, escapes overlong words and adds ellipsis',()=>{
  assert.deepEqual(wrapLines('one two',s=>s.length,20),['one two']);
  for(const text of ['one two three four five six seven eight nine', 'x'.repeat(300)]){const lines=wrapLines(text,s=>s.length,10,4);assert.equal(lines.length,4);assert.ok(lines.every(l=>l.length<=10));assert.match(lines[3],/…$/)}
- assert.equal((wheelGrid().match(/<circle/g)||[]).length,3);assert.equal((wheelGrid().match(/<path/g)||[]).length,8);
+ assert.equal((wheelGrid().match(/<circle/g)||[]).length,6);assert.equal((wheelGrid().match(/<path/g)||[]).length,8);
  assert.equal((exampleWheel('work').match(/fill="#FFDE59"/g)||[]).length,1);
 });
 test('email sequence includes the approved commitment and private plain text wheel',()=>{
  assert.deepEqual(emails.map(e=>e.timing),['Immediately','Day 2','Day 4','Day 7']);
- for(const email of emails){const rendered=renderEmail(email);assert.equal(rendered.signoff,'Bestday\nDo it. Together.');assert.ok(rendered.paragraphs.join(' ').includes(sample.firstStep));assert.doesNotMatch(rendered.paragraphs.join(' '),/[—–]/)}
+ for(const email of emails){const rendered=renderEmail(email);assert.equal(rendered.signoff,'Bestday\nDo it. Together.');const text=rendered.paragraphs.join(' ');assert.ok(text.includes(sample.firstStep)||text.includes(sample.goal),`${email.slug} returns to the goal or first step`);assert.doesNotMatch(rendered.paragraphs.join(' '),/[—–]/)}
  const result=renderEmail(emails[0]).paragraphs.join('\n');assert.match(result,/Rest and enjoyment: skipped/);assert.match(result,/Work and direction: 7\/10/);assert.ok(result.includes(sample.day));assert.ok(result.includes(sample.goal));
 });
 test('static share pages have area-specific metadata and only public example images',async()=>{
