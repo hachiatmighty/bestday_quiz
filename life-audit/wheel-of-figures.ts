@@ -3,9 +3,10 @@ import { radialRating, sectorPath, figureBase } from '../src/lib/wheel-of-figure
 export function initWheelDemo(onFirstInteraction: () => void) {
   const wheel=document.querySelector<HTMLElement>('[data-demo-wheel]');
   if(!wheel)return;
-  let started=false, drag: SVGGElement | null=null, active: SVGGElement | null=null;
+  let started=false, drag: SVGGElement | null=null, active: SVGGElement | null=wheel.querySelector('[data-sector="relationships"]');
   const set=(sector:SVGGElement,value:number)=>{
     if(!started){started=true;onFirstInteraction()}
+    wheel.classList.add('demo-touched');
     if(active && active!==sector){active.querySelector('.figure-fill')!.setAttribute('fill','#FFFCEF');active.querySelector('image')!.setAttribute('href',`${figureBase}${active.dataset.sector}-cream.webp`)}
     active=sector;
     sector.querySelector('.figure-fill')!.setAttribute('fill','#FFDE59');

@@ -60,3 +60,19 @@ input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
 header>a img{display:block;width:126px;height:auto}@media(max-width:599px){header>a img{width:104px}}
 
 .hero-ring{display:block;width:100%;height:auto;background:var(--black);border-radius:50%}
+
+/* Task 8: wheel scale and controls. */
+body .hero-demo{width:min(100%,560px);max-width:560px}
+body .hero-demo .figure-wheel{max-width:none}
+footer>a:first-child img{display:block;width:104px;height:auto}
+.lock svg{display:block;width:20px;height:20px;fill:none;stroke:var(--cream);stroke-width:1.6;opacity:.7;margin-bottom:16px}
+.lock .lock-preview{color:var(--muted);font-size:13px;line-height:1.4;margin:12px 0 0}
+body [data-include-wheel]{appearance:none;width:22px;height:22px;flex-shrink:0;border:1px solid var(--muted);border-radius:5px;vertical-align:middle;margin:0 8px 0 0;background:var(--black);cursor:pointer}
+body [data-include-wheel]:checked{background:var(--yellow);border-color:var(--yellow)}
+body [data-include-wheel]:checked::after{content:'';display:block;width:6px;height:11px;border:solid var(--black);border-width:0 2px 2px 0;transform:translate(7px,3px) rotate(45deg)}
+body .days{flex-wrap:wrap;justify-content:flex-start}
+body .days button{padding:13px 18px;font-size:16px;min-height:48px}
+[data-demo-wheel]:not(.demo-touched) .figure-fill.focus{animation-name:demo-edge;animation-delay:1.2s;animation-duration:1.8s;animation-iteration-count:1}
+@keyframes demo-edge{0%,100%{stroke:#0D0D0D;stroke-width:1.5}50%{stroke:#FFDE59;stroke-width:6}}
+@media(max-width:599px){body .hero-demo{max-width:360px}.result-layout [data-result-wheel] .figure-wheel{max-width:none;width:100%}.scale-labels{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:9px;row-gap:4px}.scale-labels span:first-child{grid-column:1 / 4;grid-row:2}.scale-labels span:nth-child(2){grid-column:6;grid-row:1;text-align:center}.scale-labels span:last-child{grid-column:4 / 7;grid-row:2;text-align:right}}
+@media(prefers-reduced-motion:reduce){[data-demo-wheel] .figure-fill.focus{animation-name:none}}
