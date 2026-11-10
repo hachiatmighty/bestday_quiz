@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { readFile, readdir, writeFile, access } from 'node:fs/promises';
 import path from 'node:path';
 
 const placeholder = 'https://__QUIZ_ORIGIN__';
@@ -21,7 +21,10 @@ const collectFiles = async directory => {
   }
 };
 
-await collectFiles(targetDirectory);
+for (const directory of ['dist/quiz','dist/life-audit']) {
+ try { await access(directory); } catch(error) { if(error.code === 'ENOENT') continue; throw error; }
+ await collectFiles(path.resolve(directory));
+}
 for (const file of files) {
   const source = await readFile(file, 'utf8');
   await writeFile(file, source.replaceAll(placeholder, origin));

@@ -41,3 +41,14 @@ for (const [name, variables, expectedOrigin] of cases) {
     }
   });
 }
+
+test('origin rewrite handles the life-audit folder when quiz is missing',async()=>{
+ const fixture=await mkdtemp(path.join(os.tmpdir(),'audit-origin-'));
+ const audit=path.join(fixture,'dist','life-audit');
+ try{await mkdir(audit,{recursive:true});await writeFile(path.join(audit,'index.html'),`${placeholder}/life-audit/assets/og/default.png`);
+ await exec(process.execPath,[script],{cwd:fixture,env:{PATH:process.env.PATH}});
+ assert.equal(await readFile(path.join(audit,'index.html'),'utf8'),'https://bestday.ai/life-audit/assets/og/default.png');
+ await writeFile(path.join(audit,'index.html'),'__QUIZ_ORIGIN__');
+ await assert.rejects(exec(process.execPath,[script],{cwd:fixture,env:{PATH:process.env.PATH}}),/placeholder remains/);
+ }finally{await rm(fixture,{recursive:true,force:true})}
+});

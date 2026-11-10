@@ -1,0 +1,19 @@
+---
+import AuditLayout from '../../layouts/AuditLayout.astro';
+import Wheel from '../../components/Wheel.astro';
+import { areas } from '../../data/audit.mjs';
+export function getStaticPaths(){return areas.map(area=>({params:{area:area.id},props:{area}}))}
+const {area}=Astro.props;
+const title=`Your friend is giving attention to ${area.name}`;
+---
+<AuditLayout {title} image={area.id} path={`/life-audit/r/${area.id}/`}>
+<main><a href="/life-audit/"><img src="/life-audit/assets/logos/wordmark-white.png" alt="Bestday" width="126"/></a><div class="hero"><div><h1>Your friend is giving attention to <em>{area.name}</em> this month.</h1><p>See which part of your life deserves attention. Choose one goal and a first step to tell someone you trust. 3 minutes.</p><a class="button" href={`/life-audit/?ref=${area.id}&start=1`}>Take the life audit</a></div><Wheel focus={area.id}/></div></main>
+<script>
+import {initAnalytics,trackLifeAudit} from '../../../src/lib/analytics';
+import {validArea} from '../../../src/lib/life-audit-sharing.mjs';
+initAnalytics(import.meta.env.PUBLIC_MIXPANEL_TOKEN);
+const ref=validArea(location.pathname.split('/').filter(Boolean).pop());
+if(ref)trackLifeAudit('referral_landing',{ref});
+</script>
+<style>main{max-width:1280px;margin:auto;padding:28px 24px 70px}.hero{display:grid;gap:32px;align-items:center;padding-top:45px}h1{font-size:clamp(36px,4.5vw,64px);line-height:1.05;letter-spacing:-.04em}em{font-style:normal;color:#FFDE59}p{font-size:18px;line-height:1.6;max-width:40ch;margin-bottom:30px}@media(min-width:800px){.hero{grid-template-columns:1fr 1fr;gap:60px;padding-top:80px}}</style>
+</AuditLayout>

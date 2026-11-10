@@ -32,3 +32,9 @@ Decisions made during the build without interrupting you. Each has the reasoning
 | D16 | Result copy names areas by their short names ("Health and Home are where you feel most satisfied right now"). | The long names made "Health and energy and Home and everyday life", which reads badly. | Made |
 | D17 | The opening question's answer (segment) tints nothing on the result yet and is not shown. It goes to analytics only. | The playbook wants the first answer to tailor the result. With 4 segments x 8 areas, tailored lines would be thin. Better use: tailor the emails (a "new season" person gets a January-flavoured note). Logged as a v1.1 idea. | Open |
 | D13 | Recommend adding only `/life-audit/` to the sitemap, not the 8 share pages. | Share pages are thin and near-duplicate; one strong page is better for search, as the research recommends. | Made |
+
+## Task 3 review notes
+
+- The result signup uses the existing archetype web Branch link until the dedicated Life Audit links arrive. Launch handoffs reject either missing link; review handoffs print warnings.
+- Referral copy has two deterministic variants, for matching and different areas. Both ask the two people to exchange first steps and choose a check-in day this week.
+- Public OG PNGs were rendered with Urbanist and the public example wheel using a software rasteriser because Chromium cannot launch in this sandbox (`setsockopt: Operation not permitted`). The Playwright generator is supplied with embedded font data and `CHROMIUM_PATH` support. Re-render with `npm run assets:life-audit` outside the sandbox before visual approval. Personal cards and the updated screenshot flow still need browser verification outside this sandbox.

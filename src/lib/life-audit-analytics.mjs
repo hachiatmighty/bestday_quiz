@@ -5,7 +5,7 @@ const areaIds = ids(areas);
 const segments = ids(contextOptions);
 const times = ids(timeOptions);
 const horizons = ids(horizonOptions);
-const attributionKeys = new Set(['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'ref']);
+const attributionKeys = new Set(['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']);
 
 // Allowlist both keys and values. Never accept nested objects or arbitrary free text.
 export function lifeAuditProperties(properties = {}) {
@@ -15,6 +15,7 @@ export function lifeAuditProperties(properties = {}) {
       (key === 'edited' && typeof value === 'boolean') ||
       (key === 'step' && Number.isInteger(value) && value >= 0 && value <= 32) ||
       (['area_id', 'focus_area_id'].includes(key) && areaIds.has(value)) ||
+      (key === 'ref' && areaIds.has(value)) ||
       (key === 'segment' && segments.has(value)) ||
       (key === 'time_option' && times.has(value)) ||
       (key === 'horizon' && horizons.has(value)) ||

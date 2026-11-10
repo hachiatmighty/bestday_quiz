@@ -13,7 +13,9 @@
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
     "test": "node --test tests/*.test.mjs",
     "dev:life-audit": "ASTRO_TELEMETRY_DISABLED=1 astro dev --config astro.life-audit.config.mjs",
-    "build:life-audit": "ASTRO_TELEMETRY_DISABLED=1 astro check --config astro.life-audit.config.mjs && ASTRO_TELEMETRY_DISABLED=1 astro build --config astro.life-audit.config.mjs"
+    "build:life-audit": "ASTRO_TELEMETRY_DISABLED=1 astro check --config astro.life-audit.config.mjs && ASTRO_TELEMETRY_DISABLED=1 astro build --config astro.life-audit.config.mjs",
+    "build:life-audit-handoff": "node scripts/build-life-audit-handoff.mjs",
+    "assets:life-audit": "node scripts/generate-life-audit-assets.mjs"
   },
   "dependencies": {
     "astro": "^7.3.5",

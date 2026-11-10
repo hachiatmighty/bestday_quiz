@@ -89,8 +89,8 @@ test('analytics strips rating values, PII, free text and overrides of the quiz i
   const payload = lifeAuditProperties({ quiz:'other', ratings:{work:2}, rating:2, value:2,
     email:'a@example.com', firstName:'A', name:'A', phone:'123', whatsapp:'123', goal:'free text',
     step:2, area_id:'work', focus_area_id:'money', segment:'curious', time_option:'hour',
-    horizon:4, channel:'share', quiz_version:'abcdef0', utm_source:'newsletter', ref:'friend' });
-  assert.deepEqual(payload, {quiz:'life_audit',step:2,area_id:'work',focus_area_id:'money',segment:'curious',time_option:'hour',horizon:4,channel:'share',quiz_version:'abcdef0',utm_source:'newsletter',ref:'friend'});
+    horizon:4, channel:'share', quiz_version:'abcdef0', utm_source:'newsletter', ref:'relationships' });
+  assert.deepEqual(payload, {quiz:'life_audit',step:2,area_id:'work',focus_area_id:'money',segment:'curious',time_option:'hour',horizon:4,channel:'share',quiz_version:'abcdef0',utm_source:'newsletter',ref:'relationships'});
   assert.deepEqual(lifeAuditProperties({step:'private text', area_id:3, segment:'my name', ref:'a@example.com',utm_source:'123456789',channel:{email:'private'}}), {quiz:'life_audit'});
 });
 

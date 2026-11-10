@@ -20,7 +20,7 @@ export const copy = {
   horizon: 'How long', firstStep: 'Your first step this week', day: 'Choose a day', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   quote: 'No one achieves alone.', quoteBody: 'A goal can live quietly in your head for months. Tell someone who will remember it, and you have someone to return to when the week gets full.',
   share: 'Who would tell you if this is true?', shareBody: 'Send your commitment to a few people you trust. Ask one of them to check in on the day you chose.',
-  circle: 'Start your circle', pricing: 'Premium is $99 a year. Your people join free.', again: 'Take it again', linkPending: 'Your commitment is ready. Your circle link is being prepared.',
+  circle: 'Start your circle', pricing: 'Premium is $99 a year. Your people join free.', again: 'Take it again',
   shareIntro: "This month I'm giving attention to", shareEnd: 'Take the life audit and tell me yours:', copied: 'Your commitment is copied.', skipped: 'skipped', outOf: 'out of 10',
   how: 'How it works', steps: [['Take stock', 'Rate your satisfaction with 8 areas of your life, as they are right now.'], ['Choose one area', 'The lowest rating does not decide for you. You choose where your attention goes next.'], ['Tell your people', 'Choose a goal and a first step. Let someone you trust know what you intend to do.']],
   method: 'A wheel, not a verdict.', methodBody: 'The wheel of life is a reflection tool used in coaching. Each part represents an area of your life. You rate your own satisfaction, then look at the shape together. There is no ideal shape to copy. This is a picture of how things feel to you right now.',

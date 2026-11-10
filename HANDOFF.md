@@ -106,3 +106,35 @@ Delete `public/quiz/` and remove only the six `/quiz` rewrite entries added abov
 ## Local verification boundary
 
 The package is tested by unzipping it into a scratch Vite SPA, running `vite build` and `vite preview`, and loading `/quiz/`, `/quiz/r/anchor/`, and quiz assets. Vite preview does not read `vercel.json`, so the clean-URL rewrite entries are verified from Vercel's rewrite behavior and their explicit file destinations, not exercised by the local preview server.
+
+## Life Audit
+
+Build a review archive with `LIFE_AUDIT_ALLOW_NO_TOKEN=1 npm run build:life-audit-handoff`, or provide `PUBLIC_MIXPANEL_TOKEN` for a tracked build. Review archives print warnings for missing tracking and pending Branch links. Launch with `PUBLIC_LIFE_AUDIT_NOINDEX=false`; the handoff refuses launch while either `LIFE_AUDIT_WEB` or `LIFE_AUDIT_EMAIL` in `life-audit/data/links.mjs` is null. The token escape is for review only.
+
+Unzip `handoff/bestday-life-audit-<sha>.zip` directly into `public/life-audit/` in the website repository. Replace the entire previous folder. The resulting entry point is `public/life-audit/index.html`. Email previews are excluded. Install the updated `scripts/set-quiz-origin.mjs` and run it after `vite build`; it rewrites both `dist/quiz/` and `dist/life-audit/`, skipping missing folders and failing on leftover placeholders.
+
+Add these exact entries above the SPA catch-all in `vercel.json`:
+
+```json
+{ "source": "/life-audit", "destination": "/life-audit/index.html" },
+{ "source": "/life-audit/", "destination": "/life-audit/index.html" },
+{ "source": "/life-audit/r/:area", "destination": "/life-audit/r/:area/index.html" },
+{ "source": "/life-audit/r/:area/", "destination": "/life-audit/r/:area/index.html" }
+```
+
+For the sitemap, recommend only `https://bestday.ai/life-audit/`. Optionally add `/life-audit/r/<area>/` for work, money, health, relationships, growth, rest, home and meaning; these are similar pages, so the landing is the stronger search destination.
+
+```sh
+curl -sI https://bestday.ai/life-audit/
+curl -sI https://bestday.ai/life-audit/r/relationships
+curl -sI https://bestday.ai/life-audit/r/relationships/
+curl -s https://bestday.ai/life-audit/r/relationships/ | grep 'bestday.ai/life-audit/assets/og/relationships.png'
+curl -sI https://bestday.ai/life-audit/assets/og/default.png
+curl -sI https://bestday.ai/life-audit/assets/og/relationships.png
+curl -s https://bestday.ai/life-audit/ | grep 'name="robots"'
+curl -s https://bestday.ai/life-audit/email/
+```
+
+Pass: landing and both share routes return `200` with `text/html`; the share HTML contains its OG image tag; images return `200` with `image/png`. Review landing has `noindex`; launch landing has no robots `noindex` tag. `/email/` must not return Life Audit preview content (a website fallback or 404 is acceptable).
+
+Personal images are rendered only in the browser. Share URLs carry only an area, never a goal, rating, name or email. This repository supplies email previews, not email delivery. The capture service still needs the approved sequence and a working unsubscribe destination before launch. App-side preservation of the chosen goal remains outside this static handoff.

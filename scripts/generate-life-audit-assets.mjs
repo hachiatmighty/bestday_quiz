@@ -1,0 +1,11 @@
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {chromium} from 'playwright-core';
+import {areas} from '../life-audit/data/audit.mjs';
+import {exampleWheel,escapeXml} from '../src/lib/life-audit-sharing.mjs';
+const root='life-audit/public/assets';
+const data=async(path,mime)=>`data:${mime};base64,${(await readFile(`${root}/${path}`)).toString('base64')}`;
+const medium=await data('fonts/Urbanist-Medium.ttf','font/ttf'),bold=await data('fonts/Urbanist-ExtraBold.ttf','font/ttf'),logo=await data('logos/wordmark-white.png','image/png');
+export function stripPngMetadata(buffer){const chunks=[buffer.subarray(0,8)];for(let offset=8;offset<buffer.length;){const end=offset+buffer.readUInt32BE(offset)+12;const type=buffer.toString('ascii',offset+4,offset+8);if(['IHDR','IDAT','IEND'].includes(type))chunks.push(buffer.subarray(offset,end));offset=end}return Buffer.concat(chunks)}
+await mkdir(`${root}/og`,{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium',headless:true,args:['--no-sandbox']});
+try{const page=await browser.newPage({viewport:{width:1200,height:630},deviceScaleFactor:1});for(const area of [null,...areas]){const title=area?`Your friend is giving attention to ${area.name}`:'Look at your whole life. Then choose one thing.';await page.setContent(`<style>@font-face{font-family:Urbanist;src:url('${medium}');font-weight:500}@font-face{font-family:Urbanist;src:url('${bold}');font-weight:800}*{box-sizing:border-box}body{margin:0;background:#0D0D0D;color:#FFFCEF;font-family:Urbanist}article{width:1200px;height:630px;padding:55px 65px;position:relative}h1{font-size:62px;line-height:1.05;letter-spacing:-2px;width:620px;margin-top:70px}svg{position:absolute;right:50px;top:160px;width:410px;height:410px}p{position:absolute;bottom:30px;font-size:24px}</style><article><img src="${logo}" width="150"/><h1>${escapeXml(title)}</h1>${exampleWheel(area?.id || 'relationships')}<p>bestday.ai/life-audit</p></article>`);await page.evaluate(()=>document.fonts.ready);await writeFile(`${root}/og/${area?.id || 'default'}.png`,stripPngMetadata(await page.screenshot({type:'png'})));}}finally{await browser.close()}

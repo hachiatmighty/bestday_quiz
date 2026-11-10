@@ -1,0 +1,5 @@
+---
+import AuditLayout from '../../layouts/AuditLayout.astro';
+import {emails} from '../../data/emails.mjs';
+---
+<AuditLayout review title="Life Audit email previews"><main class="shell"><p>Review only. Sample data. No messages are sent.</p><h1>Life Audit emails</h1>{emails.map(e=><p><a href={`/life-audit/email/${e.slug}/`}>{e.timing}: {e.subject}</a></p>)}</main></AuditLayout>
