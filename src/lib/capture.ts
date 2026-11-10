@@ -1,21 +1,25 @@
+export type LifeAuditCapturePayload = {
+ quiz: 'life_audit'; stage: 'capture'; attemptId: string; firstName: string; email: string;
+ whatsapp: string; whatsappConsent: boolean; consent: boolean; focusArea: string;
+ segment: string; timeOption: string; ratings: Record<string, number | null>;
+ source: Record<string, string | null>; quizVersion: string;
+};
+export type LifeAuditCommitmentPayload = {
+ quiz: 'life_audit'; stage: 'commitment'; attemptId: string; email: string;
+ goal: string; goalEdited: boolean; horizon: number; firstStep: string; day: string | null;
+};
 export type CapturePayload = {
   firstName: string;
   email: string;
   whatsapp: string;
   whatsappConsent: boolean;
   consent: boolean;
-  quiz?: 'life_audit';
-  focusArea?: string;
-  segment?: string;
-  timeOption?: string;
-  horizon?: number;
-  ratings?: Record<string, number | null>;
   archetype: string;
   category: string;
   source: Record<string, string | null>;
 };
 
-export async function submitCapture(payload: CapturePayload, endpoint?: string) {
+export async function submitCapture(payload: CapturePayload | LifeAuditCapturePayload | LifeAuditCommitmentPayload, endpoint?: string) {
   if (endpoint) {
     const response = await fetch(endpoint, {
       method: 'POST',
