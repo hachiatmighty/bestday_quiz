@@ -34,3 +34,12 @@ test('exported figures have exact colours, transparency, centred padding and web
     assert.equal(Math.max(web.width, web.height), 512);
   }
 });
+
+test('supporting ring preserves transparency and exact brand yellow', async () => {
+  const { data, info } = await sharp('life-audit/public/assets/figures/hero-ring.png').raw().toBuffer({ resolveWithObject: true });
+  assert.equal(info.width,1024);assert.equal(info.height,1024);assert.equal(info.channels,4);
+  assert.equal(data[3],0);
+  let filled=0;
+  for(let p=0;p<data.length;p+=4)if(data[p+3]){filled++;assert.deepEqual([...data.subarray(p,p+3)],colours.yellow)}
+  assert.ok(filled>50000 && filled<600000);
+});

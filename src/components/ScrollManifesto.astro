@@ -1,0 +1,13 @@
+<slot />
+<script>
+  document.querySelectorAll('[data-lines]').forEach(lines => {
+    if (!('IntersectionObserver' in window)) return;
+    lines.setAttribute('data-reveal', '');
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('seen');
+      observer.unobserve(entry.target);
+    }), { rootMargin: '0px 0px -45% 0px' });
+    lines.querySelectorAll('.line').forEach(line => observer.observe(line));
+  });
+</script>

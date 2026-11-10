@@ -1,0 +1,6 @@
+---
+import { figureWheel } from '../../src/lib/wheel-of-figures.mjs';
+import { exampleRatings } from '../../src/lib/life-audit-sharing.mjs';
+const {focus=null, demo=false, ratings=exampleRatings}=Astro.props;
+---
+<Fragment set:html={figureWheel(ratings,focus,{demo})}/>

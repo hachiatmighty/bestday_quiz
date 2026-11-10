@@ -7,6 +7,8 @@ const times = ids(timeOptions);
 const horizons = ids(horizonOptions);
 const attributionKeys = new Set(['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']);
 
+export const lifeAuditEventNames = new Set(['landing_view','landing_demo','quiz_start','step_view','question_answered','quiz_complete','teaser_view','capture_submit','result_view','share_click','card_download','referral_landing','signup_click','goal_selected','goal_edited','horizon_selected']);
+
 // Allowlist both keys and values. Never accept nested objects or arbitrary free text.
 export function lifeAuditProperties(properties = {}) {
   const clean = { quiz: 'life_audit' };

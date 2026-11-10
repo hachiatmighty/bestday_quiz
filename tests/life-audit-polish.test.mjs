@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {wheelArtwork,fitCardGoal} from '../src/lib/life-audit-sharing.mjs';
-test('continuous wheel guides overlay petals on every shared surface',async()=>{
+test('legacy wheel export keeps continuous guides above petals',async()=>{
  const svg=wheelArtwork({work:10,money:5},'work');
  assert.ok(svg.indexOf('<circle')>svg.lastIndexOf('class="petal'));
  assert.match(svg,/stroke="#0D0D0D" stroke-width="1" opacity=".22"/);
  assert.match(svg,/stroke="#FFFCEF" stroke-width=".6" opacity=".18"/);
- for(const file of ['life-audit/client.ts','life-audit/components/Wheel.astro'])assert.match(await readFile(file,'utf8'),/wheelArtwork/);
+ for(const file of ['src/lib/life-audit-sharing.mjs'])assert.match(await readFile(file,'utf8'),/wheelArtwork/);
 });
 test('personal goal typography shrinks before truncation and stays above the wheel',()=>{
  const measure=(s,size)=>s.length*size*.6;

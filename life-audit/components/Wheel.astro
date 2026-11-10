@@ -1,10 +1,5 @@
 ---
-import { areas } from '../data/audit.mjs';
-import { exampleRatings, wheelArtwork } from '../../src/lib/life-audit-sharing.mjs';
-const { focus = 'relationships' } = Astro.props;
+import WheelOfFigures from './WheelOfFigures.astro';
+const {focus='relationships'}=Astro.props;
 ---
-<div class="wheel" data-wheel><svg viewBox="-55 -40 310 280" role="img" aria-label="Example wheel">
-<g set:html={wheelArtwork(exampleRatings,focus)}/>
-{areas.map((a,i)=>{const angle=-Math.PI/2+(i+.5)*Math.PI/4;return <text x={100+Math.cos(angle)*125} y={100+Math.sin(angle)*125} text-anchor="middle" dominant-baseline="middle">{a.short}</text>})}
-</svg></div>
-<style>.wheel{width:100%;max-width:520px;margin:auto}.wheel svg{width:100%;display:block}.wheel text{font-family:Urbanist,sans-serif;font-size:9px;fill:#FFFCEF}</style>
+<WheelOfFigures {focus}/>

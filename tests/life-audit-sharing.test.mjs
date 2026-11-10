@@ -29,7 +29,7 @@ test('email sequence includes the approved commitment and private plain text whe
 test('static share pages have area-specific metadata and only public example images',async()=>{
  for(const a of areas){const html=await readFile(`dist-life-audit/r/${a.id}/index.html`,'utf8');assert.ok(html.includes(`/life-audit/?ref=${a.id}&amp;start=1`));assert.ok(html.includes(`/life-audit/assets/og/${a.id}.png`));assert.match(html,/name="robots" content="noindex"/);assert.ok(!html.includes(sample.goal));}
  const home=await readFile('dist-life-audit/index.html','utf8');assert.match(home,/WebApplication/);assert.match(home,/FAQPage/);assert.match(home,/twitter:card/);
- assert.deepEqual((await readdir('dist-life-audit/assets')).sort(),['fonts','logos','og']);
+ assert.deepEqual((await readdir('dist-life-audit/assets')).sort(),['figures','fonts','logos','og']);
  for(const name of ['default',...areas.map(a=>a.id)]){const png=await readFile(`life-audit/public/assets/og/${name}.png`);assert.equal(png.readUInt32BE(16),1200);assert.equal(png.readUInt32BE(20),630);const chunks=[];for(let i=8;i<png.length;){chunks.push(png.toString('ascii',i+4,i+8));i+=png.readUInt32BE(i)+12}assert.ok(chunks.every(c=>['IHDR','IDAT','IEND'].includes(c)));}
 });
 

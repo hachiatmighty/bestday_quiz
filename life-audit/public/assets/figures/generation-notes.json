@@ -15,9 +15,15 @@
   "regenerations": {
     "growth": "Smaller head: one quarter of composition longest dimension. Capsule torso 0.8 head diameters wide, 1.6 long. Limb width 0.4 head diameters. Two book rectangles with white seam, crossed lower limbs.",
     "meaning": "Same smaller-head proportions as growth; kneeling leg folded underneath, other knee raised, reaching toward short sapling with two rounded leaves.",
-    "rest": "Regenerated twice. Final prompt: nearly horizontal recline, arm behind head, legs crossed at ankles; head diameter 27% of composition width, torso width 80% of head diameter and length 160%, limb width 45%. Compact limbs, composition spanning approximately 4 heads."
+    "rest": "Task 7, built-in image_gen: flat yellow pictogram on white, lying in hammock, thick yellow curve between two short upright posts, circle head and arm visible above curve, one arm behind head; no outline, text, texture or shadow; 15% margins. Processed to exact brand colours with process-figures.mjs."
   },
   "rebuild": "node scripts/process-figures.mjs",
   "raw": "Ignored raw/ directory includes selected images and discarded v1 generations.",
-  "limitations": "Independent image generations retain small proportion differences; inspect contact sheets before site integration."
+  "limitations": "Independent image generations retain small proportion differences; inspect contact sheets before site integration.",
+  "supportingHero": {
+    "file": "hero-ring.png",
+    "tool": "Built-in image_gen.imagegen",
+    "background": "Transparent; alpha threshold and median cleanup in process-figures.mjs",
+    "prompt": "Use case: illustration-story. Supporting hero illustration for Bestday Life Audit. Eight simple flat brand-yellow #FFDE59 pictogram people arranged evenly in a circular ring, each holding the rim of one large simple wheel at the centre, viewed straight-on as a clean graphic emblem. Match Bestday's existing faceless circle-head, capsule-torso, rounded capsule limbs pictograms. All eight distinct people must read clearly at small size, with generous spacing and equal visual weight. Wheel is a simple thick yellow circular rim, no chart, no numbers, no text. Flat solid yellow only, no outlines, gradients, shadows, texture, faces or fingers. Square transparent canvas with even 12 percent margins. Transparent background."
+  }
 }

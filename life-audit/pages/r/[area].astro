@@ -7,7 +7,7 @@ const {area}=Astro.props;
 const title=`Your friend is giving attention to ${area.name}`;
 ---
 <AuditLayout {title} image={area.id} path={`/life-audit/r/${area.id}/`}>
-<main><a href="/life-audit/"><img src="/life-audit/assets/logos/wordmark-white.png" alt="Bestday" width="126" height="40"/></a><div class="hero"><div><h1>Your friend is giving attention to <em>{area.name}</em> this month.</h1><p>See which part of your life deserves attention. Choose one goal and a first step to tell someone you trust. 3 minutes.</p><a class="button" href={`/life-audit/?ref=${area.id}&start=1`}>Take the life audit</a></div><Wheel focus={area.id}/></div></main>
+<main class="share-page"><a href="/life-audit/"><img src="/life-audit/assets/logos/wordmark-white.png" alt="Bestday" width="126" height="40"/></a><div class="hero"><div><h1>Your friend is giving attention to <em>{area.name}</em> this month.</h1><p>See which part of your life deserves attention. Choose one goal and a first step to tell someone you trust. 3 minutes.</p><a class="button" href={`/life-audit/?ref=${area.id}&start=1`}>Take the life audit</a></div><Wheel focus={area.id}/></div></main>
 <script>
 import {initAnalytics,trackLifeAudit} from '../../../src/lib/analytics';
 import {validArea} from '../../../src/lib/life-audit-sharing.mjs';

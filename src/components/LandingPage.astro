@@ -1,4 +1,5 @@
 ---
+import ScrollManifesto from './ScrollManifesto.astro';
 import { archetypeOrder, archetypes, manifestoLines } from '../data/quiz';
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const assetUrl = (path: string) => `${base}${path.replace(/^\//, '')}`;
@@ -24,7 +25,7 @@ const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, l
     </div>
   </header>
 
-  <section class="lines" data-lines aria-label="The five goal archetypes">
+  <ScrollManifesto><section class="lines" data-lines aria-label="The five goal archetypes">
     <div class="landing-wrap">
       {types.map((type, index) => (
         <article class:list={['line', { flip: index % 2 === 1 }]} id={`type-${type.slug}`} data-type={type.slug}>
@@ -33,7 +34,7 @@ const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, l
         </article>
       ))}
     </div>
-  </section>
+  </section></ScrollManifesto>
 
   <section class="closing">
     <div class="landing-wrap">
@@ -46,21 +47,11 @@ const types = archetypeOrder.map(slug => ({ slug, name: archetypes[slug].name, l
 <script>
   // Each line waits in grey and lights up as it reaches the middle of the screen; its figure then makes one move in
   // the manner of its type (not with reduced motion). Without JavaScript the lines are simply shown.
-  const lines = document.querySelector('[data-lines]');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // The hero cards jump to their type's line. Buttons, not #links: a hash change fires popstate, which the quiz uses for its steps.
   document.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach(button => button.addEventListener('click', () => {
     document.getElementById(`type-${button.dataset.jump}`)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
   }));
-  if (lines && 'IntersectionObserver' in window) {
-    lines.setAttribute('data-reveal', '');
-    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('seen');
-      observer.unobserve(entry.target);
-    }), { rootMargin: '0px 0px -45% 0px' });
-    lines.querySelectorAll('.line').forEach(line => observer.observe(line));
-  }
 </script>
 
 <style>

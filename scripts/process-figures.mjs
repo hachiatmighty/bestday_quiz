@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 export const areas = ['work', 'money', 'health', 'relationships', 'growth', 'rest', 'home', 'meaning'];
@@ -17,6 +17,21 @@ async function exactColour(pipeline, rgb) {
   const { data, info } = await pipeline.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   for (let p = 0; p < data.length; p += 4) data.set(rgb, p);
   return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } });
+}
+
+// The supporting ring keeps the generated transparency; normalise its ink and
+// discard low-alpha noise before resizing, just as the individual figures do.
+async function processHeroRing() {
+  const source = `${directory}/raw/hero-ring.png`;
+  try { await access(source); } catch { return; }
+  const { data, info } = await sharp(source).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const mask = Buffer.alloc(info.width * info.height);
+  for (let p = 0; p < mask.length; p++) mask[p] = data[p * 4 + 3] >= 128 ? 255 : 0;
+  const alpha = await sharp(mask, { raw: { width: info.width, height: info.height, channels: 1 } })
+    .median(3).resize(1024, 1024).raw().toBuffer({ resolveWithObject: true });
+  const pixels = Buffer.alloc(1024 * 1024 * 4);
+  for (let p = 0; p < 1024 * 1024; p++) { pixels.set(colours.yellow, p * 4); pixels[p * 4 + 3] = alpha.data[p * alpha.info.channels]; }
+  await sharp(pixels, { raw: { width: 1024, height: 1024, channels: 4 } }).png().toFile(`${directory}/hero-ring.png`);
 }
 
 export async function processFigures() {
@@ -56,6 +71,7 @@ export async function processFigures() {
       }
     }
   }
+  await processHeroRing();
   for (const [colour, layers] of Object.entries(sheets)) {
     await sharp({ create: { width: 1200, height: 680, channels: 4, background: '#0D0D0D' } })
       .composite(layers).png().toFile(`${directory}/contact-sheet${colour === 'yellow' ? '' : '-grey'}.png`);
