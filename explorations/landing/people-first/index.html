@@ -21,46 +21,42 @@
   <script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
 </head>
 <body>
-<!-- Software / people-first. Bestday black, cream and accent yellow. Split hero, local Urbanist, quiet pill actions. Hero entrance + deliberate optional-wheel interaction. -->
+<!-- Software / people-first. Bestday black, cream and accent yellow. Central two-figure opening, local Urbanist, pill actions. Hero entrance + deliberate optional-wheel interaction. -->
 <header class="nav">
   <div class="wrap nav-inner">
     <a class="skip-link" href="#main">Skip to content</a>
     <a class="brand" href="#home" aria-label="Bestday home"><img src="assets/logos/wordmark-white.png" alt="Bestday" width="122" height="38"></a>
     <nav class="nav-links" aria-label="On this page">
-      <a class="m-link m-link--bare" href="#people">Your people</a>
-      <a class="m-link m-link--bare" href="#audit">The audit</a>
-      <a class="m-link m-link--bare" href="#method">The method</a>
+      <a class="m-link m-link--bare nav-start" href="#people">The people part <span aria-hidden="true">↓</span></a>
     </nav>
-    <a class="btn btn--primary nav-start" data-start href="#first-question">Start your life audit</a>
   </div>
 </header>
 <main id="main">
 
   <section class="hero" id="home" data-enter aria-labelledby="hero-title">
     <div class="wrap hero-wrap">
+      <div class="hero__media" data-enter-media>
+        <img src="assets/people-handoff.webp" alt="Two figures passing a small card between them." width="1536" height="1024" fetchpriority="high">
+      </div>
       <div class="hero-text">
-        <h1 id="hero-title">Your life audit,<br>people included.</h1>
+        <h1 id="hero-title">Your life audit,<br> people included.</h1>
         <p class="hero__lead">For people used to doing it alone. See where things stand, and who knows what you’re working towards.</p>
         <div class="hero-action">
           <a class="btn btn--primary" data-start href="#first-question">Start your life audit</a>
           <p class="hero-fact">About 8 minutes, free.</p>
         </div>
       </div>
-      <div class="hero__media" data-enter-media>
-        <img src="assets/people-handoff.webp" alt="Two figures passing a small card between them." width="1536" height="1024" fetchpriority="high">
-      </div>
-      <div class="hero-bottom"><span>A look at your life. A place for your people.</span><a class="m-link m-link--bare" href="#people">See the people part <span aria-hidden="true">↓</span></a></div>
     </div>
   </section>
 
   <section class="section people-section" id="people" aria-labelledby="people-title">
     <div class="wrap">
-      <h2 id="people-title">The people part<br>of your goals.</h2>
+      <h2 id="people-title">The people around<br>your goals.</h2>
       <p class="section-lead">A few of the circle questions. Answer for the last 4 weeks.</p>
       <div class="statement-list" aria-label="A look at the circle questions">
         <div class="statement"><span>I was the one chasing people for their goal updates.</span><img src="assets/figures/relationships-cream.webp" alt="" width="100" height="100" loading="lazy"></div>
-        <div class="statement"><span>I kept a goal quiet until I could do it for sure.</span><img src="assets/figures/growth-cream.webp" alt="" width="100" height="100" loading="lazy"></div>
-        <div class="statement"><span>A goal slipped and nobody asked me about it.</span><img src="assets/figures/work-cream.webp" alt="" width="100" height="100" loading="lazy"></div>
+        <div class="statement"><span>I kept a goal to myself until I was sure I could do it.</span><img src="assets/figures/growth-cream.webp" alt="" width="100" height="100" loading="lazy"></div>
+        <div class="statement"><span>A goal slipped and nobody noticed.</span><img src="assets/figures/work-cream.webp" alt="" width="100" height="100" loading="lazy"></div>
       </div>
       <p class="people-end">The audit asks about this, too. Your circle read comes from your answers.</p>
     </div>
@@ -68,7 +64,7 @@
 
   <section class="section cream" id="audit" aria-labelledby="audit-title">
     <div class="wrap">
-      <div class="section-head"><h2 id="audit-title">Your whole life<br>gets a look.</h2><p>8 areas. 5 parts. About 52 answers,<br>most of them a single tap.</p></div>
+      <div class="section-head"><h2 id="audit-title">Your life in 8 areas.</h2><p>8 areas and 5 parts, with about 52 answers, most of them a single tap.</p></div>
       <div class="app-frame audit-overview">
         <div class="areas-panel">
           <div class="panel-heading"><span>Your life audit</span><span>8 areas</span></div>
@@ -172,7 +168,7 @@
     <div class="handoff-top"><button class="text-button m-link" id="return-landing" type="button">Back to the life audit</button><span>Part 1 of 5</span></div>
     <div class="question-progress" aria-label="First statement in Work and direction"><span></span></div>
     <div class="question-layout">
-      <div class="question-copy"><p class="small muted">Work and direction, the last 4 weeks</p><h1 id="question-title" tabindex="-1">I got something done on the work I wanted to do.</h1><p>Think about the past 4 weeks. Tap how much each statement sounds like what actually happened.</p><div class="answer-list" role="group" aria-label="Your answer">
+      <div class="question-copy"><p class="small muted">Work and direction, the last 4 weeks</p><h1 id="question-title" tabindex="-1">I moved forward on work I actually care about.</h1><p>Think about the past 4 weeks. Tap how much each statement sounds like what actually happened.</p><div class="answer-list" role="group" aria-label="Your answer">
         <button type="button" data-answer="0" aria-pressed="false">Not me</button>
         <button type="button" data-answer="1" aria-pressed="false">Mostly not me</button>
         <button type="button" data-answer="2" aria-pressed="false">A bit like me</button>
@@ -187,7 +183,7 @@
 
 <footer class="closing" id="start">
   <div class="wrap">
-    <div class="close-content"><h2>One goal.<br>Let your people in.</h2><p>Start with a look at your life.<br>Decide what to let your people in on.</p><a class="btn btn--primary btn--xl" data-start href="#first-question">Start your life audit</a><p class="small muted">About 8 minutes, free.</p></div>
+    <div class="close-content"><h2>A goal to share<br>with your people.</h2><p>Start with a look at your life.<br>Decide what to let your people in on.</p><a class="btn btn--primary btn--xl" data-start href="#first-question">Start your life audit</a><p class="small muted">About 8 minutes, free.</p></div>
     <div class="footer-bottom"><img src="assets/logos/wordmark-white.png" alt="Bestday" width="168" height="52"><span>© 2026 Bestday</span><a class="m-link m-link--bare" href="#questions">Read the FAQ</a><a class="m-link m-link--bare" href="#method">Read the method</a></div>
   </div>
 </footer>

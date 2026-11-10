@@ -1,56 +1,58 @@
 Kind: software
-Direction: Bestday black/cream, Urbanist 500/800, split live-UI hero, pill actions, wordmark nav, cream result spread, black circle section. These are the supplied brand and concept, not a random deal; the founder explicitly requested no installation or taste scripts.
+Direction: Bestday black/cream, Urbanist 500/800, live question card with a wheel that builds as you answer. Supplied brand and concept. No installation or taste scripts.
 
-The working audit lets someone feel the audit's one-tap pace before deciding to start. Three practice answers build one provisional slice, then a readable example shows where the full audit leads: a wheel, a circle read and one goal.
+## Round 2 changes
 
-## Screen plan (taste step 3)
+- The opening now centres on the practice controls. A compact headline sits above the card and wheel; the start action follows them. At 1440 the wheel has its own 360px column beside the card. On phones it occupies 164px inside the card, up from 86px. The old headline-left/card-right arrangement is removed.
+- Navigation is the wordmark and one text link, “See an example result”. The three-link navigation and header start pill are removed. Both remaining start buttons use “Start your life audit” without a plus or other glyph.
+- The 3 taps now preview 3 separate areas: work.W1, health.W1 and rest.C1, copied exactly from QUESTIONS-V3.md. The area name and figure change with the question. This replaces the previous 3 Work statements contributing to one small slice.
+- Every answer adds that area's slice while its rim figure fades from grey to cream over 700ms. Earlier slices stay in place. The Rest cost statement is reversed. A zero answer lights the figure and adds a small marker near the centre; it is never drawn as an unanswered area or inflated into a positive reading.
+- A visible “0 of 3 areas tried” counter accompanies the wheel. Desktop also says “Practice preview”. This is a demonstration of the controls, with one answer per area, not a completed area reading. Completion explains that the full audit asks more questions for each area. The wheel's accessible name includes the same distinction.
+- Back removes the most recent preview and returns to that question. Reset and starting the audit clear all previews. Keyboard focus follows the question or reset control. Reduced motion shows the final slices and cream figures immediately.
+- Re-read the taste skill's references/copy-tells.md. Replaced the paired headings with “The 5 parts of your audit”, “How your result comes together” and “A goal for your next quarter”. Removed the method and FAQ contrast frames. The demo, handoff, example Work statements and three circle statements use the v3 bank. “The quiet planner” and its description remain exact source copy.
 
-- `hero` | Learn the pace by answering | object: working question card and small wheel of eight figures | 1 screen | One load entrance; taps update the provisional Work slice, and completion settles it once.
-- `result` | Inspect what your own answers give back | object: labelled fictional result spread, wheel and answer-linked reading, circle read and one goal | 1 screen | Static, readable UI; no scroll reveal.
-- `parts` | Understand the actual effort | parts: five-part progress list beside the eight area figures | 1 screen | Still. 32 + 8 + 1 + 6 + 4 answers, plus the opening context tap, about 52 altogether.
-- `circle` | See the questions about your people | use: large Relationships figure and three of the six situational statements | 1 screen | Still; the question content carries the section.
-- `method` | Know how the result is built and what email opens | diagram: answers → area reading → chosen focus; open access rows | 1 screen | Still.
-- `questions` | Resolve practical search questions | type: six open FAQs | 1 screen | Still.
-- `close` | Start with a clear expectation | type: large next-quarter line and primary action, footer links | 1 screen | Quiet hover/press only.
+## Screen plan
 
-Desktop sections occupy 100svh at 1440×900. On phones and tablets, content stacks and sections grow as needed; the hero remains one screen at 390×844. This prioritises readable controls over forcing whole-screen heights on every phone.
+- `hero`: try 3 questions and see the wheel build. Compact heading, working card, prominent wheel, one start action. One load entrance and visitor-triggered slice/figure changes.
+- `result`: inspect a labelled fictional result. Existing wheel, answer-linked reading, circle read and one goal.
+- `parts`: understand the effort. Existing five-part list beside the eight area figures.
+- `circle`: read 3 of the 6 source statements about the people around your goals.
+- `method`: understand how the result is built and what first name/email open.
+- `questions`: six open FAQs.
+- `close`: start the audit, with a next-quarter goal heading and footer links.
 
-## Design plan
-
-- Palette roles: #0D0D0D page, cream #FFFCEF text and result surfaces, #FFDE59 focus, wheel slice and primary action on black. Black actions with yellow text on cream. Supporting grey only for unlit figures, wheel outlines and secondary labels on black.
-- Type: local Urbanist Medium (500) for all reading text; ExtraBold (800) for headings and important UI. Desktop h1 76px, h2 56px, card statement 34px, body 18px, labels 14px. Phone h1 40px, h2 36px, question 23px, body 16px. No all-caps or decorative eyebrows.
-- Layout: equal 80px desktop edges and 24px phone edges; left-aligned split hero, result as one continuous product spread, five-part ruled list, large circle figure, method/access comparison, open FAQ. No repeated feature-card grid, gradient, shadow, stock photography or manifesto.
-- One system: 24px panel radius, 999px actions, 12px answer controls; 8/16/24/32/48/64/96 spacing. Taste's supplied motion layer handles entrance and primary button feedback. The second meaningful moment is the visitor-driven slice build; no auto loops or scroll animation.
+Desktop sections retain their whole-screen layout at 1440×900. The hero uses natural height on phones and short desktop viewports so controls remain reachable. The mobile layout targets 390px with 24px edges; desktop sections retain 80px edges, with a centred practice workspace. This round could not verify those layouts in a browser.
 
 ## Copy and source decisions
 
-Voice: Bestday's flat, specific member register; capable second-person address; situations before abstractions; no humour, hype or borrowed proof. The v3 structure and this brief override the older three-minute, 0–10 spec and original research concept. All full-result content is labelled as a fictional example, as explicitly required by the brief (overriding taste's generic ban on example labels).
+The v3 structure and exploration brief govern the about-8-minutes, five-part audit, overriding the older three-minute, single-rating spec for this exploration. Full-result content remains labelled as fictional. Existing reviewed goals/reflections in life-audit/data/audit.mjs and the production quizzes are untouched.
 
-QUESTIONS-V3.md arrived during the build. The demo now uses the exact first three selected Work statements (W1, W2, C1), and the handoff uses work.W1: “I got something done on the work I wanted to do.” All five answer labels, the three circle questions and the quiet-planner example are taken from that bank. The demo previews three of the five Work answers; the full audit adds C2 and the closing check. The Start handoff opens Part 1, area 1 directly, as requested, rather than recreating the context flow or implying this is the complete audit.
+The practice preview stores independent per-area values and does not average across areas. One response per area is enough only for this explicitly labelled demonstration. The method section still explains that the full audit requires at least 3 answers to draw an area. Untouched areas stay missing.
 
-The practice wheel is explicitly provisional: each tap previews a slice, only three answers completes the demo area, and no full area reading is claimed from one answer. Cost items are reversed. An all-minimum reading remains an answered area rather than a skipped area. Starting clears practice answers; returning restores an empty demo. Everything is memory-only, with no analytics, network submission, cookies or browser storage. The handoff accepts one answer and identifies the end of this exploration.
+The Start handoff opens Part 1, area 1 directly, as in the original exploration. It accepts one answer and identifies the end of the exploration. Starting clears practice answers; returning shows an empty demo. Everything is memory-only, with no analytics, network submission, cookies or browser storage.
 
-## Difference from the other directions
+## Assets and implementation
 
-This earns the start through using the controls. The editorial concept earns it through an invitation; the report concept starts with a completed result; the people concept starts with a commitment between two people. The working audit has no letter, report-first hero or staged sharing handoff.
+Local Urbanist Medium/ExtraBold, the existing Bestday wordmark and eight supplied figure sets. No generated images, new dependencies or external assets. Existing inline wheels render without JavaScript. Serve the folder with a static server or open index.html directly.
 
-## Assets
+The small sector geometry helper adapts src/lib/wheel-of-figures.mjs. The shared wheel renderer serves the demo and fictional result within this exploration. The supplied taste motion layer is unchanged; the new slice and figure animations live in assets/style.css. No installation, taste scripts, deployment, commit, push or branch change.
 
-No images generated: the product UI and supplied figures are the visual subject, and new raster art would distract from the working control. Copied local Urbanist 500/800, Bestday black/white logo PNGs, and the existing eight yellow/cream/grey WebP figures. Wheel geometry adapts the small `sectorPath` helper from `src/lib/wheel-of-figures.mjs`; the existing audit's rendering, capture, analytics, copy and styles are untouched. The independent five-point demo has its own tested logic because the existing renderer implements the older 0–10 audit.
+Files changed in round 2:
 
-Taste motion.css is copied unchanged from the requested skill assets. motion.js is wrapped in a closure with module exports removed so it also works when opened directly from disk; no skill scripts run, no installation. No external dependencies or assets. Serve the folder with any static server, or open index.html directly.
-
-## Open questions
-
-- The question bank is still a copy and measurement draft. Confirm its final approval before production.
-- About 8 minutes is the brief's estimate; time the complete v3 audit before launch.
-- v3 says five parts but places Part 2's checks at the end of each area. The list explains that placement rather than promising a separate eight-answer block.
-- This is a local landing exploration with a one-question handoff. Production analytics, capture, persistence, delivery, real consent and full audit routing belong to the chosen direction's implementation.
-- Confirm final v3 circle patterns, first-name/email gate wording and privacy policy before production. This page promises only the stated gate, not a storage policy for the future audit.
+- index.html
+- assets/style.css
+- assets/app.js
+- assets/logic.js
+- NOTES.md
+- ../../../tests/working-audit.test.mjs
 
 ## Verification
 
-- New tests cover five-point arithmetic, reverse cost items, three-answer completion, empty versus zero, clamping, demo back/reset, clean handoff, selection/return, exact v3 source copy, relative asset resolution, inline no-JavaScript wheels, CSS parsing and the three allowed text-colour contrasts.
-- `npm run build && npm test`: build passed with 0 errors and 0 warnings. Final full-suite run: 22 of 24 test files passed. `tests/origin-rewrite.test.mjs` failed as documented for this sandbox; the concurrently added `tests/open-result-landing.test.mjs` also failed. Neither file was edited. This exploration’s `tests/working-audit.test.mjs` passes, including its DOM-flow tests.
-- Preview server and Chromium launch both failed with sandbox `Operation not permitted` errors. No browser screenshot, overflow or rendered-layout verification is claimed at 390 or 1440. Responsive rules are present, but the reviewer must verify the rendered page.
-- The founder-requested taste scripts were not run. No install, commit, push, branch change or deployment.
+- Focused tests pass. Coverage includes independent slices, cost reversal, missing versus zero, earlier answers surviving later taps, Back/reset, duplicate completion clicks, cream/grey figure states, clean handoff and return, exact v3 statements, relative assets, inline no-JavaScript wheels, CSS parsing and text contrast.
+- `npm run build && npm test`: build passed with 0 errors, 0 warnings and 3 unused-variable hints in the existing motion files. 23 of 24 test files passed, including working-audit. Only tests/origin-rewrite.test.mjs failed, the sandbox-sensitive child-process test documented in AGENTS.md. That test was not edited.
+- A local HTTP server failed with `PermissionError: [Errno 1] Operation not permitted`. Chromium also failed at launch in this sandbox. No new screenshots, rendered overflow check or visual animation verification is claimed at 390 or 1440; the reviewer needs to check these.
+
+## Open questions
+
+- The v3 question bank is still a copy/measurement draft. Confirm final approval and time the complete audit before production.
+- The full audit's check mapping, circle patterns, consent, privacy, analytics, capture and delivery remain production implementation work. This round keeps the original one-question handoff.

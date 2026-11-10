@@ -7,11 +7,21 @@ const source = await readFile(root + 'assets/logic.js', 'utf8');
 const context = vm.createContext({});
 vm.runInContext(source, context);
 const logic = context.WorkingAudit;
-test('working audit demo reverses cost statements and distinguishes empty from zero', () => {
-  assert.equal(logic.reading([]), null);
-  assert.equal(logic.reading([0, 0, 4]), 0);
-  assert.equal(logic.reading([4, 4, 0]), 4);
-  assert.equal(logic.reading([4, 4, 4]), 8 / 3);
+test('practice answers build separate area previews, reverse costs and preserve missing areas', () => {
+  assert.deepEqual(Object.keys(logic.previewValues([])), []);
+  const first = logic.previewValues([0]);
+  assert.equal(first.work, 0);
+  assert.equal(first.health, undefined);
+  const second = logic.previewValues([0, 3]);
+  assert.equal(second.work, 0);
+  assert.equal(second.health, 3);
+  assert.equal(second.rest, undefined);
+  const third = logic.previewValues([0, 3, 4]);
+  assert.deepEqual(Object.keys(third), ['work', 'health', 'rest']);
+  assert.equal(third.work, 0);
+  assert.equal(third.health, 3);
+  assert.equal(third.rest, 0);
+  assert.equal(logic.previewValues([4, 4, 0]).rest, 4);
 });
 test('working audit demo completes in three taps without mutating earlier answers', () => {
   const initial = [];
@@ -49,7 +59,7 @@ test('working audit DOM flow supports back, reset, clean handoff and return', as
     setAttribute(name, value) { this.attributes[name] = value; }
     focus() {}
   }
-  const selectors = ['.demo', '#demo-count', '#demo-statement', '#demo-answers', '#demo-done', '#demo-back', '#demo-status', '#demo-wheel', '#demo-reset', '#landing', '#handoff', '.nav__links', '.nav-start', '.skip-link', '#return-link', '#handoff-status', '#result-wheel', '#demo-answers .answer'];
+  const selectors = ['.demo', '#demo-count', '#demo-statement', '#demo-answers', '#demo-done', '#demo-back', '#demo-status', '#demo-wheel', '#demo-progress', '#demo-area', '#demo-figure', '#demo-reset', '#landing', '#handoff', '.nav__links', '.skip-link', '#return-link', '#handoff-status', '#result-wheel', '#demo-answers .answer'];
   const nodes = Object.fromEntries(selectors.map(key => [key, new Node()]));
   const handoffButtons = Array.from({ length: 5 }, (_, i) => Object.assign(new Node(), { dataset: { handoff: String(i) } }));
   const start = new Node();
@@ -63,13 +73,36 @@ test('working audit DOM flow supports back, reset, clean handoff and return', as
   function tap(value) { nodes['#demo-answers'].listeners.click({ target: { closest: () => ({ dataset: { value: String(value) } }) }, detail: 1 }); }
   tap(4);
   assert.equal(nodes['#demo-count'].textContent, '2 of 3');
-  assert.match(nodes['#demo-statement'].textContent, /something else/);
+  assert.equal(nodes['#demo-statement'].textContent, logic.questions[1].text);
+  assert.equal(nodes['#demo-area'].textContent, 'Health and energy');
+  assert.equal(nodes['#demo-figure'].src, 'assets/figures/health.webp');
+  assert.equal(nodes['#demo-progress'].textContent, '1 of 3 areas tried');
+  assert.equal((nodes['#demo-wheel'].innerHTML.match(/data-answered="true"/g) || []).length, 1);
+  assert.match(nodes['#demo-wheel'].innerHTML, /work-cream.webp/);
+  assert.match(nodes['#demo-wheel'].innerHTML, /health-grey.webp/);
+  assert.match(nodes['#demo-wheel'].innerHTML, /slice-grow/);
   nodes['#demo-back'].listeners.click();
   assert.equal(nodes['#demo-count'].textContent, '1 of 3');
-  tap(4); tap(2); tap(0);
+  assert.doesNotMatch(nodes['#demo-wheel'].innerHTML, /data-answered="true"/);
+  tap(4); tap(2);
+  assert.equal(nodes['#demo-area'].textContent, 'Rest and enjoyment');
+  assert.equal((nodes['#demo-wheel'].innerHTML.match(/data-answered="true"/g) || []).length, 2);
+  tap(0);
+  assert.equal((nodes['#demo-wheel'].innerHTML.match(/data-answered="true"/g) || []).length, 3);
+  for (const area of ['work', 'health', 'rest']) assert.ok(nodes['#demo-wheel'].innerHTML.includes(`${area}-cream.webp`));
+  assert.equal(nodes['#demo-progress'].textContent, '3 of 3 areas tried');
+  tap(3); // A queued or synthetic extra click must not alter the completed wheel.
+  assert.equal(nodes['#demo-progress'].textContent, '3 of 3 areas tried');
   assert.equal(nodes['#demo-answers'].hidden, true);
   assert.equal(nodes['#demo-done'].hidden, false);
+  nodes['#demo-back'].listeners.click();
+  assert.equal((nodes['#demo-wheel'].innerHTML.match(/data-answered="true"/g) || []).length, 2);
+  assert.match(nodes['#demo-wheel'].innerHTML, /rest-grey.webp/);
+  tap(4);
+  assert.match(nodes['#demo-wheel'].innerHTML, /rest-cream.webp/);
+  assert.match(nodes['#demo-wheel'].innerHTML, /<circle cx=/, 'A zero answer remains visibly answered');
   nodes['#demo-reset'].listeners.click();
+  assert.doesNotMatch(nodes['#demo-wheel'].innerHTML, /data-answered="true"/);
   assert.equal(nodes['#demo-count'].textContent, '1 of 3');
   tap(3);
   location.hash = '#audit'; window.hashchange();
@@ -114,4 +147,21 @@ test('working audit uses the current v3 first statements and first handoff quest
   const html = await readFile(root + 'index.html', 'utf8');
   assert.ok(html.includes(`<h1 id="audit-h">${logic.questions[0].text}</h1>`));
   for (const label of ['Mostly not me', 'A bit like me', 'Mostly me']) assert.ok(html.includes(label));
+});
+
+
+test('working audit uses source statements in the result and circle section too', async () => {
+  const bank = await readFile('docs/life-audit/QUESTIONS-V3.md', 'utf8');
+  const html = await readFile(root + 'index.html', 'utf8');
+  const statements = [...html.matchAll(/“(I [^”]+|Work [^”]+|Someone [^”]+|A goal [^”]+)”/g)];
+  assert.ok(statements.length >= 5);
+  for (const [, statement] of statements) assert.ok(bank.includes(statement), statement);
+  for (const [, heading] of html.matchAll(/<h[123][^>]*>(.*?)<\/h[123]>/g)) {
+    assert.doesNotMatch(heading, /\.<br>/, heading);
+  }
+  for (const [, label] of html.matchAll(/<a [^>]*class="btn[^>]*>(.*?)<\/a>/g)) {
+    assert.doesNotMatch(label, /<span|[+→]/);
+  }
+  const css = await readFile(root + 'assets/style.css', 'utf8');
+  assert.match(css, /prefers-reduced-motion:reduce.*slice-grow,.figure-light\{animation:none/s);
 });

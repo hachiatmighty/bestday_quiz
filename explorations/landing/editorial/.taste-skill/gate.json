@@ -1,0 +1,93 @@
+{
+ "start": "2026-11-10T11:09:21.400Z",
+ "round": 1,
+ "idle": 0,
+ "errors": 2,
+ "status": "error",
+ "history": [
+  {
+   "at": "2026-11-10T11:11:58.439Z",
+   "mode": "manual",
+   "status": "fail",
+   "fails": 1,
+   "round": 1,
+   "reused": false,
+   "stopHookActive": false
+  },
+  {
+   "at": "2026-11-10T11:13:32.904Z",
+   "mode": "manual",
+   "status": "error",
+   "fails": 0,
+   "round": 1,
+   "reused": false,
+   "stopHookActive": false
+  }
+ ],
+ "max": 3,
+ "marker": {
+  "page": "index.html",
+  "url": null,
+  "root": null,
+  "kind": "software",
+  "category": "life audit",
+  "primary": "Start your life audit",
+  "rounds": 3,
+  "start": "2026-11-10T11:09:21.400Z",
+  "by": "gate.mjs --start"
+ },
+ "manual": true,
+ "roundKey": "30d1d4c19ef6d1fa:da39a3ee",
+ "roundFree": false,
+ "idleFree": false,
+ "blockKey": null,
+ "fp": "2c5d2fb7bf502be3",
+ "page": "index.html",
+ "found": {
+  "fails": [
+   {
+    "check": "gaming-suspect",
+    "where": "assets/motion.js",
+    "msg": "the page's own script reads the user agent near \"headless\" or an automation tool's name",
+    "fix": "delete the user-agent test; a visitor and the checker get the same page",
+    "widths": [],
+    "ids": [
+     "gaming-suspect"
+    ],
+    "wheres": [
+     "assets/motion.js"
+    ]
+   }
+  ],
+  "warns": [],
+  "crashed": [
+   "copy-lint.mjs could not run (exit 0: spawnSync /opt/node22/bin/node EPERM)",
+   "consistency.mjs gave no report (exit 2)",
+   "check.mjs could not run (exit 2)"
+  ],
+  "seconds": {
+   "consistency": 0,
+   "layout": 0
+  }
+ },
+ "open": [],
+ "waived": [
+  {
+   "check": "gaming-suspect",
+   "where": "assets/motion.js",
+   "msg": "the page's own script reads the user agent near \"headless\" or an automation tool's name",
+   "fix": "delete the user-agent test; a visitor and the checker get the same page",
+   "widths": [],
+   "ids": [
+    "gaming-suspect"
+   ],
+   "wheres": [
+    "assets/motion.js"
+   ],
+   "reason": "The kit's motion.js shot() test, ported unchanged into the existing classic-script wrapper. The page declares data-motion=live, so this test never changes its behaviour for headless browsers. This waiver is explicitly documented in references/gate.md."
+  }
+ ],
+ "warnCount": 0,
+ "at": "2026-11-10T11:13:32.905Z",
+ "note": "copy-lint.mjs could not run (exit 0: spawnSync /opt/node22/bin/node EPERM); consistency.mjs gave no report (exit 2); check.mjs could not run (exit 2)"
+}

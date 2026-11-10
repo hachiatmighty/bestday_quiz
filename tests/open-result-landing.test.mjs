@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { areas } from '../life-audit/data/audit.mjs';
-import { exampleAreas, areaReading, suggestedFocus, priorities, firstStatement, goal, firstStep } from '../explorations/landing/open-result/assets/example.mjs';
+import { exampleAreas, areaReading, suggestedFocus, priorities, firstStatement, circleEvidence, goal, firstStep } from '../explorations/landing/open-result/assets/example.mjs';
 
 const root = resolve('explorations/landing/open-result');
 const html = await readFile(resolve(root, 'index.html'), 'utf8');
@@ -46,10 +46,11 @@ test('open-result shows the complete fictional result, access terms and first st
 
 test('open-result handoff and evidence use retained v3 questions and scale labels', async () => {
   const questions = await readFile('docs/life-audit/QUESTIONS-V3.md', 'utf8');
-  assert.equal(firstStatement, 'I got something done on the work I wanted to do.');
+  assert.equal(firstStatement, 'I moved forward on work I actually care about.');
   for (const area of exampleAreas) {
     for (const statement of area.statements) assert.ok(questions.includes(statement), statement);
   }
+  for (const [statement] of circleEvidence) assert.ok(questions.includes(statement), statement);
   for (const label of ['Mostly not me', 'A bit like me', "That's me"]) assert.ok(html.includes(label));
 });
 
@@ -79,10 +80,10 @@ test('open-result interactions inspect evidence and keep the handoff isolated', 
     click() { this.dispatchEvent(new Event('click')); }
   }
   let focused;
-  const selectors = new Map(['#area-answers', '#evidence-area', '#evidence-count', '#evidence-intro', '#top', '.closing', '#audit', '.nav__links', '.nav-start', '.nav-back', '.skip-link', '#question-title', '.answer-status'].map(key => [key, new Control()]));
+  const selectors = new Map(['#area-answers', '#evidence-area', '#evidence-count', '#evidence-intro', '#top', '.closing', '#audit', '.nav__links', '.nav-back', '.skip-link', '#question-title', '.answer-status'].map(key => [key, new Control()]));
   const areaButtons = exampleAreas.map(area => new Control({ area: area.id }));
   const wheelParts = exampleAreas.map(area => new Control({ wheelArea: area.id }));
-  const startButtons = Array.from({ length: 3 }, () => new Control());
+  const startButtons = Array.from({ length: 2 }, () => new Control());
   const choices = Array.from({ length: 5 }, (_, answer) => new Control({ answer: String(answer) }));
   const sets = new Map([['[data-area]', areaButtons], ['.large-wheel [data-wheel-area]', wheelParts], ['a[href="#audit"]', startButtons], ['[data-answer]', choices]]);
   const page = new EventTarget();
@@ -99,16 +100,19 @@ test('open-result interactions inspect evidence and keep the handoff isolated', 
     assert.equal(selectors.get('#evidence-area').textContent, 'Work and direction');
     assert.equal(selectors.get('#area-answers').children.length, 5);
     assert.equal(areaButtons[0].attributes['aria-pressed'], 'true');
+    assert.equal(selectors.get('#area-answers').children[4].children[0].textContent, 'How is it going, in a word?');
     assert.equal(areaButtons[3].attributes['aria-pressed'], 'false');
     areaButtons[6].click();
     assert.match(selectors.get('#evidence-intro').textContent, /stays missing/);
     assert.equal(selectors.get('#area-answers').children.length, 1);
     page.scrollY = 3200;
-    startButtons[2].click();
+    startButtons[1].click();
     page.location.hash = '#audit'; page.dispatchEvent(new Event('hashchange'));
     assert.equal(selectors.get('#top').hidden, true);
     assert.equal(selectors.get('.closing').hidden, true);
     assert.equal(selectors.get('#audit').hidden, false);
+    assert.equal(selectors.get('.nav__links').hidden, true);
+    assert.equal(selectors.get('.nav-back').hidden, false);
     assert.equal(focused, selectors.get('#question-title'));
     assert.equal(page.scrollY, 0);
     assert.equal(selectors.get('.skip-link').attributes.href, '#audit');
@@ -118,8 +122,10 @@ test('open-result interactions inspect evidence and keep the handoff isolated', 
     page.location.hash = '#top'; page.dispatchEvent(new Event('hashchange'));
     assert.equal(selectors.get('#top').hidden, false);
     assert.equal(selectors.get('#audit').hidden, true);
+    assert.equal(selectors.get('.nav__links').hidden, false);
+    assert.equal(selectors.get('.nav-back').hidden, true);
     assert.equal(page.scrollY, 3200);
-    assert.equal(focused, startButtons[2]);
+    assert.equal(focused, startButtons[1]);
     assert.equal(JSON.stringify(exampleAreas), snapshot);
   } finally {
     for (const [key, value] of Object.entries(originals)) {

@@ -1,0 +1,7 @@
+[
+  {
+    "check": "gaming-suspect",
+    "target": "assets/motion.js",
+    "reason": "The kit's motion.js shot() test, ported unchanged into the existing classic-script wrapper. The page declares data-motion=live, so this test never changes its behaviour for headless browsers. This waiver is explicitly documented in references/gate.md."
+  }
+]

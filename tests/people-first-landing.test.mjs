@@ -36,7 +36,7 @@ test('people-first handoff and circle statements follow the v3 question bank', a
   const bank = await readFile('docs/life-audit/QUESTIONS-V3.md', 'utf8');
   const first = bank.match(/\| work\.W1 \| ([^|]+) \|/)[1].trim();
   assert.equal(html.match(/id="question-title" tabindex="-1">([^<]+)/)[1], first);
-  for (const id of ['S3', 'S4', 'S5']) {
+  for (const id of ['S3', 'S4', 'S5', 'work.C1']) {
     const statement = bank.match(new RegExp(`\\| ${id} \\| ([^|]+) \\|`))[1].trim();
     assert.ok(html.includes(statement), id);
   }
@@ -62,7 +62,7 @@ test('people-first is self-contained with real destinations and local assets', a
 
 test('people-first sells v3, labels fictional results and discloses the email boundary', () => {
   assert.match(html, /About 8 minutes, free/);
-  assert.match(html, /8 areas\. 5 parts\. About 52 answers/);
+  assert.match(html, /8 areas and 5 parts, with about 52 answers/);
   assert.match(html, /Fictional answers/);
   assert.match(html, /Example share preview/);
   assert.match(html, /First name and email open the rest/);

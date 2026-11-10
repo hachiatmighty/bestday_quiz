@@ -1,5 +1,5 @@
 Kind: software. A free reflection tool from Bestday.
-Design selection: black stage, cream reading surfaces, yellow actions and one focus figure; Urbanist 500/800, split hero, centred navigation, pill buttons, cream middle band, type close. Brand and the fixed people-first concept determine these choices; no skill scripts were run, as requested.
+Design selection: black stage, cream reading surfaces, yellow actions and one focus figure; Urbanist 500/800, illustration-led central hero, single-link navigation, pill buttons, cream middle band, type close. Brand and the fixed people-first concept determine these choices; no skill scripts were run, as requested.
 
 # Concept
 
@@ -7,7 +7,7 @@ The Life Audit looks at the people around a goal as well as the goal itself. Two
 
 # Screen plan
 
-- `home`: the audit includes your people; custom two-figure pictogram (object); 1 screen; hero entrance puts the name before the action and settles the illustration once.
+- `home`: the audit includes your people; custom two-figure pictogram (object); 1 screen; the illustration leads above a centred headline and action; the existing entrance settles once.
 - `people`: recognise the circle questions; 3 concrete statements with pictograms (type); 1 screen; still text, no scroll reveals.
 - `audit`: the whole audit, beyond relationships; live HTML overview with eight areas and five ordered parts (UI); 1 screen at 1440, grows naturally on mobile.
 - `sharing`: separate the private picture from the chosen commitment; interactive HTML export preview (UI fragment); 1 screen; one user-triggered moment places the wheel in the export only when requested.
@@ -20,8 +20,8 @@ The Life Audit looks at the people around a goal as well as the goal itself. Two
 # Design plan
 
 - Palette: `#0D0D0D` is the main stage and product surface. `#FFFCEF` is text on black and the full audit/method ground. `#FFDE59` is limited to actions, the focus figure, selected answers and focus states on black. Secondary text is cream at reduced opacity on black. Cream-ground actions use black with yellow text. Both html and body own their background and font.
-- Type: local Urbanist Medium 500 for prose and controls, ExtraBold 800 for headings. Desktop h1 88px, h2 64px, h3 28px, lead 22px, body 18px, labels 14px. Mobile h1 48px, h2 38px (44px in the close), h3 25px, body 17px. No tracked capitals or decorative eyebrows.
-- Layout: equal 80px edges at 1440 and 24px at 390, maximum 1280px. All splits use the same 6/6 columns. Hero is exactly the first viewport. Desktop sections are one viewport each at 1440x900; mobile sections grow for legibility. No sideways scroll or fixed mobile action bar.
+- Type: local Urbanist Medium 500 for prose and controls, ExtraBold 800 for headings. Desktop hero h1 76px, h2 64px, h3 28px, lead 22px, body 18px, labels 14px. Mobile hero h1 46px, h2 38px (44px in the close), h3 25px, body 17px. No tracked capitals or decorative eyebrows.
+- Layout: equal 80px edges at 1440 and 24px at 390, maximum 1280px. Content splits use the same 6/6 columns. The hero is a central vertical composition, with the figures above the headline, and fills the first viewport (minimum 700px). Desktop sections are one viewport each at 1440x900; mobile sections grow for legibility. No sideways scroll or fixed mobile action bar.
 - Voice: Bestday's current voice; capable, specific, warm; second person; member nouns (goal, people, check in, slipping); no coach language, invented reviews or member counts.
 - Motion: adapted taste-skill motion layer, one hero entrance; the optional-wheel interaction is the page's additional orchestrated moment. No timers, loops, parallax, scroll reveals or libraries. Reduced motion rests immediately.
 - Deliberate departure from the skill: labelled examples are required by the brief; brand fonts, weights, colours and pictograms override dealt defaults. The user explicitly prohibits installation and script execution. No photograph, shader, or extra effect fits this concept. The first-question handoff is intentionally a bounded preview, not a second audit implementation.
@@ -39,7 +39,7 @@ This starts with a relationship, rather than letting visitors try audit controls
 
 # Open questions and boundaries
 
-- `QUESTIONS-V3.md` appeared during implementation. The final handoff uses its exact `work.W1`: “I got something done on the work I wanted to do.” The five answer labels, introductory instruction, three circle statements (S3, S4, S5), method example (`work.C1`) and example circle role now follow that draft. Its copy is still a proposal for review, not a validated instrument.
+- `QUESTIONS-V3.md` appeared during implementation. The final handoff uses its exact `work.W1`: “I moved forward on work I actually care about.” The five answer labels, introductory instruction, three circle statements (S3, S4, S5), method example (`work.C1`) and example circle role now follow that draft. Its copy is still a proposal for review, not a validated instrument.
 - V3 gives “about 52 answers”, five parts plus context, and “about 8 minutes”. It embeds the one-word check inside each area while retaining its Part 2 label. The page follows this wording and five-part naming; the estimate still needs timed member testing.
 - The whole result beyond the wheel, suggested focus and one area read requires first name and email. This is disclosed, not implemented in this landing exploration.
 - Commitment-only sharing is the default demonstration; actual sharing, export, capture, analytics and the remaining audit are outside this standalone landing/handoff scope. No data leaves the page and nothing is persisted.
@@ -50,8 +50,19 @@ This starts with a relationship, rather than letting visitors try audit controls
 
 The taste-skill checker, dealer, gate and other scripts were deliberately not run, per the brief.
 
-- All 7 targeted checks in `tests/people-first-landing.test.mjs` pass: default privacy, the five-answer selection contract, exact v3 question-bank wording, relative asset/anchor resolution, honest v3/gate copy, AA brand pairs and explicit root surfaces, and event-driven routing/sharing/answer state with a DOM test double.
+- All 7 targeted checks in `tests/people-first-landing.test.mjs` pass: default privacy, the five-answer selection contract, exact v3 question-bank wording including the method example, relative asset/anchor resolution, honest v3/gate copy, AA brand pairs and explicit root surfaces, and event-driven routing/sharing/answer state with a DOM test double.
 - `node --check` passes for the page and copied motion module.
-- Final `npm run build && npm test`: build passes (32 static pages). Full test run passes 23 of 24 test files. `tests/origin-rewrite.test.mjs` fails with `ERR_TEST_FAILURE`, consistent with the documented sandbox-sensitive child-process limitation. It was not edited.
+- Final `npm run build && npm test`: build passes (32 static pages). Round 2 final test run passes 23 of 24 test files. `tests/origin-rewrite.test.mjs` fails with `ERR_TEST_FAILURE`, consistent with the documented sandbox-sensitive child-process limitation. The other exploration tests pass on the final run. The origin-rewrite test was not edited.
 - Chromium and the available headless-shell launch were blocked by the sandbox (`Operation not permitted` / `SIGTRAP`). No screenshots, real-browser layout, touch, reduced-motion rendering or browser performance checks could be completed. The page includes responsive CSS for 390, 768, 1024 and 1440, but this is not a claim of verified rendering. The reviewer should visually check those sizes.
 - Total page source and local assets are approximately 450 KB. No source files, capture/analytics modules, reviewed audit data or quiz behaviour were changed. Other landing explorations and `QUESTIONS-V3.md` appeared concurrently in the shared workspace and were left alone.
+
+# Round 2 review changes
+
+- Replaced the left/right hero with one central composition. The existing generated figures lead above the headline at both widths; the artwork frame is 720 × 440px on desktop and 342 × 280px at 390px. The headline and action sit together 20px below the artwork, replacing the mobile layout that pushed the figures to the bottom of an expanding row. The art itself is unchanged.
+- Simplified the header to the wordmark and one text link, “The people part”. The hero now has the first screen's sole start button.
+- Rewrote the close as “A goal to share with your people.” and the audit heading as “Your life in 8 areas.” Removed the extra two-sentence hero footer line and turned the audit's count fragments into one sentence. Re-read the taste skill's `references/copy-tells.md`; there are no two-fragment section headings or sales contrast frames. Exact question-bank language and role names remain intact.
+- Checked all question examples against `QUESTIONS-V3.md`: `work.W1`, `work.C1`, S3, S4 and S5, plus the five answer labels. Extended the existing question-copy check to cover `work.C1` and updated the count-copy assertion. No interaction logic changed.
+- Files changed for this round: `index.html`, `assets/style.css`, this `NOTES.md`, and `tests/people-first-landing.test.mjs`. Production quiz and audit source, reviewed data, and other explorations were untouched.
+- Validation: `npm run build && npm test` was run. The build passes with 32 pages, 0 errors, 0 warnings and 3 existing unused-variable hints. Tests pass 23/24 files, with only the documented origin-rewrite failure described above. All 7 people-first checks pass; the CSS also parses with `css-tree`.
+- Visual verification remains incomplete: fresh launches of Chromium and headless shell both fail under sandbox restrictions (`Operation not permitted`, `SIGTRAP`). No new screenshots were produced. Please review the revised composition at 390 and 1440; this round does not claim a successful browser layout check.
+- No commit, push or branch change.

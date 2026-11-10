@@ -56,7 +56,7 @@ test('editorial DOM handoff keeps practice separate and restores reading positio
   const selectors = ['#landing', '#audit', '#audit-heading', '.skip-link', '[data-return]', '.nav .brand', '[data-practice-scale]', '[data-audit-scale]', '[data-practice-status]', '[data-audit-status]', '.statements'];
   const nodes = Object.fromEntries(selectors.map(selector => [selector, new Element()]));
   const starts = [new Element(), new Element()];
-  const labels = ['Not me', 'Mostly not me', 'A bit like me', 'Mostly me', 'That’s me'];
+  const labels = ['Not me', 'Mostly not me', 'A bit like me', 'Mostly me', "That's me"];
   for (const selector of ['[data-practice-scale]', '[data-audit-scale]']) {
     const buttons = labels.map((label, i) => {
       const button = new Element(label);
@@ -93,7 +93,7 @@ test('editorial DOM handoff keeps practice separate and restores reading positio
   assert.ok(nodes['#audit-heading'].focusCount > 0);
   assert.ok(nodes['[data-audit-scale]'].buttons.every(button => button.attributes['aria-pressed'] === 'false'));
   choose('[data-audit-scale]', 4);
-  assert.match(nodes['[data-audit-status]'].textContent, /That’s me/);
+  assert.match(nodes['[data-audit-status]'].textContent, /That's me/);
   assert.equal(nodes['[data-practice-scale]'].buttons[2].attributes['aria-pressed'], 'true');
   nodes['[data-return]'].listeners.click({ preventDefault() {} });
   assert.equal(nodes['#landing'].hidden, false);
@@ -130,11 +130,15 @@ test('editorial sells v3 and uses the selected Work statements and scale from th
   const example = [...html.match(/<ol class="statements">([\s\S]*?)<\/ol>/)[1].matchAll(/<span>(.*?)<\/span>/g)].map(m => m[1]);
   assert.equal(selected.length, 4);
   assert.deepEqual(example, selected);
+  const circleStatement = bank.match(/\| S1 \| ([^|]+) \|/)[1].trim();
+  assert.equal(html.match(/<blockquote class="pull-statement">(.*?)<\/blockquote>/)[1], circleStatement);
   assert.match(html, /A bit like me/);
   assert.doesNotMatch(html, /In between/);
   for (const scale of ['data-practice-scale', 'data-audit-scale']) {
     const body = html.slice(html.indexOf(scale)).split('</div>')[0];
     assert.deepEqual([...body.matchAll(/data-value="(\d)"/g)].map(m => Number(m[1])), [0, 1, 2, 3, 4]);
+    const labels = [...bank.matchAll(/\| (Not me|Mostly not me|A bit like me|Mostly me|That's me) \| \d \|/g)].map(m => m[1]);
+    assert.deepEqual([...body.matchAll(/<button[^>]+>(.*?)<\/button>/g)].map(m => m[1]), labels);
   }
   assert.doesNotMatch(html, /—|three minutes|0 to 10|unlock|wellbeing|mindset/);
 });

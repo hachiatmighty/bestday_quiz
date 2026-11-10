@@ -10,9 +10,9 @@ function showEvidence(id) {
   document.querySelector('#evidence-intro').textContent = skipped
     ? 'This area was skipped. Its slice stays missing.'
     : 'This slice came from these 5 answers.';
-  const rows = skipped ? [['No answers given', 'Missing, not zero']] : [
+  const rows = skipped ? [['No answers given', 'Missing']] : [
     ...area.statements.map((statement, index) => [statement, scale[area.responses[index]]]),
-    ['How it’s going, in a word', area.check],
+    ['How is it going, in a word?', area.check],
   ];
   answers.replaceChildren(...rows.map(([statement, answer]) => {
     const row = document.createElement('li');
@@ -39,7 +39,6 @@ const landing = document.querySelector('#top');
 const footer = document.querySelector('.closing');
 const handoff = document.querySelector('#audit');
 const navLinks = document.querySelector('.nav__links');
-const navStart = document.querySelector('.nav-start');
 const navBack = document.querySelector('.nav-back');
 let returnScroll = 0;
 let returnFocus = null;
@@ -60,7 +59,6 @@ function syncRoute() {
   footer.hidden = next;
   handoff.hidden = !next;
   navLinks.hidden = next;
-  navStart.hidden = next;
   navBack.hidden = !next;
   document.querySelector('.skip-link').setAttribute('href', next ? '#audit' : '#top');
   document.body.classList.toggle('is-audit', next);
