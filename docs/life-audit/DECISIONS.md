@@ -38,6 +38,17 @@ Decisions made during the build without interrupting you. Each has the reasoning
 | D20 | Email sequence: result now, day 2 "Who knows your first step?", day 4 "How did {day} go?", day 7 "One week in". Pricing line only on the first and last. | Comes back to the first step and the person who will ask about it, as the voice guide asks; no hype, one next step each. | Open: copy sign-off |
 | D21 | The share card's focus sector is drawn full length, not at its rating. | Showing a 4/10 on a public card would reveal a rating by default. "Include my wheel" shows the real shape. | Made |
 
+## v2 redesign (after your review on 10 Nov)
+
+| # | Decision | Reasoning | Status |
+| --- | --- | --- | --- |
+| V1 | The wheel is made of people: 8 pictogram figures, one per area, standing at the rim of their slices. Codex generated them in the archetype quiz's figure style. | v1 had no illustration and a chart-like wheel. The figures are Bestday's signature; this puts the Life Audit in the same family as the archetype quiz. | Open: please look at the figures |
+| V2 | The landing hero is a live demo: tap or drag any slice of the wheel. | The frontend-design skill: open with the most characteristic thing in the subject's world, in its most fitting form. For a wheel of life that is touching the wheel. | Made |
+| V3 | A scroll-lit manifesto band, one line per area ("Some seasons, work takes everything." … "Which one needs you now?"), same mechanics as the archetype quiz. | Ties the two quizzes together and gives each figure a human truth. | Open: copy sign-off |
+| V4 | Contrast rules are enforced by a test: explicit html and body backgrounds; only black on cream, cream on black, yellow on black and muted grey on black; buttons on cream are black with yellow text. | v1 relied on the host for the body background, so the Artifact viewer showed cream and yellow text on white. A yellow button also sat on the cream hero. | Made |
+| V5 | v1's generic tells are removed: eyebrow labels, "↗" on buttons, "A · B" strings, decorative numbering. | Called out by the frontend-design skill as markers of generated pages. | Made |
+| V6 | Rest's figure redrawn in a hammock. | The reclined first version was ambiguous at small sizes. | Made |
+
 ## Verified during the build
 
 - `npm run build`, `npm run build:life-audit` and `npm test` pass (64 tests at the last count). The live `/quiz` build is unchanged.
