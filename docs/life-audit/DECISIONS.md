@@ -27,14 +27,33 @@ Decisions made during the build without interrupting you. Each has the reasoning
 | D10 | Share URLs carry only the chosen area (`/life-audit/r/relationships`), never the goal or ratings. The personal card is drawn in the browser. | The brief says scores and answers stay private by default and must stay out of public links. | Made |
 | D11 | The share card shows only the commitment by default; "Include my wheel" is an opt-in tick box. | Brief: "scores and personal answers remain private by default". Voice guide: celebrate in public, hold struggle in private. | Made |
 | D12 | A friend arriving from a share link sees "Your friend chose X. You chose Y." with one thing to do for each other. No 8x8 grid of written pairings. | The archetype quiz's hand-written pairings fit 5 results; 64 area pairings would be filler. Two templated variants (same area, different areas) keep it honest. | Made |
+| D13 | Recommend adding only `/life-audit/` to the sitemap, not the 8 share pages. | Share pages are thin and near-duplicate; one strong page is better for search, as the research recommends. | Made |
 | D14 | Until the Life Audit has its own Branch links, "Start your circle" falls back to the archetype quiz's `quizw` link. The launch build refuses to run while the dedicated links are missing. | A dead button in review hides the real flow; a fallback keeps it testable. Using `quizw` in production would mix attribution, so launch is blocked until you supply `LIFE_AUDIT_WEB` and `LIFE_AUDIT_EMAIL` (and desktop fallbacks). | Open: create 2 Branch links |
 | D15 | Hero: "Look at your whole life. Then choose one thing." Subline names the 8 areas, the wheel, one goal, a first step "to tell someone you trust", 3 minutes. | Codex's "Your life. One clear choice." repeated the eyebrow and had no second person. The research's promise is "see which part of your life deserves attention, then choose one achievable goal"; this says it in Bestday's plain voice. | Open: copy sign-off |
 | D16 | Result copy names areas by their short names ("Health and Home are where you feel most satisfied right now"). | The long names made "Health and energy and Home and everyday life", which reads badly. | Made |
 | D17 | The opening question's answer (segment) tints nothing on the result yet and is not shown. It goes to analytics only. | The playbook wants the first answer to tailor the result. With 4 segments x 8 areas, tailored lines would be thin. Better use: tailor the emails (a "new season" person gets a January-flavoured note). Logged as a v1.1 idea. | Open |
-| D13 | Recommend adding only `/life-audit/` to the sitemap, not the 8 share pages. | Share pages are thin and near-duplicate; one strong page is better for search, as the research recommends. | Made |
 
-## Task 3 review notes
+| D18 | Email form posts in two stages: contact details at the gate, then the chosen goal, horizon, first step and day once the person stops editing. If sending fails, the result still shows. | The gate fires before a goal exists, so a single post could never carry what the first email promises. The playbook gate trades name and email for the full result; a delivery failure must not withhold it. Contract for `quizCaptureWeb`: `docs/life-audit/CAPTURE-CONTRACT.md`. | Made |
+| D19 | Fonts load with `swap`, a size-matched Arial fallback and preloads. | Codex chose `optional`, which drops Urbanist entirely on a slow first visit, the common case for a WhatsApp link on a phone. | Made |
+| D20 | Email sequence: result now, day 2 "Who knows your first step?", day 4 "How did {day} go?", day 7 "One week in". Pricing line only on the first and last. | Comes back to the first step and the person who will ask about it, as the voice guide asks; no hype, one next step each. | Open: copy sign-off |
+| D21 | The share card's focus sector is drawn full length, not at its rating. | Showing a 4/10 on a public card would reveal a rating by default. "Include my wheel" shows the real shape. | Made |
 
-- The result signup uses the existing archetype web Branch link until the dedicated Life Audit links arrive. Launch handoffs reject either missing link; review handoffs print warnings.
-- Referral copy has two deterministic variants, for matching and different areas. Both ask the two people to exchange first steps and choose a check-in day this week.
-- Public OG PNGs were rendered with Urbanist and the public example wheel using a software rasteriser because Chromium cannot launch in this sandbox (`setsockopt: Operation not permitted`). The Playwright generator is supplied with embedded font data and `CHROMIUM_PATH` support. Re-render with `npm run assets:life-audit` outside the sandbox before visual approval. Personal cards and the updated screenshot flow still need browser verification outside this sandbox.
+## Verified during the build
+
+- `npm run build`, `npm run build:life-audit` and `npm test` pass (64 tests at the last count). The live `/quiz` build is unchanged.
+- Full walk-through in Chromium at 390px and 1440px: every screen, skip-all recovery, Back keeping a 0 rating, reload restoring the result, share page, referral card and personal card. No sideways scroll on any screen, no page errors. Screenshots: `review/life-audit/` (regenerate with `scripts/life-audit-screens.mjs`).
+- Mixpanel, with the real Bestday Quiz token and every request intercepted (no test events reached the project): 28 events to `api-eu.mixpanel.com` only, all with `quiz: life_audit`, UTM values, version, segment, focus area and time. No names, emails, ratings or goal text in any event.
+- Website handoff: review zip builds; a launch build is refused while the Branch links are missing. Email previews are excluded from the zip.
+
+## Before launch (needs you or someone else)
+
+| Item | Owner | Status |
+| --- | --- | --- |
+| Create Branch links `LIFE_AUDIT_WEB` and `LIFE_AUDIT_EMAIL` with desktop fallbacks; put them in `life-audit/data/links.mjs`. | Hachi / Branch owner | Blocks launch build |
+| Update `quizCaptureWeb` for the two-stage Life Audit payload and add the 4 emails, tested on `bestday-staging`. | Backend | Not started |
+| Fix `bestday.ai/unsubscribe` (404 today, same gap as the archetype quiz). | Backend | Not started |
+| Sign off copy: hero (D15), area reflections and goals (D6), emails (D20), numerals (D2). | Hachi | Open |
+| Carry the chosen goal through signup into the app (opaque reference, app side). | App team | Out of scope for this static build |
+| Five usability sessions before promotion, as the Notion brief asks. | Growth | Not started |
+| After release: query Mixpanel for `quiz = life_audit` events from bestday.ai within the hour. | Whoever ships | After launch |
+| Set owner, cost ceiling, thresholds and review dates on the Notion experiment. | Hachi | Open |
