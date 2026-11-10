@@ -1,0 +1,23 @@
+{
+  "tool": "Built-in image_gen.imagegen",
+  "background": "Pure white, removed by scripts/process-figures.mjs",
+  "sharedPrompt": "One centred square Bestday pictogram, flat yellow #FFDE59, circle head, rounded capsule torso and limbs, faceless, no fingers, no outline, gradient, shadow, texture or text. 15% empty margins, legible at 64px. Initial proportions: head diameter 110 units, torso width 85 length 175, limb width 45 and segment length 110.",
+  "poses": {
+    "money": "a figure placing one coin on a short stack of exactly 3 coins. Coins are simple thick rounded horizontal yellow discs seen from the side, white gaps between them",
+    "health": "a figure mid-stride running, bent arms and bent legs, clear dynamic running silhouette",
+    "relationships": "two figures side by side leaning in, one with a hand resting on the other's shoulder",
+    "growth": "a figure sitting cross-legged holding an open book, book made of two simple yellow rounded rectangles separated by a white central seam",
+    "rest": "a figure lying back reclined, one arm behind the head, legs crossed",
+    "home": "a figure standing relaxed with arms down under a simple roof made of a thick inverted V above the head, no walls",
+    "meaning": "a figure kneeling planting a small sapling, sapling is one short stem and exactly two rounded leaves"
+  },
+  "work": "Figure stepping up onto a low rounded block, one arm forward, climbing the next step.",
+  "regenerations": {
+    "growth": "Smaller head: one quarter of composition longest dimension. Capsule torso 0.8 head diameters wide, 1.6 long. Limb width 0.4 head diameters. Two book rectangles with white seam, crossed lower limbs.",
+    "meaning": "Same smaller-head proportions as growth; kneeling leg folded underneath, other knee raised, reaching toward short sapling with two rounded leaves.",
+    "rest": "Regenerated twice. Final prompt: nearly horizontal recline, arm behind head, legs crossed at ankles; head diameter 27% of composition width, torso width 80% of head diameter and length 160%, limb width 45%. Compact limbs, composition spanning approximately 4 heads."
+  },
+  "rebuild": "node scripts/process-figures.mjs",
+  "raw": "Ignored raw/ directory includes selected images and discarded v1 generations.",
+  "limitations": "Independent image generations retain small proportion differences; inspect contact sheets before site integration."
+}
